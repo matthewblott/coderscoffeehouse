@@ -1,4 +1,0 @@
-#!/usr/bin/env zsh
-git add -A
-git commit -m "automated update"
-git push origin master --tags
