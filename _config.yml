@@ -12,4 +12,4 @@ github_username:  jekyll
 
 # Build settings
 markdown: kramdown
-gems: ['therubyracer', 'jekyll-lunr-js-search']
+gems: ['jekyll-lunr-js-search']
