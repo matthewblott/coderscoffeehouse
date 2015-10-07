@@ -1,0 +1,12 @@
+---
+layout: page
+title: Contact
+permalink: /contact/
+---
+
+<form action="//formspree.io/matthew.blott@gmail.com" method="post">
+    <input name="name" placeholder="name">
+    <input type="email" name="_replyto" placeholder="email">
+    <input type="submit" value="Send">
+    <input type="hidden" name="_next" value="{{ 'thanks' | prepend: site.baseurl }}" />
+</form>
