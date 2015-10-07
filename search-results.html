@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+<div class="parent">
+    <div class="child">
+        <div class="container">
+            <h1 class="display-4">
+                {{ site.title }}
+            </h1>
+            <h2>
+                Search results
+            </h2>
+
+            <div id="search-results">
+                <ul class="entries list-unstyled">
+                    <li>
+                        <span>{{ post.date | date: "%b %-d, %Y" }}</span>
+                        <h2>
+                            <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+                        </h2>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% raw %}
+<script id="search-results-template" type="text/mustache">
+    {{#entries}}
+    <li>
+        <span>{{#date}}<small><time datetime="{{pubdate}}" pubdate>{{displaydate}}</time></small>{{/date}}</span>
+        <h2>
+            <a href="{{url}}">{{title}}</a></h2>
+    </li>
+    {{/entries}}
+</script>
+{% endraw %}
