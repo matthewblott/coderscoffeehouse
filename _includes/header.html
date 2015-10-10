@@ -5,11 +5,21 @@
     <div class="collapse navbar-toggleable-xs" id="exCollapsingNavbar2">
         <a class="navbar-brand" href="{{ site.baseurl }}/">{{ site.title }}</a>
         <ul class="nav navbar-nav">
-            {% for page in site.pages %} {% if page.title != 'Search Results' %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+                <a class="nav-link" href="{{ 'About' | prepend: site.baseurl }}">About</a>
             </li>
-            {% endif %} {% endfor %}
+            <li class="nav-item">
+                <span class="nav-link">|</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ 'Contact' | prepend: site.baseurl }}">Contact</a>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link">|</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ 'Projects' | prepend: site.baseurl }}">Projects</a>
+            </li>
             <li class="nav-item pull-right">
                 <form class="form-inline navbar-form pull-right" action="/search-results/" method="get">
                     <input class="form-control" name="q" placeholder="Search">
