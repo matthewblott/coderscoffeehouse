@@ -1,3 +1,9 @@
+---
+layout: post
+title:  "Legacy ASP.NET Websites"
+date:   2014-11-26 20:38:00
+categories: jekyll update
+---
 So, you've got an old ASP.NET website using the now (or so it seems) disliked Web Forms that really needs upgrading but you simply don't  have the time or resources to devote to the task. But making incremental changes with all the good new stuff is difficult because websites don't play as well with the VS tools like web projects do. Some problems:
 
 * I am forced to convert a website to a web project - a bit of a task in itself as there is no natural converion method or tools to do this.

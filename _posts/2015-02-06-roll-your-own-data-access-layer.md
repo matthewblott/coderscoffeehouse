@@ -1,3 +1,9 @@
+---
+layout: post
+title:  "Roll Your Own Data Access Layer"
+date:   2015-02-06 21:53:00
+categories: jekyll update
+---
 This is a follow up to a previous post I did about a website I'm upgrading.
 
 You have a website that you manage that wasn't written by you and wasn't the best piece of software ever written to start with. But now it's old and needs upgrading. The problem is it "works" and rewriting it is not a priority. But badly written software often isn't modular and partial upgrading can be difficult. Babysteps are required but small steps will eventually take you a long way and the journey has to start somewhere.
