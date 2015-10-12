@@ -21,3 +21,6 @@ Sub SomeMethod ()
 End Sub
 
 {% endhighlight %}
+
+{% highlight vbnet linenos %}
+{% endhighlight %}

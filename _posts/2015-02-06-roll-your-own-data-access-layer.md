@@ -10,7 +10,8 @@ You have a website that you manage that wasn't written by you and wasn't the bes
 
 One of the earlier tasks I like to achieve with this type of project is getting a good handle on the data layer. It's often a mixture of inline SQL and stored procedures with no consistency between how each is called - some methods just execute a concatenated string while others correctly append paramaters to a command object. But even with the correct approach you often end up with a lot of boiler plate code like the following:
 
-```
+{% highlight vbnet linenos %}
+
 Dim cnnConn As SqlConnection
 Dim cmdReturn As SqlCommand
 Dim intStatus As Integer
@@ -95,7 +96,7 @@ cmdReturn.Dispose()
 cnnConn.Close()
 cnnConn.Dispose()
 
-```
+{% endhighlight %}
 
 The obvious thing to do might be to use an ORM but in here I don't want to introduce more assemblies than I already have or add another layer of abstraction.
 
@@ -103,7 +104,7 @@ So I want to bring some basic DRY principles to simple ADO.NET coding.
 
 First, we'll create a generic Db class where all instances of the connection string are called from.
 
-```
+{% highlight vbnet linenos %}
 
 Public Class Db
 
@@ -113,56 +114,58 @@ Public Class Db
 
 End Class
 
-```
+{% endhighlight %}
 
-Next we'll add a method for creating a DataSet. Nine times out of ten that's what we're doing here so it makes sense to have a generic method to handle this. Here is where the connection string is created (and ultimately destroed). 
+Next we'll add a method for creating a DataSet. Nine times out of ten that's what we're doing here so it makes sense to have a generic method to handle this. Here is where the connection string is created (and ultimately destroyed). 
 
-```
+{% highlight vbnet linenos %}
 
-  Public Shared Function GetDataSet(sql As String) As DataSet
+Public Shared Function GetDataSet(sql As String) As DataSet
+
+  Using conn = Db.GetConnection()
   
-    Using conn = Db.GetConnection()
+    Using cmd As New SqlCommand()
     
-      Using cmd As New SqlCommand()
+      Using adapter As New SqlDataAdapter(cmd)
       
-        Using adapter As New SqlDataAdapter(cmd)
+        Dim data As New DataSet
         
-          Dim data As New DataSet
-          
-          conn.Open()
-          
-          adapter.Fill(data)
-          
-          Return data
-          
-        End Using
+        conn.Open()
+        
+        adapter.Fill(data)
+        
+        Return data
         
       End Using
       
     End Using
     
-  End Function
+  End Using
+  
+End Function
 
-```
+{% endhighlight %}
 
 To make the method more flexible there is an optional boolean value to indicate the sql string argument is the name of a stored procedure.
 
-```
+{% highlight vbnet linenos %}
+
 Public Shared Function GetDataSet(sql As String, Optional isStoredProcedure As Boolean = False) As DataSet
 
-  ...
-  
-  If isStoredProcedure Then
-    cmd.CommandType = CommandType.StoredProcedure
-  End If
-  
-  ...
+...
 
-```
+If isStoredProcedure Then
+  cmd.CommandType = CommandType.StoredProcedure
+End If
+
+...
+
+{% endhighlight %}
 
 Great now we have a generic method but it only handles a SQL string and we need to be able to append paramaters to our command object. To do this I created a method which dynamically creates paramaters by matching the names of the paramaters in the SQL source with the field names of a POCO (plain old CLR object) object using Reflection. This was a bit tricky as I had to parse the SQL for carriage returns and other problematic whitespace.
 
-```
+{% highlight vbnet linenos %}
+
 Public Shared Sub AddParams(ByRef cmd As SqlCommand, source As Object)
 
   Dim sql = cmd.CommandText.ToLower()
@@ -184,11 +187,12 @@ Public Shared Sub AddParams(ByRef cmd As SqlCommand, source As Object)
   
 End Sub
 	
-```
+{% endhighlight %}
 
 We then update our `GetDataSet` method so it uses the method added above.
 
-```
+{% highlight vbnet linenos %}
+
 Public Shared Function GetDataSet(sql As String, source As Object, _
   Optional isStoredProcedure As Boolean = False) As DataSet
       
@@ -198,11 +202,11 @@ Public Shared Function GetDataSet(sql As String, source As Object, _
     Db.AddParams(cmd, source)
   End If
 
-```
+{% endhighlight %}
 
 Most of the time I work with DataTables so we'll add a wrapper function so we don't have to extract the DataTable from the function every time.
 
-```
+{% highlight vbnet linenos %}
 
 Public Shared Function GetDataTable(sql As String, source As Object, _
   Optional isStoredProcedure As Boolean = False) As DataTable
@@ -211,33 +215,33 @@ Public Shared Function GetDataTable(sql As String, source As Object, _
   
 End Function
 
-```
+{% endhighlight %}
 
 We're almost there. Let's create a POCO class to test our new data access methods.
 
-```
+{% highlight vbnet linenos %}
+
 Public Class User
   Public Property Id As Integer
   Public Property Name As String
   Public Property Password As String
 End Class
 
-```
+{% endhighlight %}
 
 Next we'll add a method to our class that creates our SQL string and executes GetDataTable. Normally I would create a service layer but this is for demonstration purposes only.
 
-```
+{% highlight vbnet linenos %}
 
 Public Sub [Get]()
   Db.GetDataTable(<sql>select Id, Name, Password from Users where Id = @Id </sql>.Value, New With {.Id = Me.Id})
 End Sub
 
-```
+{% endhighlight %}
 
 That's great but we need to bind the return values with our POCO fields. We'll create a method for doing this, again using Reflection but this time we'll match the POCO class fields with a DataRow (you'll notice the function checks for Enum fields and null values).
 
-
-```
+{% highlight vbnet linenos %}
 
 Public Shared Sub BindDataRow(row As DataRow, source As Object)
   
@@ -271,11 +275,12 @@ Public Shared Sub BindDataRow(row As DataRow, source As Object)
   
 End Sub
 
-```
+{% endhighlight %}
 
 Finally we amend our POCO Get function and we're all set to go.
 
-```
+{% highlight vbnet linenos %}
+
 ...
 
 For Each row In Db.GetDataTable("select Id, Name, Password from Users where Id = @Id ", _
@@ -286,13 +291,12 @@ For Each row In Db.GetDataTable("select Id, Name, Password from Users where Id =
 Next
 
 ...
-		
-```
+
+{% endhighlight %}
 
 That's it. If you execute the code below the Name field's value will be written to the console.
 
-
-```
+{% highlight vbnet linenos %}
 
 Dim user As New User With {.Id = 1}
 
@@ -300,6 +304,6 @@ user.Get()
 
 Console.WriteLine(user.Name)
 		
-```
+{% endhighlight %}
 
 There are a few things missing from this project but I've actually got a lot further with this than what is disclosed here. Certain helper methods and SQL generation for CRUD operations have been added. I will add this code to Github and the rest later. Please feel free to comment :-)
