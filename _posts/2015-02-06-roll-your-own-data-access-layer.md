@@ -2,7 +2,7 @@
 layout: post
 title:  "Roll Your Own Data Access Layer"
 date:   2015-02-06 21:53:00
-categories: jekyll update
+categories: web orms
 ---
 This is a follow up to a previous post I did about a website I'm upgrading.
 

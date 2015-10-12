@@ -2,7 +2,7 @@
 layout: post
 title:  "Microsoft Developers Hermitically Sealed World"
 date:   2015-10-08 23:28:00
-categories: jekyll update
+categories: tech
 ---
 I've had this post on my mind for a while but was prompted to finally put something together after speaking with a network guy I hire from time to time. He's a certified Microsoft engineer and really knows his stuff, the point being he's someone whose opinion I respect.
 
