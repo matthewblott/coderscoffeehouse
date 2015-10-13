@@ -19,3 +19,23 @@
   position: relative;
   z-index: 1;
 }
+
+.margin-top-xs {
+  margin-top: 1px;
+}
+
+.margin-top-sm {
+  margin-top: 2px;
+}
+
+.margin-top-md {
+  margin-top: 4px;
+}
+
+.margin-top-lg {
+  margin-top: 8px;
+}
+
+.margin-top-xl {
+  margin-top: 15px;
+}

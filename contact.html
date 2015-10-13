@@ -4,9 +4,31 @@ title: Contact
 permalink: /contact/
 ---
 
-<form action="//formspree.io/matthew.blott@gmail.com" method="post">
+<form class="form-horizontal" action="//formspree.io/matthew.blott@gmail.com" method="post">
+	<input name="_gotcha" style="display:none" />
     <input type="hidden" name="_next" value="{{ 'thanks' | prepend: site.baseurl }}" />
-    <input name="name" placeholder="name" required>
-    <input type="email" name="_replyto" placeholder="email" required>
-    <input type="submit" value="Send" class="btn btn-success-outline">
-</form>
+    <input type="hidden" name="_subject" value="New submission!" />
+
+  <div class="form-group">
+	  <div class="col-sm-offset-2 col-sm-8">
+	    <label class="sr-only" for="name">name</label>
+		    <input name="name" placeholder="name" id="name" class="form-control" required>
+	    </div>
+  </div>
+  <div class="form-group">
+  	<div class="col-sm-offset-2 col-sm-8">
+	    <label class="sr-only" for="email">email</label>
+	    <input type="email" name="_replyto" placeholder="email" id="email" class="form-control margin-top-lg" required>
+    </div>
+	</div>
+
+  <div class="form-group">
+  <div class="col-sm-offset-2 col-sm-8">
+    <label class="sr-only" for="message">message</label>
+	<textarea rows="5" placeholder="your message" id="message" class="form-control margin-top-lg" required></textarea>
+  </div>
+	</div>
+  <div class="col-sm-offset-2 col-sm-8">
+	<button type="submit" class="btn btn-success-outline margin-top-lg">Send</button>
+</div>
+	</form>
