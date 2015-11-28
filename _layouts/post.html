@@ -12,6 +12,8 @@ comments: true
   </article>
 
     {% if page.comments %}
+    {% endif %}
+
     <div id="disqus_thread"></div>
     <script>
         var disqus_shortname = 'matthewblott';
@@ -23,6 +25,5 @@ comments: true
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     </script>
-    {% endif %}
 
 </div>
