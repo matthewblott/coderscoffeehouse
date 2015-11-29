@@ -10,7 +10,7 @@ You have a website that you manage that wasn't written by you and wasn't the bes
 
 One of the earlier tasks I like to achieve with this type of project is getting a good handle on the data layer. It's often a mixture of inline SQL and stored procedures with no consistency between how each is called - some methods just execute a concatenated string while others correctly append paramaters to a command object. But even with the correct approach you often end up with a lot of boiler plate code like the following:
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Dim cnnConn As SqlConnection
 Dim cmdReturn As SqlCommand
@@ -104,7 +104,7 @@ So I want to bring some basic DRY principles to simple ADO.NET coding.
 
 First, we'll create a generic Db class where all instances of the connection string are called from.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Class Db
 
@@ -118,7 +118,7 @@ End Class
 
 Next we'll add a method for creating a DataSet. Nine times out of ten that's what we're doing here so it makes sense to have a generic method to handle this. Here is where the connection string is created (and ultimately destroyed). 
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Function GetDataSet(sql As String) As DataSet
 
@@ -148,7 +148,7 @@ End Function
 
 To make the method more flexible there is an optional boolean value to indicate the sql string argument is the name of a stored procedure.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Function GetDataSet(sql As String, Optional isStoredProcedure As Boolean = False) As DataSet
 
@@ -164,7 +164,7 @@ End If
 
 Great now we have a generic method but it only handles a SQL string and we need to be able to append paramaters to our command object. To do this I created a method which dynamically creates paramaters by matching the names of the paramaters in the SQL source with the field names of a POCO (plain old CLR object) object using Reflection. This was a bit tricky as I had to parse the SQL for carriage returns and other problematic whitespace.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Sub AddParams(ByRef cmd As SqlCommand, source As Object)
 
@@ -191,7 +191,7 @@ End Sub
 
 We then update our `GetDataSet` method so it uses the method added above.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Function GetDataSet(sql As String, source As Object, _
   Optional isStoredProcedure As Boolean = False) As DataSet
@@ -206,7 +206,7 @@ Public Shared Function GetDataSet(sql As String, source As Object, _
 
 Most of the time I work with DataTables so we'll add a wrapper function so we don't have to extract the DataTable from the function every time.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Function GetDataTable(sql As String, source As Object, _
   Optional isStoredProcedure As Boolean = False) As DataTable
@@ -219,7 +219,7 @@ End Function
 
 We're almost there. Let's create a POCO class to test our new data access methods.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Class User
   Public Property Id As Integer
@@ -231,7 +231,7 @@ End Class
 
 Next we'll add a method to our class that creates our SQL string and executes GetDataTable. Normally I would create a service layer but this is for demonstration purposes only.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Sub [Get]()
   Db.GetDataTable(<sql>select Id, Name, Password from Users where Id = @Id </sql>.Value, New With {.Id = Me.Id})
@@ -241,7 +241,7 @@ End Sub
 
 That's great but we need to bind the return values with our POCO fields. We'll create a method for doing this, again using Reflection but this time we'll match the POCO class fields with a DataRow (you'll notice the function checks for Enum fields and null values).
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Public Shared Sub BindDataRow(row As DataRow, source As Object)
   
@@ -279,7 +279,7 @@ End Sub
 
 Finally we amend our POCO Get function and we're all set to go.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 ...
 
@@ -296,7 +296,7 @@ Next
 
 That's it. If you execute the code below the Name field's value will be written to the console.
 
-{% highlight vbnet linenos %}
+{% highlight vb linenos %}
 
 Dim user As New User With {.Id = 1}
 
