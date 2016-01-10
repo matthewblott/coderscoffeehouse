@@ -1,0 +1,2 @@
+Now we'll install mono itself. It's worth paying attention here. Mono is a lot easier to install than it used to be and the people who manage debian packages do an excellent job of keeping everything up to date but there is a very serious issue with the current release of Mono which means you're unable to use a SqlDataAdapter. For me this is a show stopper as I currently have production code that talks to a SQL Sever database so I had to revert to an older version of Mono.   
+
