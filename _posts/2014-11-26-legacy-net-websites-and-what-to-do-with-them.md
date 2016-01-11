@@ -17,11 +17,11 @@ The bloated solution VS creates that I have to pick through and then remove the 
 
 I just want to add the odd controller and build from there. And although it's not obvious it can be done.
 
-1. Add the correct libraries. This took some effort as MVC uses a lot of extension methods so it isn't always apparent that the correct library is loaded. Also, the namespaces can be confusing - Microsoft.AspNet.Mvc and System.Web.Mvc both appear to be the same upon inspection. The files below are the only ones you will need.
+Add the correct libraries. This took some effort as MVC uses a lot of extension methods so it isn't always apparent that the correct library is loaded. Also, the namespaces can be confusing - Microsoft.AspNet.Mvc and System.Web.Mvc both appear to be the same upon inspection. The files below are the only ones you will need.
 
 ![](/images/2014-11-26/required-libraries.jpg)
 
-2. Add the correct handlers and assemblies to web.config. Needless to say when you install stuff via VS or Nuget you get a lot of unncessary boiler plate additions you can live without. Here is a barebones example of what you need in web.config.
+Add the correct handlers and assemblies to web.config. Needless to say when you install stuff via VS or Nuget you get a lot of unncessary boiler plate additions you can live without. Here is a barebones example of what you need in web.config.
 
 {% highlight xml linenos %}
 
@@ -57,9 +57,9 @@ I just want to add the odd controller and build from there. And although it's no
 
 {% endhighlight %}
 
-3. Add the routes you want to use with your application. This one through me as the MapHttpRoute method is an extension method and it doesn't appear with code completion even after the site is built. The code is executed at the start so I have placed it in the Global.asax code behind.
+Add the routes you want to use with your application. This one through me as the MapHttpRoute method is an extension method and it doesn't appear with code completion even after the site is built. The code is executed at the start so I have placed it in the Global.asax code behind.
 
-{% highlight vbnet linenos %}
+{% highlight aspx-vb linenos %}
 
 Imports System.Web.Http
 Imports System.Web.Routing
@@ -78,7 +78,7 @@ End Class
 
 {% endhighlight %}
 
-4. Now we have a router in place we can start adding some controls. For this example I've just added a simple web user control that mimics a login control.
+Now we have a router in place we can start adding some controls. For this example I've just added a simple web user control that mimics a login control.
 
 {% highlight aspx-vb linenos %}
 
@@ -92,7 +92,7 @@ End Class
 
 {% endhighlight %}
 
-5. The control is placed in master page in this example.
+The control is placed in master page in this example.
 
 {% highlight aspx-vb linenos %}
 
@@ -114,7 +114,7 @@ End Class
 
 {% endhighlight %}
           
-6. Finally to wrap it all up a controller is added to manage the http requests. For this example I created the POCO "User" object which is sent via a post request. Because Web API automatically maps the request type to the controller you can simply call the method "Post".
+Finally to wrap it all up a controller is added to manage the http requests. For this example I created the POCO "User" object which is sent via a post request. Because Web API automatically maps the request type to the controller you can simply call the method "Post".
 
 {% highlight vbnet linenos %}
 

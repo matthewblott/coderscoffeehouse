@@ -24,3 +24,9 @@ End Sub
 
 {% highlight vbnet linenos %}
 {% endhighlight %}
+
+{% highlight bash %}
+
+sudo apt-get install openssh-server
+
+{% endhighlight %}
