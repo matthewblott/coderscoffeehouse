@@ -343,7 +343,7 @@ sudo service nginx restart
 
 {% endhighlight %}
 
-That's it! If you browse to the domain you set up for the site it should know view in the browser.
+That's it! If you browse to the domain you set up for the site it should now view in the browser.
 
 You can manage ```monoserve``` the same as any service by using the following commands.
 
