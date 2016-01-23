@@ -130,7 +130,7 @@ sudo service nginx restart
 
 {% endhighlight %}
 
-Now we are finally ready to test our new web page and show some .NET code running. Run the following command:
+Now we are finally ready to test our new web page and show some .NET code running. Run the following command.
 
 {% highlight zsh linenos %}
 
