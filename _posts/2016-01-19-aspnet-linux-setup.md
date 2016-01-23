@@ -146,7 +146,7 @@ That's all well and good but it isn't very practical to have a terminal open for
 
 [This](https://fan0o.wordpress.com/2012/11/13/mono-and-nginx-for-asp-net) post pointed me in the right direction but this required putting all the configuration information for each site in the same file in the ```/etc/init.d/``` folder under root. Thanksfully I came across the EPM Junkie blog which has a super helpful post [here](http://epmjunkie.com/mono-fastcgi-startup-script) which tells me everything I need. 
 
-To tie everything up create the file ```monoserve``` by running the following command:
+To tie everything up create the file ```monoserve``` by running the following command.
 
 {% highlight zsh linenos %}
 
@@ -240,7 +240,7 @@ exit 0
 
 {% endhighlight %}
 
-As per the previous steps when using vim run the ```!wq``` command to save the changes. There's quite a lot going on in this file but the bits to note are the variables ```FCGI_CONFIG_DIR``` which points to a configuration file for our sites which we'll create in a minute and ```USER``` and ```GROUP``` which refer to the ```www-data``` user and group which our sites will run under and have lower level privileges and are a lot safer than running under root! To get the ```monoserve``` service to start after a reboot run the following: 
+As per the previous steps when using vim run the ```!wq``` command to save the changes. There's quite a lot going on in this file but the bits to note are the variables ```FCGI_CONFIG_DIR``` which points to a configuration file for our sites which we'll create in a minute and ```USER``` and ```GROUP``` which refer to the ```www-data``` user and group which our sites will run under and have lower level privileges and are a lot safer than running under root! To get the ```monoserve``` service to start after a reboot run the following. 
 
 {% highlight zsh linenos %}
 
@@ -256,7 +256,7 @@ sudo chmod +x /etc/init.d/monoserve
 
 {% endhighlight %}
 
-There are a few gotchas referred to in the post mentioned above which are to do with folders and files not being present. We'll need to create them so run the following commands to create them and them:
+There are a few gotchas referred to in the post mentioned above which are to do with folders and files not being present. We'll need to create them so run the following commands to create them and them.
 
 {% highlight zsh linenos %}
 
