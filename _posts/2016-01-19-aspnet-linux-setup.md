@@ -258,7 +258,7 @@ sudo chmod +x /etc/init.d/monoserve
 
 {% endhighlight %}
 
-There are a few gotchas referred to in the post mentioned above which are to do with folders and files not being present. We'll need to create them so run the following commands to create them and them.
+There are a few gotchas referred to in the post mentioned above which are to do with folders and files not being present. We'll need to create them so run the following commands.
 
 {% highlight zsh linenos %}
 
