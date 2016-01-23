@@ -308,7 +308,7 @@ mkdir ~/www/mono-fastcgi
 {% highlight zsh linenos %}
 {% endhighlight %}
 
-That's everything setup for ```monoserve``` we're now ready to add a site. Basically the service will check for files that are suffixed with ```.webapp``` in the ```~/www/mono-fastcgi``` folder we created earlier. So let's created one for our demo app. 
+That's everything setup for ```monoserve``` we're now ready to add a site. Basically the service will check for files that are suffixed with ```.webapp``` in the ```~/www/mono-fastcgi``` folder we created earlier. So let's create one for our demo app. 
 
 {% highlight zsh linenos %}
 
