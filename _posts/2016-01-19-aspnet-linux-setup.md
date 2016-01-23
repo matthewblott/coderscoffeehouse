@@ -19,7 +19,7 @@ sudo apt-get install nginx
 
 {% endhighlight %}
 
-We'll use nginx as a reverse proxy for fastcgi which is what will be doing all the work. This is an exmaple of where you can find yourself getting caught out with Mono as I found a lot of the documentation referenced the fastcgi version for Mono's .NET 2.0 implementation. Anyhow, to install the correct version for this tutorial run the following command: 
+We'll use nginx as a reverse proxy for fastcgi which is what will be doing all the work. This is an exmaple of where you can find yourself getting caught out with Mono as I found a lot of the documentation referenced the fastcgi version for Mono's .NET 2.0 implementation. Anyhow, to install the correct version for this tutorial run the following command.
 
 {% highlight zsh linenos %}
 
@@ -52,7 +52,7 @@ mkdir ~/www
 
 {% endhighlight %}
 
-Then create a directory for a demo website itself:
+Then create a directory for a demo website itself.
 
 {% highlight zsh linenos %}
 
@@ -60,7 +60,7 @@ mkdir ~/www/aspnet
 
 {% endhighlight %}
 
-Move to the directory then create an aspx file using vim:
+Then create an aspx file using vim.
 
 {% highlight zsh linenos %}
 
@@ -85,7 +85,7 @@ In the vim editor paste the following code - we'll use the ubiquitous 'Hello Wor
 
 {% endhighlight %}
 
-Save the changes with the ```!wq``` vim command. Now we'll create the configuration files so the site will work with nginx. Move to the appropriate directory and create a new file with vim.
+Save the changes with the ```!wq``` vim command. Now we'll create the configuration files so the site will work with nginx. Create a new file with vim.
 
 {% highlight zsh linenos %}
 
@@ -112,7 +112,7 @@ server {
 
 {% endhighlight %}
 
-The value next server_name is your domain name. I'm using a local VM which has the name mono-demo but normally this would be the something like www.mysite.com. The other values are self explanatory although you might notice there are two entries for the default aspx web page. This is a gotcha for anyone coming from the Windows world - path and file names with different cases are treated seperately. If a user browses for Default.aspx and your file is uploaded as default.aspx the request will be treated as a 404 so you have to cater for this. 
+The value next to ```server_name``` is your domain name. I'm using a local VM which has the name mono-demo but normally this would be the something like www.mysite.com. The other values are self explanatory although you might notice there are two entries for the default aspx web page. This is a gotcha for anyone coming from the Windows world - path and file names with different cases are treated seperately. If a user browses for Default.aspx and your file is uploaded as default.aspx the request will be treated as a 404 so you have to cater for this. 
 
 Next create a symlink in the nginx sites-enabled folder to point to the previously created nginx config file by running the following commands.
 
