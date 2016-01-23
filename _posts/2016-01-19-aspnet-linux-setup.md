@@ -154,6 +154,8 @@ sudo vi /etc/init.d/monoserve
 
 {% endhighlight %}
 
+And then copy and paste the following.
+
 {% highlight zsh linenos %}
 
 #!/bin/bash
