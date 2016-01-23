@@ -59,7 +59,7 @@ sudo apt-get update
 
 {% endhighlight %}
 
-If you're using a different version of Ubuntu from the one here (14.04) there may be some additonal steps but if not then just run the followong: 
+If you're using a different version of Ubuntu from the one here (14.04) there may be some additonal steps but if not then just run the following: 
 
 {% highlight bash linenos %}
 
@@ -118,7 +118,7 @@ Now hit escape so no more changes are made then type the following in the termin
 
 {% endhighlight %}
  
-The exclamation mark is what you put before sending a command to vim and the 'w' is for writing the changes and 'q' is for quitting. Once the changes are written compile the newly created file with the following; 
+The exclamation mark is what you put before sending a command to vim and the 'w' is for writing the changes and 'q' is for quitting. Once the changes are written compile the newly created file with the following:
 
 {% highlight bash linenos %}
 
