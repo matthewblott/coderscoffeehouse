@@ -5,6 +5,8 @@ date:   2015-10-10 21:19:00
 categories: tech
 ---
 
+Some ```inline``` code.
+
 {% highlight csharp linenos %}
 
 void SomeMethod ()
