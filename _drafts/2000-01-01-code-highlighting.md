@@ -1,9 +1,12 @@
 ---
 layout: post
 title:  "Code Highlighting"
-date:   2015-10-10 21:19:00
+date:   2000-01-01 00:00:00
 categories: tech
 ---
+
+![](/path/image.jpg)
+[href text](/path/to/page.html)
 
 Some ```inline``` code.
 
