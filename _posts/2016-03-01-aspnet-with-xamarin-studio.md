@@ -5,7 +5,7 @@ date:   2016-03-01 00:00:00
 categories: tech
 ---
 
-Anyone following along my recent posts will notice I've been writing about working with Mono on Linux. I've covered [installing Mono on Linux](/tech/2015/12/09/mono-linux-setup.html) and [hosting a website](/tech/2016/01/19/aspnet-linux-setup.html) which for me was the hard part but some people have complained about the lack of anything for getting started outside Windows. As I've said before documentation for .NET outside Windows is a wasteland (which is part of my motivation for this blog) so here's a quick how to for getting started with MVC 5 on OSX with Xamarin Studio.
+Anyone following along with my recent posts will notice I've been writing about working with Mono on Linux. I've covered [installing Mono on Linux](/tech/2015/12/09/mono-linux-setup.html) and [hosting a website](/tech/2016/01/19/aspnet-linux-setup.html) which for me was the hard part but some people have complained about the lack of anything for getting started outside Windows. As I've said before documentation for .NET outside Windows is a wasteland (which is part of my motivation for this blog) so here's a quick how to for getting started with MVC 5 on OSX with Xamarin Studio.
 
 This tutorial isn't going to go through installing Xamarin Studio - there are installers on the Xamarin website for Windows and OSX that are stable and well supported. I don't think there's anything for Linux but Monodevelop is essentially the same product and there are instructions on the Monodevelop site for getting set up.
 
@@ -37,4 +37,4 @@ Rebuild the site again with Command + B then click the start button again and ou
 
 ![](/images/2016-03-01/2016-03-01@20.21.42-sm.jpg)
 
-This is a pretty stratighforward tutorial but there were a couple of people requesting it so I have it comes in handy. Feel free to leave any comments :-)
+This is a pretty stratighforward tutorial but there were a couple of people requesting it so I hope it comes in handy. Feel free to leave any comments :-)
