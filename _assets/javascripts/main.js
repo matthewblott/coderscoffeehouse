@@ -6,10 +6,10 @@
 //= require vendor/URI
 //= require vendor/jquery.lunr.search
 
-$(function() {
-    $('#search-query').lunrSearch({
-        results: '#search-results',
-        entries: '.entries',
-        template: '#search-results-template'
-    });
+$(function () {
+  $('#search-query').lunrSearch({
+    results: '#search-results',
+    entries: '.entries',
+    template: '#search-results-template'
+  });
 });

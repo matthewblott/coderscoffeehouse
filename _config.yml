@@ -21,6 +21,6 @@ gems: ['jekyll-lunr-js-search', 'jekyll-assets', 'uglifier']
 #   input: GFM # for use with Github
 #   syntax_highlighter: rouge
 
-assets:
-  js_compressor:  uglifier
-  css_compressor: sass
+# assets:
+#   js_compressor:  uglifier
+#   css_compressor: sass

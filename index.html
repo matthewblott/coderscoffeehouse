@@ -2,33 +2,37 @@
 layout: default
 ---
 
-<h1 class="display-4">
+<div class="container-fluidx">
 
-    {{ site.title }}
+    <h1 class="display-4">{{ site.title }}</h1>
 
-</h1>
-<h2>
+    <div>
+        <h2>
     Useful titbits from the projects I'm working on plus other things that interest me in the programming world
 </h2>
 
-<p>
-   
-<h2>   <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
+        <p>
+
+            <h2>   <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
 
 </h2>
-     
-</p>
-<ul class="list-unstyled">
 
-    {% for post in site.posts %}
+        </p>
+        <ul class="list-unstyled">
 
-    <li>
-        <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-        <h2>
+            {% for post in site.posts %}
+
+            <li>
+                <span>{{ post.date | date: "%b %-d, %Y" }}</span>
+                <h2>
             <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
         </h2>
-    </li>
+            </li>
 
-    {% endfor %}
-    
-</ul>
+            {% endfor %}
+
+        </ul>
+        
+    </div>
+
+</div>

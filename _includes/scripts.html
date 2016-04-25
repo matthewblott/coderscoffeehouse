@@ -1,7 +1,15 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="//cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>x
-<script src="//cdnjs.cloudflare.com/ajax/libs/lunr.js/0.5.12/lunr.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.1.3/mustache.min.js"></script>
-<script src="//stevenlevithan.com/assets/misc/date.format.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
-<script src="//raw.githubusercontent.com/slashdotdash/jekyll-lunr-js-search/master/js/jquery.lunr.search.js"></script>
+{% if jekyll.environment == 'production' %}
+  {% javascript main %}
+{% else %}
+  {% javascript libs/jquery-2.2.0 %}
+  {% javascript libs/tether-1.1.1.min %}
+  {% javascript libs/bootstrap %}
+  
+  {% javascript libs/lunr %}
+  {% javascript libs/mustache %}
+  {% javascript libs/date.format %}
+  {% javascript libs/URI %}
+  {% javascript libs/jquery.lunr.search %}
+  
+  {% javascript main.dev %}
+{% endif %}
