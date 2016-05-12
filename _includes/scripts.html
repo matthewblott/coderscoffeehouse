@@ -1,15 +1,7 @@
+<script src="http://localhost:4000/js/mustache-0.8.1.js"></script>
+
+{% javascript main %}
+
 {% if jekyll.environment == 'production' %}
-  {% javascript main %}
 {% else %}
-  {% javascript libs/jquery-2.2.0 %}
-  {% javascript libs/tether-1.1.1.min %}
-  {% javascript libs/bootstrap %}
-  
-  {% javascript libs/lunr %}
-  {% javascript libs/mustache %}
-  {% javascript libs/date.format %}
-  {% javascript libs/URI %}
-  {% javascript libs/jquery.lunr.search %}
-  
-  {% javascript main.dev %}
 {% endif %}

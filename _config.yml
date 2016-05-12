@@ -17,6 +17,8 @@ excerpt_separator: ""   # Workaround for http://blog.slaks.net/2013-08-09/jekyll
 gems: ['jekyll-lunr-js-search', 'jekyll-assets', 'uglifier']
 # markdown: kramdown
 
+# highlighter: rouge
+
 # kramdown:
 #   input: GFM # for use with Github
 #   syntax_highlighter: rouge

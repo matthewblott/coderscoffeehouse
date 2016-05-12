@@ -313,3 +313,44 @@ h2 {
 .post {
   min-height: 200px;
 }
+
+.margin-top-xs {
+  margin-top: 1px;
+}
+
+.margin-top-sm {
+  margin-top: 2px;
+}
+
+.margin-top-md {
+  margin-top: 4px;
+}
+
+.margin-top-lg {
+  margin-top: 8px;
+}
+
+.margin-top-xl {
+  margin-top: 15px;
+}
+
+.post-header {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+article {
+  background: #fff;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+}
+
+#disqus_thread {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+td.code {
+  padding: 5px;
+}

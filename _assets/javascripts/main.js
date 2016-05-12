@@ -1,10 +1,10 @@
-//= require vendor/jquery-2.1.4
-//= require vendor/bootstrap
-//= require vendor/lunr
-//= require vendor/mustache
-//= require vendor/date.format
-//= require vendor/URI
-//= require vendor/jquery.lunr.search
+//= require libs/jquery-2.2.0
+//= require libs/tether-1.3.2
+//= require libs/bootstrap
+//= require libs/lunr-0.4.5
+//= require libs/date.format-1.2.3
+//= require libs/URI-1.12.1
+//= require libs/jquery.lunr.search-0.0.1
 
 $(function () {
   $('#search-query').lunrSearch({

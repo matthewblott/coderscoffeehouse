@@ -1,52 +1,49 @@
----
-layout: default
----
+<!DOCTYPE html>
+<html>
 
-<div class="parent">
-    <div class="child">
-        <div class="container">
-            <article>
-                <header>
-                    <h1>Search all posts</h1>
-                </header>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+</head>
 
-                <div id="search" class="text-center">
-                    <form action="/search.html" method="get">
-                        <input id="search-query" class="search-query" name="q" placeholder="Search">
-                    </form>
-                </div>
+<body>
 
-                <section id="search-results">
-                    <div class="entries">
-                    </div>
-                </section>
-
-                {% raw %}
-                <script id="search-results-template" type="text/mustache">
-                    {{#entries}}
-                    <article>
-                        <h3>
-            {{#date}}<small><time datetime="{{pubdate}}" pubdate>{{displaydate}}</time></small>{{/date}}
-            <a href="{{url}}">{{title}}</a></h3>
-                    </article>
-                    {{/entries}}
-                </script>
-                {% endraw %}
-
-                <script src="/js/search.min.js"></script>
-
-                <script>
-                $(function() {
-                    $('#search-query').lunrSearch({
-                        results: '#search-results',
-                        entries: '.entries',
-                        template: '#search-results-template'
-                    });
-                });
-                </script>
-
-            </article>
-        </div>
-
+    <div id="search">
+        <form action="/search.html" method="get">
+            <input id="search-query" class="search-query" name="q" placeholder="Search">
+            <button type="submit">Submit</button>
+        </form>
     </div>
-</div>
+
+    <section id="search-results">
+        <div class="entries">
+        </div>
+    </section>
+
+
+        <script id="search-results-template" type="text/mustache">
+        </script>
+
+    <script type="text/javascript" src="/assets/libs/jquery-2.2.0.js"></script>
+    <script type="text/javascript" src="/assets/libs/lunr.js"></script>
+    <script type="text/javascript" src="/assets/libs/mustache.js"></script>
+    <script type="text/javascript" src="/assets/libs/date.format.js"></script>
+    <script type="text/javascript" src="/assets/libs/URI.js"></script>
+    <script type="text/javascript" src="/assets/libs/jquery.lunr.search.js"></script>
+
+    <script>
+        $(function() {
+            $('#search-query').lunrSearch({
+                results: '#search-results',
+                entries: '.entries',
+                template: '#search-results-template'
+            });
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>
