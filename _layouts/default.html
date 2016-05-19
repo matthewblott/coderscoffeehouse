@@ -10,20 +10,13 @@
   </div>
   <div style="height: 84px"></div>
 
-  <style>
-    
-    
-    
-  </style>
-
-
-  <div class="container-fluid bg">
-
+  <div class="container-fluid {% if page.url == '/' || page.url == '/index.html' %}bg{% endif %}">
     {{ content }}
-                
-  </div>  
-  
-  {% include footer.html %}
+  </div>
+
+  <div class="{% if page.layout == 'default' and page.url != '/' %}navbar-fixed-bottom{% endif %}">
+    {% include footer.html %}
+  </div>
 
   {% include scripts.html %}
 

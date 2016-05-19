@@ -2,7 +2,14 @@
 layout: default
 ---
 
-    <h1 class="display-4">{{ site.title }}</h1>
+<div class="container-fluid bg">
+
+    <h1 class="display-4">{{ site.title }}
+        
+              <i class="fa fa-coffee padding-left-md"></i>
+
+        
+    </h1>
 
     <div>
         <h2>
@@ -17,8 +24,7 @@ layout: default
 
         </p>
         <ul class="list-unstyled">
-
-            {% for post in site.posts %}
+            {% for post in site.posts offset: 0 limit: 10  %}
 
             <li>
                 <span>{{ post.date | date: "%b %-d, %Y" }}</span>
@@ -32,3 +38,6 @@ layout: default
         </ul>
         
     </div>
+
+    
+</div>
