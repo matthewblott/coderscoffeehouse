@@ -24,5 +24,6 @@ gems: ['jekyll-lunr-js-search', 'jekyll-assets', 'uglifier']
 #   syntax_highlighter: rouge
 
 assets:
-  js_compressor:  uglifier
-  css_compressor: sass
+  compress:
+    css:  sass
+    js:   uglifier
