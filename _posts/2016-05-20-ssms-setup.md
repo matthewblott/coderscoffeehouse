@@ -12,11 +12,11 @@ Dark Theme
 
 You can skip this step if you wish but the first thing I always do after installing SSMS is change the default theme to a darker theme. There's some helpful info on how to do this [here](http://blogs.sqlsentry.com/aaronbertrand/making-ssms-pretty-my-dark-theme/) but it can be a bit of a pain. Fortunately the same page has a dark theme you can download directly [here](http://blogs.sqlsentry.com/wp-content/uploads/aaronbertrand/media/AB.DarkScheme.vssettings.zip) which you can then import by clicking the Tools link at the top of SSMS.
 
-![](/images/2016-05-23/2016-05-23@21.23.47-sm.jpg)
+![](/images/2016-05-23/2016-05-23@21.23.47-xs.jpg)
 
 This will then give you a theme the same as the one shown below which I find a lot easier on the eye.
 
-![](/images/2016-05-23/2016-05-23@21.20.45-sm.jpg)
+![](/images/2016-05-23/2016-05-23@21.20.45-xs.jpg)
 
 Allow Remote Connections
 ------------------------
@@ -25,39 +25,39 @@ This is something any seasoned developer who's worked with SQL Server will have 
 
 First enable TCP/IP in SQL Server Configuration Manager.
 
-![](/images/2016-04-18/2016-04-18@15.27.57-sm.jpg)
+![](/images/2016-04-18/2016-04-18@15.27.57-xs.jpg)
 
 Then right-click and select the properties, select the IP Addresses tab and enter 1433 in the TCP Port field under the IPAll section at the bottom. 
 
-![](/images/2016-04-18/2016-04-18@15.28.07-sm.jpg)
+![](/images/2016-04-18/2016-04-18@15.28.07-xs.jpg)
 
 Finally for the remote connection add a rule to the Windows Firewall. Fire up the program then under Inbound Rules right-click and select New Rule then click next.
 
-![](/images/2016-04-18/2016-04-18@16.07.22-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.07.22-xs.jpg)
 
 Then enter the file location for the sqlserver.exe program in the "This program path field" as shown below and then click Next.
 
-![](/images/2016-04-18/2016-04-18@16.08.06-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.08.06-xs.jpg)
 
 On the Action section click Next.
 
-![](/images/2016-04-18/2016-04-18@16.08.47-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.08.47-xs.jpg)
 
 On the Profile section only tick Private and click Next.
 
-![](/images/2016-04-18/2016-04-18@16.08.53-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.08.53-xs.jpg)
 
 Finally give your rule a name - MSSQL is as good a name as any - and then click Finish.
 
-![](/images/2016-04-18/2016-04-18@16.09.01-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.09.01-xs.jpg)
 
 Finally double-click your newly created rule then select the Protocols and Ports tab. 
 
-![](/images/2016-04-18/2016-04-18@16.09.28-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.09.28-xs.jpg)
 
 Change the Local port from All Ports to 1433.
 
-![](/images/2016-04-18/2016-04-18@16.09.55-sm.jpg)
+![](/images/2016-04-18/2016-04-18@16.09.55-xs.jpg)
 
 Click OK. You will now be able to connect to SQL Server from your host OSX machine.
 
@@ -66,7 +66,7 @@ Password File
 
 One really annoying thing with SSMS is its inability to retain passwords after you click the Remember Password checkbox.
 
-![](/images/2016-04-18/2016-04-18@15.28.32-sm.jpg)
+![](/images/2016-04-18/2016-04-18@15.28.32-xs.jpg)
 
 If you're using SSMS many times throughout the day hunting for your passwords and then entering them soon hits your productivity level. Luckily there is a way round this. The trick is to save a copy of the password file then copy it before you fire up SSMS. First you need to create the file to copy so delete the existing file before we create a new file with the preferred login information. 
 
@@ -74,7 +74,7 @@ C:\Users\Matt\AppData\Roaming\Microsoft\SQL Server Management Studio\12.0\SqlStu
 
 Then fire up SSMS and connect to all the servers you want to be associated with password. One tip is to note the servers you connect to will appear in the reverse order. So the server you want to connect to most frequently you'll want to connect to last when creating the file. Once completed connecting to your servers make a copy of the file and save it as SqlStudio.bin.bak as shown below.
 
-![](/images/2016-05-23/2016-05-23@20.20.27-sm.jpg)
+![](/images/2016-05-23/2016-05-23@20.20.27-xs.jpg)
 
 Now you need to create a command file for starting SSMS that copies the SqlStudio.bin.bak file ready for SSMS to use. So create a text file called SSMS-Open.cmd and past the following commands then save the file.
 
@@ -93,7 +93,7 @@ Manifest File
 
 Another serious pain with SSMS if you're using a retina display is its rendering. It sucks big time and for some tasks it is quite literally unusable as shown below.
 
-![](/images/2016-05-23/2016-05-23@20.34.22-sm.jpg)
+![](/images/2016-05-23/2016-05-23@20.34.22-xs.jpg)
 
 Thankfully I found a super helpful way round this [here](https://spaghettidba.com/2015/10/14/ssms-in-high-dpi-displays-how-to-stop-the-madness). You need to create a manifest file in the same directory the application exe uses which forces your application to use Vista style bitmap scaling. The file format needs to be [application name].exe.manifest with [application name] being the name of your exe.
 
@@ -156,30 +156,30 @@ del Ssms.exe.manifest
 
 If you've been following along you should have two files for opening SSMS. When you click on SSMS-Open.cmd it will open SSMS normally and when you click on SSMS-Open-With-Manifest.cmd it will open using Vista style rendering as shown below.
 
-![](/images/2016-04-18/2016-04-18@15.28.39-sm.jpg)
+![](/images/2016-04-18/2016-04-18@15.28.39-xs.jpg)
 
 Now if you try to create a new database you'll see something more user friendly unlike the screenshot in the first step of this section.
 
-![](/images/2016-05-23/2016-05-23@20.34.54-sm.jpg)
+![](/images/2016-05-23/2016-05-23@20.34.54-xs.jpg)
 
 Toolbar Shortcut
 ----------------
 
 As stated earlier you may need to open the command files under Administrator but this can be done using a shortcut so you can just click and open. First from Windows create a shortcut on your shared desktop
 
-![](/images/2016-05-23/2016-05-23@20.22.19-sm.jpg)
+![](/images/2016-05-23/2016-05-23@20.22.19-xs.jpg)
 
 Make sure the Target and Start in fields are correctly filled out.
 
-![](/images/2016-05-21/2016-05-21@22.57.55-sm.jpg)
+![](/images/2016-05-21/2016-05-21@22.57.55-xs.jpg)
 
 Then click the Advanced button and make sure Run as administrator is ticked (this will fix any issues referred to earlier where the Windows command may complain copying the SqlStudio.bin.bak file).
 
-![](/images/2016-05-21/2016-05-21@22.59.59-sm.jpg)
+![](/images/2016-05-21/2016-05-21@22.59.59-xs.jpg)
 
 The default shortcut command is a bit ugly and it looks nicer to have the SSMS icon so to change that click the Change Icon button on the properties.
 
-![](/images/2016-05-21/2016-05-21@22.58.58-sm.jpg)
+![](/images/2016-05-21/2016-05-21@22.58.58-xs.jpg)
 
 Browse to the following file then click OK to set the icon.
 
@@ -187,10 +187,10 @@ C:\Program Files (x86)\Microsoft SQL Server\120\Tools\Binn\ManagementStudio\ssms
 
 Finally from OSX open Finder then browser to the newly created shortcut files and drag them to your toolbar.
 
-![](/images/2016-05-21/2016-05-21@23.00.27-sm.jpg)
+![](/images/2016-05-21/2016-05-21@23.00.27-xs.jpg)
 
 Now if you click on either file you can open SSMS directly with your saved passwords and rendering however you choose in Vista mode or using your retina settings.
 
-![](/images/2016-05-21/2016-05-21@23.00.52-sm.jpg)
+![](/images/2016-05-21/2016-05-21@23.00.52-xs.jpg)
 
 That's it. I've picked up these tips over the years and used them when I was still using Windows so I hope they've been helpful. Please leave any comments below. Thanks :-)
