@@ -1,7 +1,9 @@
 {% if jekyll.environment == 'production' %}
-  <script src="/js/mustache-0.8.1.min.js"></script>
+<script src="/js/mustache-0.8.1.min.js"></script>
 {% else %}
-  <script src="/js/mustache-0.8.1.js"></script>
+<script src="/js/mustache-0.8.1.js"></script>
 {% endif %}
 {% javascript main %}
+{% if jekyll.environment == 'production' %}
 {% javascript google-analytics %}
+{% endif %}
