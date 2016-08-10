@@ -144,7 +144,7 @@ If you browse to the domain entry in your aspnet.conf file you should see your w
 
 That's all well and good but it isn't very practical to have a terminal open for each web site you want to run. This is where I started to experience some frustration as I really had to hunt around to find an adequate solution.
 
-[This](https://fan0o.wordpress.com/2012/11/13/mono-and-nginx-for-asp-net) post pointed me in the right direction but this required putting all the configuration information for each site in the same file in the ```/etc/init.d/``` folder under root. Thanksfully I came across the EPM Junkie blog which has a super helpful post [here](http://epmjunkie.com/mono-fastcgi-startup-script) which tells me everything I need. 
+[This](https://fan0o.wordpress.com/2012/11/13/mono-and-nginx-for-asp-net) post pointed me in the right direction but this required putting all the configuration information for each site in the same file in the ```/etc/init.d/``` folder under root. Thankfully I came across the EPM Junkie blog which has a super helpful post [here](http://epmjunkie.com/mono-fastcgi-startup-script) which tells me everything I need. 
 
 To tie everything up create the file ```monoserve``` by running the following command.
 
@@ -243,6 +243,8 @@ exit 0
 {% endhighlight %}
 
 As per the previous steps when using vim run the ```!wq``` command to save the changes. There's quite a lot going on in this file but the bits to note are the variables ```FCGI_CONFIG_DIR``` which points to a configuration file for our sites which we'll create in a minute and ```USER``` and ```GROUP``` which refer to the ```www-data``` user and group which our sites will run under and have lower level privileges and are a lot safer than running under root! To get the ```monoserve``` service to start after a reboot run the following. 
+
+UPDATE: I'm not sure if this was a mistake on my part or if it's because I've just tried this on a new version of Ubuntu than the one used when I wrote this tutorial but this step should be done after the execute permissions are set for the file (shown in the step after). 
 
 {% highlight zsh linenos %}
 
