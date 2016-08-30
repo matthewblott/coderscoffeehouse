@@ -5,18 +5,18 @@
 
 <body>
 
+
   <div class="container-fluid bg-inverse">
     {% include nav.html %}
   </div>
+
   <div style="height: 84px"></div>
 
-  <div class="container-fluid {% if page.url == '/' || page.url == '/index.html' %}bg{% endif %}">
+  <div class="container-fluid {% if page.footer_bg %}bg{% endif %}">
     {{ content }}
   </div>
-
-  <div class="{% if page.layout == 'default' and page.url != '/' %}navbar-fixed-bottom{% endif %}">
-    {% include footer.html %}
-  </div>
+  
+  {% include footer.html %}
 
   {% include scripts.html %}
 
