@@ -12,11 +12,13 @@
 
   <div style="height: 84px"></div>
 
-  <div class="container-fluid {% if page.footer_bg %}bg{% endif %}">
+  <div class="container-fluid {% if page.content_bg %}bg{% endif %}">
     {{ content }}
   </div>
   
-  {% include footer.html %}
+  <div class="{% if page.footer_fixed %}navbar-fixed-bottom{% endif %}">
+    {% include footer.html %}
+  </div>
 
   {% include scripts.html %}
 
