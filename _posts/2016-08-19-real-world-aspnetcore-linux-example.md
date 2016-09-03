@@ -35,7 +35,7 @@ sudo apt-get install dotnet-dev-1.0.0-preview2-003121
 
 That's it for the installation. You can run the example as shown on the download page but it isn't necessary. Just run ```dotnet --version``` as a quick check and you'll see the following.
 
-![](/images/2016-08-19/2016-08-19@21.27.03-sm.jpg)
+![]({% asset_path posts/20160819/212703-sm.jpg %})
 
 #### Web Server Setup
 
@@ -197,7 +197,7 @@ dotnet run
 
 You should see something like the following which shows the program is listening on port 5001.
 
-![](/images/2016-08-19/2016-08-20@12.55.52-sm.jpg)
+![]({% asset_path posts/20160819/125552-sm.jpg %})
 
 Press Ctrl+C to terminate the command as we're not quite ready to view the site in a browser yet. We need to package the application so run the following command.
 
@@ -209,7 +209,7 @@ dotnet publish
 
 Again, this is where the official docs lack a bit of an explanation as it doesn't tell you where the published files are but if you look in your terminal you'll see it gives you a location.
 
-![](/images/2016-08-19/2016-08-20@13.05.33-sm.jpg)
+![]({% asset_path posts/20160819/130533-sm.jpg %})
 
 In my case it's the following path.
 
@@ -273,8 +273,7 @@ dotnet /var/www/aspnetcore/aspnetcore.dll
 
 If you now browse to the address you used for the ```server_name``` in the nginx aspnetcore file you should see the following.
 
-![](/images/2016-08-19/2016-08-20@13.50.07-sm.jpg)
-
+![]({% asset_path posts/20160819/135007-sm.jpg %})
 #### Automate Startup
 
 Obviously from a practical point of view you can't run the application from the command line everytime you want your site up so we need to create a background process to do this. The offical documentation uses supervisor which I hadn't heard of but it seems to do the job. Press Ctrl+C to stop the current dotnet command (if necessary) and then run the following to install supervisor.
@@ -421,11 +420,11 @@ sudo service nginx restart
 
 Check you can still browse to your first website successfully.
 
-![](/images/2016-08-19/2016-08-20@13.50.07-sm.jpg)
+![]({% asset_path posts/20160819/135007-sm.jpg %})
 
 And then you can browse to the second website successfully as well.
 
-![](/images/2016-08-19/2016-08-20@13.50.42-sm.jpg)
+![]({% asset_path posts/20160819/135042-sm.jpg %})
 
 #### Conclusion
 

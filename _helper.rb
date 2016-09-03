@@ -1,31 +1,33 @@
 require 'fileutils'
 require 'mini_magick'
 
+PROJECT_NAME = 'coders-coffeehouse'
+
 path = "#{ENV['HOME']}/Pictures/Screenshots/*.jpg"
 
 file = Dir.glob(path).max_by { |f| File.mtime(f) }
 
-name = File.basename file
-name = name.sub 's ', ''
-name = name.sub ' at ', '@'
+basename = File.basename file
 
-name = name.sub '.jpg', ''
+# copy the file to an images folder for archiving, this is because it's highly unlikely to be required again
+# and keeping it in the project will lead to unnecessary bloat
+FileUtils.cp file, "#{ENV['HOME']}/Pictures/#{PROJECT_NAME}/#{basename[2, 10]}@#{basename[16, 8]}.jpg"
 
-# name = name.sub '.', ''
-# name = name[0, name.length - 7]
+# create the directory if it does not exist
+dirname = "#{File.dirname(File.expand_path __FILE__)}/_assets/images/posts/#{basename[2, 10].gsub('-', '')}"
 
-newfile = "#{File.dirname(File.expand_path __FILE__)}/images/#{name}.jpg"
+puts dirname
 
-FileUtils.cp file, newfile
+unless File.directory?(dirname)
+  FileUtils.mkdir_p(dirname)
+end
 
-sizes = {:xs => 400, :sm => 800, :md => 1200, :lg => 1600}
-
-puts newfile
+sizes = {:xs => 400, :sm => 800} # :md => 1200, :lg => 1600
 
 sizes.each do | size, value |
   image = MiniMagick::Image.open(file)
   image.resize "#{value}x#{value}"
-  filename = "#{File.dirname(File.expand_path __FILE__)}/images/#{name}-#{size}.jpg"
+  filename = "#{dirname}/#{basename[16, 8].gsub('.', '')}-#{size}.jpg"
   image.write filename
 
   puts filename
