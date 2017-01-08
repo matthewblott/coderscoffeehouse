@@ -28,5 +28,10 @@ assets:
     css:  sass
     js:   uglifier
 
+#  sources:
+#    - _assets/images
+#    - _assets/javascripts
+#    - _assets/stylesheets
+
 paginate: 5
 paginate_path: "/pages/:num/"
