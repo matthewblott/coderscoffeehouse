@@ -274,6 +274,7 @@ dotnet /var/www/aspnetcore/aspnetcore.dll
 If you now browse to the address you used for the ```server_name``` in the nginx aspnetcore file you should see the following.
 
 ![]({% asset_path posts/20160819/135007-sm.jpg %})
+
 #### Automate Startup
 
 Obviously from a practical point of view you can't run the application from the command line everytime you want your site up so we need to create a background process to do this. The offical documentation uses supervisor which I hadn't heard of but it seems to do the job. Press Ctrl+C to stop the current dotnet command (if necessary) and then run the following to install supervisor.
