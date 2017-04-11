@@ -379,3 +379,20 @@ sudo service monoserve restart
 {% endhighlight %}
 
 That's the end of this tutorial. I think it's fairly instructive for getting something up and running that can be used in production. There are a couple of things I haven't gone through to help with the work process but I'll likely be documenting these at a later date and they are somewhat out of the scope of what we're discussing here. Please add any comments below :-)
+
+UPDATE 2: A new issue has come up as per [this](http://stackoverflow.com/questions/24872394/access-to-the-path-etc-mono-registry-is-denied) Stack Overflow question. It was easily resolved by running the following commands but I've put it here as it's another gotcha to look out for.
+
+{% highlight zsh linenos %}
+
+sudo mkdir /etc/mono/registry
+sudo chmod uog+rw /etc/mono/registry
+
+{% endhighlight %}
+
+UPDATE 3 (2017-03-29): I just tried to set this up on a Digital Ocean VM and had a problem when i ran the ```sudo update-rc.d monoserve defaults``` command. This calls Perl and there was an issue with the locale settings. I found various solutions but the simplest seemed to be to reinstall the required packages with the following.
+
+{% highlight zsh linenos %}
+
+sudo apt-get install --reinstall locales && sudo dpkg-reconfigure locales
+
+{% endhighlight %}

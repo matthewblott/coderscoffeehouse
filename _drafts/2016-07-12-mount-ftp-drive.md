@@ -15,6 +15,13 @@ Link the FTP folder with the following commands.
 
 # you may need to enclose password in quotation marks but if that's the case it is probably best to use a different password if possible
 sudo mkdir /media/dirname
+
+# get the group id and user id for the next step
+id
+# in my case it returns the following
+uid=1000(deployer) gid=33(www-data) groups=33(www-data),27(sudo),999(mssql)
+
+# then mount the server
 sudo curlftpfs ftp.yourserver.com /media/dirname/ -o user=username:password,allow_other,uid=1001,gid=1001
 
 
@@ -57,3 +64,7 @@ sudo apt-get install sshfs
 umount /media/dirname
 
 sudo sshfs -o allow_other,identityfile=/home/deployer/.ssh/id_rsa,uid=1001,gid=1001 deployer@webserver:/home/deployer/www/cdl-assets/ /media/cdl-assets
+
+
+UPDATE
+https://linuxconfig.org/mount-remote-ftp-directory-host-locally-into-linux-filesystem

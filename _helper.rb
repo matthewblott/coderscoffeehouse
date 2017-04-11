@@ -22,7 +22,7 @@ unless File.directory?(dirname)
   FileUtils.mkdir_p(dirname)
 end
 
-sizes = {:xs => 400, :sm => 800} # :md => 1200, :lg => 1600
+sizes = {:xs => 400, :sm => 800, :md => 1200} # :lg => 1600
 
 sizes.each do | size, value |
   image = MiniMagick::Image.open(file)
