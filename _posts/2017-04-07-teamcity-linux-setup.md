@@ -288,3 +288,91 @@ http://blog.fire-development.com/2014/09/23/teamcity-8-setup-on-linux/
 http://ubuntuhandbook.org/index.php/2015/01/install-openjdk-8-ubuntu-14-04-12-04-lts/
 https://confluence.jetbrains.com/display/TCD9/Setting+up+an+External+Database
 https://gist.github.com/sandcastle/9282638
+
+UPDATE 2017-04-19
+
+Build Agent
+-----------
+
+One step I missed last time was setting up the build agent. I realised this when I went to use TeamCity earlier! 
+
+https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderLinux
+
+Need to show how to setup an agent on the server itself - including the startup init.d file
+
+
+// for osx need to create a plist file
+/Library/LaunchDaemons
+
+Also
+sudo chown -R root:wheel dev/tools/buildAgent
+
+Need to copy the
+buildAgent/conf/buildAgent.dist.properties file to
+buildAgent/conf/buildAgent.properties
+
+OSX
+https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderMacOSx
+
+
+# need to import the certificate
+sudo keytool -importcert -file ~/Desktop/teamcity.cdlassets.com.cer -keystore /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/security/cacerts
+
+the password is "changeit"
+
+see here ...
+http://stackoverflow.com/questions/14980207/teamcity-build-agent-becomes-disconnected-after-adding-self-signed-https-certifi
+
+Remember to start the agent
+./bin/agent.sh start
+
+
+
+UPDATE 2017-04-22
+
+Config
+------
+
+Db sample config:
+/opt/TeamCity/.BuildServer/config/database.mysql.properties.dist
+
+Db settings:
+/opt/TeamCity/.BuildServer/config/database.properties
+
+Project folders:
+/opt/TeamCity/.BuildServer/config/projects/
+
+Data directory setting:
+/opt/TeamCity/conf/teamcity-startup.properties
+
+
+Nginx Https
+-----------
+
+https://confluence.jetbrains.com/pages/viewpage.action?pageId=74845225#HowTo...-SetUpTeamCitybehindaProxyServer
+
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''   '';
+}
+
+server {
+
+    listen       443;
+    server_name  teamcity.cdlassets.com;
+
+    proxy_read_timeout     1200;
+    proxy_connect_timeout  240;
+    client_max_body_size   0;
+
+    location / {
+        proxy_pass          http://localhost:8111/;
+        proxy_http_version  1.1;
+        proxy_set_header    Host $server_name:$server_port;
+        proxy_set_header    X-Forwarded-Host $http_host;    # for CSRF check
+        proxy_set_header    X-Forwarded-Proto $scheme;
+        proxy_set_header    X-Forwarded-For $remote_addr;
+        proxy_set_header    Upgrade $http_upgrade;
+        proxy_set_header    Connection $connection_upgrade;
+    }
+}
