@@ -22,14 +22,7 @@ chsh -s `which zsh`
 IMPORTANT: Turn off auto update by adding the following to .zshrc
 DISABLE_AUTO_UPDATE=true
 
-Delete the existing .zshrc file and make a new file with the following settings ...
-
-# update
-DISABLE_AUTO_UPDATE=true
-
-# keys
-export key_ssh_password=password
-export key_mssql_password=password
+Key files
 
 # zsh files
 .zshenv
@@ -39,6 +32,17 @@ export key_mssql_password=password
 
 # oh-my-zsh themes folder
 ~/.oh-my-zsh/themes
+
+Create .zshrc
+=============
+Delete the existing .zshrc file and make a new file with the following settings ...
+
+# update
+DISABLE_AUTO_UPDATE=true
+
+# keys
+export key_ssh_password=password
+export key_mssql_password=password
 
 # theme
 ZSH_THEME="robbyrussell"
@@ -72,6 +76,7 @@ function _completemarks {
   reply=($(ls $MARKPATH))
 }
 
+# compctl may need to install plugin for this
 compctl -K _completemarks jump
 compctl -K _completemarks unmark
 
@@ -93,4 +98,10 @@ https://raw.githubusercontent.com/crusoexia/vim-monokai/master/colors/monokai.vi
 # edit ~/.vimrc
 colorscheme scheme_name
 syntax on
+
+# change default sudo timeout (if desired)
+sudo visudo
+# search for "Defaults env_reset" and change it to below
+Defaults env_reset,timestamp_timeout=30
+# N.B. change to -1 above if you never wish the password to expire
 
