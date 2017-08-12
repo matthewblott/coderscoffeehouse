@@ -35,6 +35,7 @@ GEM
       nokogiri (~> 1.7)
       therubyracer (~> 0.12)
     jekyll-paginate (1.1.0)
+    jekyll-paginate-category (0.1.2)
     jekyll-sass-converter (1.5.0)
       sass (~> 3.4)
     jekyll-watch (1.5.0)
@@ -78,6 +79,7 @@ DEPENDENCIES
   jekyll-assets
   jekyll-lunr-js-search
   jekyll-paginate
+  jekyll-paginate-category
   uglifier
 
 BUNDLED WITH
