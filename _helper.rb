@@ -1,3 +1,7 @@
+# Make sure the following are present
+# ~/Pictures/PROJECT_NAME
+# ~/Pictures/Screenshots
+
 require 'fileutils'
 require 'mini_magick'
 

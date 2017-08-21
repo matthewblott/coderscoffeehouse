@@ -294,85 +294,112 @@ UPDATE 2017-04-19
 Build Agent
 -----------
 
-One step I missed last time was setting up the build agent. I realised this when I went to use TeamCity earlier! 
+One step I missed last time was setting up the build agent. I realised this when I went to use TeamCity earlier! The relevant section on the TC website is [here](https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderLinux) but the details are included here for completeness.
 
-https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderLinux
+Navigate to the services start/stop services scripts directory.
 
-Need to show how to setup an agent on the server itself - including the startup init.d file
+{% highlight shell linenos %}
+cd /etc/init.d/
+{% endhighlight %}
 
+Open the build agent service script.
 
-// for osx need to create a plist file
-/Library/LaunchDaemons
+{% highlight shell linenos %}
 
-Also
-sudo chown -R root:wheel dev/tools/buildAgent
+sudo vim buildAgent
 
-Need to copy the
-buildAgent/conf/buildAgent.dist.properties file to
+{% endhighlight %}
+
+Paste the following into the file.
+
+{% highlight shell linenos %}
+
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          TeamCity Build Agent
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start build agent daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+#Provide the correct user name:
+USER="agentuser"
+ 
+case "$1" in
+start)
+ su - $USER -c "cd BuildAgent/bin ; ./agent.sh start"
+;;
+stop)
+ su - $USER -c "cd BuildAgent/bin ; ./agent.sh stop"
+;;
+*)
+  echo "usage start/stop"
+  exit 1
+ ;;
+ 
+esac
+ 
+exit 0
+
+{% endhighlight %}
+
+Set the permissions to execute the file.
+
+{% highlight shell linenos %}
+
+sudo chmod 755 buildAgent
+
+{% endhighlight %}
+
+Make links to start the agent service on the machine boot and on restarts using the appropriate tool.
+
+{% highlight shell linenos %}
+
+sudo update-rc.d buildAgent defaults
+
+{% endhighlight %}
+
+### macOS Users
+
+If you're a macOS user you can get the build agent on your own system to run automatically by creating a ```plist``` file in ```/Library/LaunchDaemons```. The instructions for doing so are [here](https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderMacOSx).
+
+I did run into a few 'gotchas'.
+
+Make sure you set the correct permissions
+
+{% highlight shell linenos %}
+
+sudo chown -R root:wheel path-to-agent-on-your-mac/buildAgent
+
+{% endhighlight %}
+
+Copy the following file.
+
+{% highlight shell linenos %}
+buildAgent/conf/buildAgent.dist.properties
+{% endhighlight %}
+
+To the same directory with the following name.
+
+{% highlight shell linenos %}
 buildAgent/conf/buildAgent.properties
-
-OSX
-https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderMacOSx
+{% endhighlight %}
 
 
-# need to import the certificate
-sudo keytool -importcert -file ~/Desktop/teamcity.cdlassets.com.cer -keystore /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/security/cacerts
+### Import the certificate
 
-the password is "changeit"
+Another issue I found was the agent becoming disconnected after adding self-signed https certificate. I found the answer [here](https://stackoverflow.com/questions/14980207/teamcity-build-agent-becomes-disconnected-after-adding-self-signed-https-certifi) on StackOverflow.
 
-see here ...
-http://stackoverflow.com/questions/14980207/teamcity-build-agent-becomes-disconnected-after-adding-self-signed-https-certifi
+{% highlight shell linenos %}
+sudo keytool -importcert -file ~/Desktop/certificate-name.cer -keystore /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/security/cacerts
+{% endhighlight %}
 
-Remember to start the agent
+There might be a password to enter which unless changed will be ```changeit``` (as explained in the SO answer).
+
+Remember to start the agent.
+
+{% highlight shell linenos %}
 ./bin/agent.sh start
-
-
-
-UPDATE 2017-04-22
-
-Config
-------
-
-Db sample config:
-/opt/TeamCity/.BuildServer/config/database.mysql.properties.dist
-
-Db settings:
-/opt/TeamCity/.BuildServer/config/database.properties
-
-Project folders:
-/opt/TeamCity/.BuildServer/config/projects/
-
-Data directory setting:
-/opt/TeamCity/conf/teamcity-startup.properties
-
-
-Nginx Https
------------
-
-https://confluence.jetbrains.com/pages/viewpage.action?pageId=74845225#HowTo...-SetUpTeamCitybehindaProxyServer
-
-map $http_upgrade $connection_upgrade {
-    default upgrade;
-    ''   '';
-}
-
-server {
-
-    listen       443;
-    server_name  teamcity.cdlassets.com;
-
-    proxy_read_timeout     1200;
-    proxy_connect_timeout  240;
-    client_max_body_size   0;
-
-    location / {
-        proxy_pass          http://localhost:8111/;
-        proxy_http_version  1.1;
-        proxy_set_header    Host $server_name:$server_port;
-        proxy_set_header    X-Forwarded-Host $http_host;    # for CSRF check
-        proxy_set_header    X-Forwarded-Proto $scheme;
-        proxy_set_header    X-Forwarded-For $remote_addr;
-        proxy_set_header    Upgrade $http_upgrade;
-        proxy_set_header    Connection $connection_upgrade;
-    }
-}
+{% endhighlight %}
