@@ -2,14 +2,12 @@
 <html>
 {% include head.html %}
 <body>
-  <div class="container-fluid bg-inverse">
-    {% include nav.html %}
-  </div>
-  <div style="height: 84px"></div>
+  {% include nav.html %}
+  
   <div class="container-fluid {% if page.content_bg %}bg{% endif %}">
     {{ content }}
   </div>
-  <div class="{% if page.footer_fixed %}navbar-fixed-bottom{% endif %}">
+  <div class="{% if page.footer_fixed %}fixed-bottom{% endif %}">
     {% include footer.html %}
   </div>
 

@@ -1,5 +1,6 @@
-//= require libs/jquery-2.2.0
+//= require libs/jquery-3.2.1
 //= require libs/tether-1.3.2
+//= require libs/popper
 //= require libs/bootstrap
 //= require libs/lunr-0.5.12.min
 //= require libs/date.format-1.2.3
