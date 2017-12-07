@@ -16,6 +16,9 @@ $max-width-lg: 1199px;
 $min-width-xl: 1200px;
 $max-width-xl: 100%;
 
+$position-fixed: fixed;
+$position-static: static;
+
 // navbar
 .navbar {
   border-radius: 0;
@@ -60,42 +63,62 @@ $max-width-xl: 100%;
 // background
 .bg {
   width: 100%;
-  background: url(asset_path('site/bg-2-xl.jpg'));
+  background: url(asset_path('bg-2-xl.jpg'));
   background-size:     cover;
   background-repeat:   no-repeat;
   background-position: center center; 
 }
 
+// and (orientation: landscape)
 @media (max-width: $max-width-xs) {
   .bg {
-    background-image: url(asset_path('site/bg-2-xs.jpg'));
-    min-height: $max-width-xs * 0.4;
+    background-image: url(asset_path('bg-2-xs.jpg'));
+    // min-height: $max-width-xs * 0.4;
   }
 }
 
 @media (min-width: $min-width-sm) and (max-width: $max-width-sm) {
   .bg {
-    background-image: url(asset_path('site/bg-2-sm.jpg'));
-    min-height: $max-width-sm * 0.4;
+    background-image: url(asset_path('bg-2-sm.jpg'));
+    // min-height: $max-width-sm * 0.4;
   }
 }
 
 @media (min-width: $min-width-md) and (max-width: $max-width-md) {
   .bg {
-    background-image: url(asset_path('site/bg-2-md.jpg'));
-    min-height: $max-width-md * 0.4;
+    background-image: url(asset_path('bg-2-md.jpg'));
+    // min-height: $max-width-md * 0.4;
   }
 }
 @media (min-width: $min-width-lg) and (max-width: $max-width-lg) {
   .bg {
-    background-image: url(asset_path('site/bg-2-lg.jpg'));
+    background-image: url(asset_path('bg-2-lg.jpg'));
     min-height: $max-width-lg * 0.4;
   }
 }
 @media (min-width: $min-width-xl) {
   .bg {
-    background-image: url(asset_path('site/bg-2-xl.jpg'));
-    min-height: $min-width-xl * 0.4;
+    background-image: url(asset_path('bg-2-xl.jpg'));
+    // min-height: $min-width-xl * 0.4;
+  }
+}
+
+// copied from bootstrap
+.fixed-bottom {
+  position: $position-fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+}
+
+@media (orientation: portrait) {
+  .fixed-bottom {
+    position: $position-static;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
   }
 }
 

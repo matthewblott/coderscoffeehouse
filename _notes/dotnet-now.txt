@@ -1,0 +1,8 @@
+https://github.com/Wyamio/Wyam/issues/300
+
+https://github.com/OpenCover/opencover/issues/703
+
+https://github.com/Microsoft/vstest/issues/981
+
+99.6 percent of new smartphones run Android or iOS
+https://www.theverge.com/2017/2/16/14634656/android-ios-market-share-blackberry-2016

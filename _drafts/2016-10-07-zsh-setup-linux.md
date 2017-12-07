@@ -105,3 +105,6 @@ sudo visudo
 Defaults env_reset,timestamp_timeout=30
 # N.B. change to -1 above if you never wish the password to expire
 
+
+pbcopy
+======

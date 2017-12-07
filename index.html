@@ -4,57 +4,53 @@ content_bg: true
 footer_fixed: false
 ---
 
-<div class="container-fluid bg">
-
-  <h1 class="display-4">{{ site.title }}
-    <i class="fa fa-coffee padding-left-md"></i>
-  </h1>
-  <div>
-    <h2>
-      Useful titbits from the projects I'm working on plus other things that interest me in the programming world
+<h1 class="display-4">{{ site.title }}
+  <i class="fa fa-coffee padding-left-md"></i>
+</h1>
+<div>
+  <h2>
+    Useful titbits from the projects I'm working on plus other things that interest me in the programming world
+  </h2>
+  <p>
+    <h2>   
+      <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
     </h2>
-    <p>
-      <h2>   
-        <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
+  </p>
+  <ul class="list-unstyled">
+    {% for post in paginator.posts  %}
+    <li>
+      <span>{{ post.date | date: "%b %-d, %Y" }}</span>
+      <h2>
+        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
       </h2>
-    </p>
-    <ul class="list-unstyled">
-      {% for post in paginator.posts  %}
-      <li>
-        <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-        <h2>
-          <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-
-  <!-- Pagination links -->
-  {% if paginator.total_pages > 1 %}
-    <div class="pagination container-fluid">
-    {% if paginator.previous_page %}
-      <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo; Prev</a>
-    {% else %}
-      <span class="mr-1">&laquo; Prev</span>
-    {% endif %}
-
-    {% for page in (1..paginator.total_pages) %}
-      {% if page == paginator.page %}
-      <em class="mr-1">{{ page }}</em>
-      {% elsif page == 1 %}
-      <a class="mr-1" href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">{{ page }}</a>
-      {% else %}
-      <a class="mr-1" href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a>
-      {% endif %}
+    </li>
     {% endfor %}
-
-    {% if paginator.next_page %}
-      <a class="mr-1" href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Next &raquo;</a>
-    {% else %}
-      <span>Next &raquo;</span>
-    {% endif %}
-    </div>
-  {% endif %}
-    
+  </ul>
 </div>
+
+<!-- Pagination links -->
+{% if paginator.total_pages > 1 %}
+  <div class="pagination container-fluid">
+  {% if paginator.previous_page %}
+    <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&laquo; Prev</a>
+  {% else %}
+    <span class="mr-1">&laquo; Prev</span>
+  {% endif %}
+
+  {% for page in (1..paginator.total_pages) %}
+    {% if page == paginator.page %}
+    <em class="mr-1">{{ page }}</em>
+    {% elsif page == 1 %}
+    <a class="mr-1" href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">{{ page }}</a>
+    {% else %}
+    <a class="mr-1" href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}">{{ page }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if paginator.next_page %}
+    <a class="mr-1" href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">Next &raquo;</a>
+  {% else %}
+    <span>Next &raquo;</span>
+  {% endif %}
+  </div>
+{% endif %}

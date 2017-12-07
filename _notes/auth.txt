@@ -1,0 +1,51 @@
+I thought I'd use Auth0 as it has a generous free offer.
+
+https://auth0.com/
+
+
+From the command line I created a basic site with using the webapi template
+
+dotnet new auth0
+
+Then in the Startup.cs file added the following namespace.
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+
+Then added the following code to the ConfigureServices method.
+
+
+services.AddAuthentication(options =>
+{
+  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}).AddJwtBearer(options =>
+{
+  options.Authority = $"https://cdl.auth0.com/";;
+  options.Audience = "http://localhost:5000/api/";
+});
+
+
+Then in the ConfigureServices method you need to add the following.
+
+app.UseAuthentication();
+
+
+I then had to hunt about as the example shown on the Auth0 website isn't valid.
+
+https://github.com/aspnet/Security/blob/dev/samples/JwtBearerSample/Startup.cs#L51
+
+
+You can then test this using Postman. You'll need to add the correct value to the Authorization header which you can get if you click on the Test tab of your API and scroll down and look for 'Response' to the first example.
+
+[]
+
+
+Copy the token and create a request as shown below then try a POST request.
+
+[]
+
+
+
+

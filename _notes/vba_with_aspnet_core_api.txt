@@ -1,0 +1,7 @@
+Dim Json As Object
+
+Set Json = JsonConverter.ParseJson("{""a"":123,""b"":[{""id"":1},{""id"":2}],""c"":[{""d"":456}]}")
+
+Caveat with above - remember the odd array numbering. To get the value '456' which is the first item of the 'c' object array we have to do ...
+Json("c")(1)("d")
+
