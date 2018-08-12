@@ -5,8 +5,31 @@ date:   2017-12-01 00:00:00
 categories: tech
 ---
 
-SSL
----
+
+## Compression
+
+Gzip is typically enabled by default but you need to make sure ```gzip_types``` is enabled so it actually applies to served content!
+
+{% highlight shell linenos %}
+
+....
+
+        gzip on;
+        gzip_disable "msie6";
+
+        # gzip_vary on;
+        # gzip_proxied any;
+        # gzip_comp_level 6;
+        # gzip_buffers 16 8k;
+        # gzip_http_version 1.1;
+        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+....
+
+{% endhighlight %}
+
+
+## SSL
 
 The aspnet docs say nginx should be compiled with the ssl module because it's not included with the default install but this appears to be incorrect. If you run ```nginx -V``` and can see ```--with-http_ssl_module``` then it's installed.
 
@@ -46,8 +69,7 @@ include    /etc/nginx/proxy.conf;
 
 {% endhighlight %}
 
-Redirect www to non wwww
-------------------------
+## Redirect www to non wwww
 
 {% highlight shell linenos %}
 
@@ -70,9 +92,32 @@ server {
 
 {% endhighlight %}
 
+## Redirect Domain
 
-Block IP
---------
+The following will redirect all requests (including sub domains) for ```some-domain.co.uk``` to ```some-domain.com```.
+
+{% highlight shell linenos %}
+
+server {
+  server_name .some-domain.co.uk;
+  return 301 http://some-domain.com$request_uri;
+}
+
+{% endhighlight %}
+
+Then your server block ....
+
+{% highlight shell linenos %}
+
+server {
+        listen 80;
+        server_name matthewblott.com;
+
+....
+
+{% endhighlight %}
+
+## Block IP
 
 I started reading through this article [here](https://www.cyberciti.biz/faq/linux-unix-nginx-access-control-howto/) which pointed to some files I don't have and explains how to do things at the server (not site) level.
 
@@ -112,8 +157,7 @@ sudo service nginx restart
 
 {% endhighlight %}
 
-Locations
----------
+## Locations
 
 {% highlight shell linenos %}
 
@@ -132,5 +176,21 @@ server {
         }
 
 }
+
+{% endhighlight %}
+
+
+## Error Pages
+
+{% highlight shell linenos %}
+
+Display the file ```noimage.jpg``` for not found requests for ```images```.
+
+....
+
+        location ~ ^/images/([_-a-zA-Z0-9]*) {
+                error_page 404 /images/noimage.jpg;
+        }
+....
 
 {% endhighlight %}

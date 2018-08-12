@@ -114,6 +114,15 @@ Then a corresponding symlink is created as follows.
 
 If a ```servicectl``` service is removed then this look should be deleted.
 
+## OS
+
+### Disk Space
+
+{% highlight shell linenos %}
+
+df -h
+
+{% endhighlight %}
 
 ## File System
 
@@ -166,6 +175,25 @@ curl ftp://domain.com/filename --user username:password -o filename
 
 General Tasks
 -------------
+
+### Repositories
+
+Edit source list.
+
+{% highlight shell linenos %}
+
+sudo vim /etc/apt/sources.list
+
+{% endhighlight %}
+
+List additional sources.
+
+{% highlight shell linenos %}
+
+ll /etc/apt/sources.list.d
+
+{% endhighlight %}
+
 
 ### Visudo Editor
 

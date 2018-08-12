@@ -1,3 +1,10 @@
+---
+layout: post
+title:  Dropbox Linix Install
+date:   2017-12-04 00:00:00
+categories: tech
+---
+
 https://www.dropbox.com/en_GB/install-linux
 
 # download dropbox
