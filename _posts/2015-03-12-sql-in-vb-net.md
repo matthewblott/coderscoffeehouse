@@ -2,7 +2,8 @@
 layout: post
 title:  "SQL in VB .NET"
 date:   2015-03-12 21:39:00
-categories: vbnet sql
+# categories: vbnet sql
+categories: tech
 ---
 It's generally seen as a good rule of thumb to avoid writing inline SQL and it's a rule I try to observe - the obvious pitfall being it isn't parsed until runtime. Stored procedures can mitigate against this but I tend to avoid - with cached queries the advantage of compilation isn't there anymore and I find they add a layer of abstraction I don't want. So sometimes I find myself getting down and dirty with a bit of inline SQL.
 
