@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+<body class="{% if page.content_bg %}bg-dark{% endif %}">
+  {% include nav.html %}
+
+  <div class="container-fluid {% if page.content_bg %}bg{% endif %}" style="min-height: 400px">
+    {{ content }}
+
+    {% include pagination.html %}
+
+  </div>
+
+  <div class="{% if page.footer_fixed %}fixed-bottom{% endif %}">
+    {% include footer.html %}
+  </div>
+
+  {% include scripts.html %}
+
+</body>
+</html>
