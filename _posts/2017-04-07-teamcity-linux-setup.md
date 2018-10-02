@@ -148,17 +148,17 @@ sudo serivce teamcity start
 
 Now if you browse to the IP address of your server using port 8111 you should see the TeamCity web interface.
 
-![]({% asset_path posts/20170407/235832-md.jpg %})
+![]({% asset posts/20170407/235832-md.jpg %})
 
 Here you're prompted to enter where you want your data directory. The convention seems to be within your installation which is what I've gone with here.
 
 Click proceed and then you'll be prompted to fill out the details for the database. You don't need to fill in the host if you've done a local installation as we have in this tutorial (this screenshot was taken for another installation I have). 
 
-![]({% asset_path posts/20170407/08-md.jpg %})
+![]({% asset posts/20170407/08-md.jpg %})
 
 At this point if you fill out the details and click Proceed you'll get an error.
 
-![]({% asset_path posts/20170407/122326-md.jpg %})
+![]({% asset posts/20170407/122326-md.jpg %})
 
 Unfortunately this is because the Java MySQL connector needs to be installed. But this was still a useful exercise as the data directory and some of the system files were created during this process. And this was needed as we are going to put the connector in one of these directories.
 
@@ -202,11 +202,11 @@ sudo service teamcity start
 
 Now open a browser and fill out the MySQL details as before then click Proceed. At this point you might want to go and make a cup of tea or take the dog for a walk - it really can take some time and you might think it's crashed. Eventually you'll come to the license agreement page. Tick the accept check box and click Continue.
 
-![]({% asset_path posts/20170407/37-md.jpg %})
+![]({% asset posts/20170407/37-md.jpg %})
 
 Proceed and create an admin account and you're good to go.
 
-![]({% asset_path posts/20170407/49-md.jpg %})
+![]({% asset posts/20170407/49-md.jpg %})
 
 Setup nginx
 -----------
@@ -272,7 +272,7 @@ sudo service nginx restart
 
 Now if you browse to the same address under port 80 you should see the login page as shown below.
 
-![]({% asset_path posts/20170407/000335-md.jpg %})
+![]({% asset posts/20170407/000335-md.jpg %})
 
 A couple of final points.
 

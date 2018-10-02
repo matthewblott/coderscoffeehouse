@@ -13,9 +13,9 @@ excerpt_separator: ""   # Workaround for http://blog.slaks.net/2013-08-09/jekyll
 
 # Build settings
 plugins:
-  - 'jekyll-lunr-js-search'
-  - 'jekyll-assets'
-  - 'uglifier'
+  # - 'jekyll-lunr-js-search'
+  # - 'jekyll-assets'
+  # - 'uglifier'
   # - 'jekyll-paginate'
   # - 'jekyll-paginate-category'
   - jekyll-paginate-v2  
@@ -27,15 +27,15 @@ plugins:
 #   input: GFM # for use with Github
 #   syntax_highlighter: rouge
 
-assets:
-  compress:
-    css:  sass
-    js:   uglifier
+# assets:
+#   compress:
+#     css:  sass
+#     js:   uglifier
 
 #  sources:
 #    - _assets/images
-#    - _assets/javascripts
-#    - _assets/stylesheets
+#    - _assets/js
+#    - _assets/css
 
 ############################################################
 # Site configuration for the Jekyll 3 Pagination Gem

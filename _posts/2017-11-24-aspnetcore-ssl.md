@@ -29,15 +29,15 @@ openssl pkcs12 -export -out localhost.pfx -inkey localhost.key -in localhost.crt
 
 Open the macOS Keychain Access and drag the ```pfx``` file into the System section. Enter the system / admin password when prompted.
 
-![]({% asset_path posts/20171123/114511-xs.jpg %})
+![]({% asset posts/20171123/114511-xs.jpg %})
 
 Then enter the password created with the file in the step earlier.
 
-![]({% asset_path posts/20171123/114526-xs.jpg %})
+![]({% asset posts/20171123/114526-xs.jpg %})
 
 Then double-click on the Keychain Access entry and set to Always Trust so you don't continue to get a warning in the address bar when using https.
 
-![]({% asset_path posts/20171123/120132-xs.jpg %})
+![]({% asset posts/20171123/120132-xs.jpg %})
 
 You can run the following as a check if desired.
 

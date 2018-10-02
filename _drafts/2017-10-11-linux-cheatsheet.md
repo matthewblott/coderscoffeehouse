@@ -145,6 +145,19 @@ sudo ln -s /opt/mssql-tools/bin/* /usr/local/bin/
 {% endhighlight %}
 
 
+### Copy file one server to another
+
+{% highlight shell linenos %}
+
+# copy file
+scp user@server:filename /some/local/path
+
+# copy directory
+scp -Cr user@server:/path/to/dir /some/local/path
+
+{% endhighlight %}
+
+
 ### FTP
 
 FTP operations can be performed in a nubmer of ways but one simple way is to use ```curl```.

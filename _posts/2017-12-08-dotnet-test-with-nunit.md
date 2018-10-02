@@ -37,7 +37,7 @@ dotnet test --filter Hello=x
 
 This printed out the following.
 
-![]({% asset_path posts/20171209/224440-md.jpg %})
+![]({% asset posts/20171209/224440-md.jpg %})
 
 Which tells us the available filters are ```FullyQualifiedName```, ```Name```, ```Priority``` and ```TestCategory```. The available operators are listed in the official docs and they are ```=``` (equals), ```!=``` (does not equal) and ```~``` (contains) with both ```|``` (or) and ```&``` (and) for more complicated scenarios.
 

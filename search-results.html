@@ -1,40 +1,43 @@
 ---
-layout: page
+title: Search Results
+layout: search-results
 permalink: /search-results/
 footer_fixed: true
 ---
 
 <style>
-    
-    li {
-        list-style: none;
-    }
-    
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    list-style: none;
+  }
+
 </style>
 
 <div id="search-results">
-    <ul class="entries list-unstyled">
-            
-        <!--<li>
-            <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-            <h2>
-                <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-            </h2>
-            
-        </li>-->
-        
-    </ul>
+  <script id="sample_template" type="text/html">
+    
+    {% raw %}
+
+      <ul>
+        {{#.}}
+        <li>
+
+          <span>{{ date }}</span>
+
+          <h2> <a href="{{ url }}">{{ title }}</a></h2>
+
+          <span>{{ content | substring(0, 20) }}</span>
+
+        </li>
+        {{/.}}
+      </ul>
+
+    {% endraw %}
+    
+  </script>
+
 </div>
-
-
-{% raw %}
-<script id="search-results-template" type="text/mustache">
-    {{#entries}}
-    <li>
-        <span>{{#date}}<small><time datetime="{{pubdate}}" pubdate>{{displaydate}}</time></small>{{/date}}</span>
-        <h2>
-            <a href="{{url}}">{{title}}</a></h2>
-    </li>
-    {{/entries}}
-</script>
-{% endraw %}
