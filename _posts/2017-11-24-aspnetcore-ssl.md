@@ -29,15 +29,15 @@ openssl pkcs12 -export -out localhost.pfx -inkey localhost.key -in localhost.crt
 
 Open the macOS Keychain Access and drag the ```pfx``` file into the System section. Enter the system / admin password when prompted.
 
-![]({% asset posts/20171123/114511-xs.jpg %})
+{% asset posts/20171123/114511-xs.jpg %}
 
 Then enter the password created with the file in the step earlier.
 
-![]({% asset posts/20171123/114526-xs.jpg %})
+{% asset posts/20171123/114526-xs.jpg %}
 
 Then double-click on the Keychain Access entry and set to Always Trust so you don't continue to get a warning in the address bar when using https.
 
-![]({% asset posts/20171123/120132-xs.jpg %})
+{% asset posts/20171123/120132-xs.jpg %}
 
 You can run the following as a check if desired.
 
@@ -47,7 +47,8 @@ openssl x509 -in localhost.crt -text
 
 {% endhighlight %}
 
-## ASP.NET Core Code
+
+## ASP.NET Core Code
 
 My code for loading the certificate is pretty similar to that of the tutorial I refer to at the start. Below is the code for the ```Program.cs``` file where you'll have the ```Main``` method. One change is I've included the ```environment``` variable as I like to have a ```hosting.json``` file for each environment (I went to deploy and realised I already had a site using the default port 5000).
 

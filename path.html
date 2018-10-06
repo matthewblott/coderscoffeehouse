@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ASP.NET Core SSL from Development to Production</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="description" content="">
+  <link rel="stylesheet" href="/lib/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/cookieconsent/css/cookieconsent.min.css">
+  <link rel="stylesheet" href="/assets/main-38dff7f2fddcbb96eb97b2880a1df832b24a3c0c98d33abdccc5163875c1731d.css">
+
+  <link rel="canonical" href="http://localhost:4000/tech/2017/11/24/aspnetcore-ssl.html">
+  
+</head>
+<body class="">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark pl-4 pt-3 pb-3">
+  <a class="navbar-brand" href="/">
+    Coder's Coffee House
+    <i class="fa fa-coffee fa-lg padding-left-sm"></i>
+  </a>
+  <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar2">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="exCollapsingNavbar2">
+    <ul class="nav navbar-nav mr-auto">
+      <li class="nav-item mx-0">
+        <a class="nav-link " href="/about">About <span class="ml-2">|</span></a>
+      </li>
+      <li class="nav-item mx-0">
+        <a class="nav-link" href="/contact">Contact <span class="ml-2">|</span></a>
+      </li>
+      <li class="nav-item mx-0">
+        <a class="nav-link " href="/other-stuff">Other Stuff</a>
+      </li>
+    </ul>
+
+    <form class="form-inline" action="/search-results/" method="get">
+      <input class="form-control mt-1 mb-1 mr-1" name="q" placeholder="search" style="width: 400px;">
+      <button class="btn btn-outline-success mt-1 mb-1 mr-1"><i class="fa fa-search"></i></button>
+    </form>
+    
+  </div>
+</nav>
+
+  <div class="container-fluid " style="min-height: 400px">
+    <div class="post">
+  <header class="post-header">
+    <h1 class="post-title">ASP.NET Core SSL from Development to Production</h1>
+    <p class="post-meta">Nov 24, 2017</p>
+  </header>
+  <article class="post-content">
+    <p>You pretty have to use SSL these days but getting started with ASP.NET Core was a bit of a challenge for me. As usual I had to scour the net for bits of information and then cobble a solution together and this post is basically what I did to get from development to production. The code for this tutorial can be found <a href="https://github.com/matthewblott/aspnetcore-ssl">here</a>.</p>
+
+<h2 id="development-macos">Development (macOS)</h2>
+
+<p>First it’s nice to use SSL in development so your coding environment best simulates what you’ll be doing in production. There’s an excellent post <a href="https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core">here</a> on setting up SSL locally with ASP.NET Core. It’s well worth reading so I won’t go into too much detail but this is basically what you need to do.</p>
+
+<p>First create a certificate and key using <code class="highlighter-rouge">openssl</code>. Create a <code class="highlighter-rouge">localhost.conf</code> file for the default values like mine <a href="https://github.com/matthewblott/aspnetcore-ssl/blob/master/localhost.conf">here</a> and substitute <code class="highlighter-rouge">password</code> at the end for something else (if desired).</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>openssl req <span class="nt">-x509</span> <span class="nt">-nodes</span> <span class="nt">-days</span> 365 <span class="nt">-newkey</span> rsa:2048 <span class="nt">-keyout</span> localhost.key <span class="nt">-out</span> localhost.crt <span class="nt">-config</span> localhost.conf <span class="nt">-passin</span> pass:password</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Then create the <code class="highlighter-rouge">.pfx</code> file which will be added to your local keychain. Again this uses <code class="highlighter-rouge">openssl</code>. Enter the password used in the previous step when prompted.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>openssl pkcs12 <span class="nt">-export</span> <span class="nt">-out</span> localhost.pfx <span class="nt">-inkey</span> localhost.key <span class="nt">-in</span> localhost.crt</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Open the macOS Keychain Access and drag the <code class="highlighter-rouge">pfx</code> file into the System section. Enter the system / admin password when prompted.</p>
+
+<p><img src="img src=&quot;/assets/posts/20171123/114511-xs-5ca17f027378c409023e1f113b33bc8a1124131156db6e350245ee7fc59f1bc6.jpg&quot;" alt="" />
+
+
+
+<img src="/assets/posts/20171123/114511-xs-5ca17f027378c409023e1f113b33bc8a1124131156db6e350245ee7fc59f1bc6.jpg">
+
+</p>
+
+
+
+<p>Then enter the password created with the file in the step earlier.</p>
+
+<p><img src="img src=&quot;/assets/posts/20171123/114526-xs-b782d5001e00ac8d74335e2c95363a7aeb8e37e6051b52ea8d7f6d4d3567b52a.jpg&quot;" alt="" /></p>
+
+<p>Then double-click on the Keychain Access entry and set to Always Trust so you don’t continue to get a warning in the address bar when using https.</p>
+
+<p><img src="img src=&quot;/assets/posts/20171123/120132-xs-9337f04deaacd12fc2af69c16717e9ed50ec6cdee77a1476cdf3a5043db2f6ed.jpg&quot;" alt="" /></p>
+
+<p>You can run the following as a check if desired.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>openssl x509 <span class="nt">-in</span> localhost.crt <span class="nt">-text</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>## ASP.NET Core Code</p>
+
+<p>My code for loading the certificate is pretty similar to that of the tutorial I refer to at the start. Below is the code for the <code class="highlighter-rouge">Program.cs</code> file where you’ll have the <code class="highlighter-rouge">Main</code> method. One change is I’ve included the <code class="highlighter-rouge">environment</code> variable as I like to have a <code class="highlighter-rouge">hosting.json</code> file for each environment (I went to deploy and realised I already had a site using the default port 5000).</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+</pre></td><td class="code"><pre><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Net</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Security.Cryptography.X509Certificates</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Hosting</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Configuration</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">aspnetcore</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+  <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="nf">BuildWebHost</span><span class="p">(</span><span class="n">args</span><span class="p">).</span><span class="nf">Run</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="n">IWebHost</span> <span class="nf">BuildWebHost</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="kt">var</span> <span class="n">environment</span> <span class="p">=</span> <span class="n">Environment</span><span class="p">.</span><span class="nf">GetEnvironmentVariable</span><span class="p">(</span><span class="s">"ASPNETCORE_ENVIRONMENT"</span><span class="p">);</span>
+      <span class="kt">var</span> <span class="n">currentDir</span> <span class="p">=</span> <span class="n">Directory</span><span class="p">.</span><span class="nf">GetCurrentDirectory</span><span class="p">();</span>
+
+      <span class="kt">var</span> <span class="n">config</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ConfigurationBuilder</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">SetBasePath</span><span class="p">(</span><span class="n">Directory</span><span class="p">.</span><span class="nf">GetCurrentDirectory</span><span class="p">())</span>
+        <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">"hosting.json"</span><span class="p">,</span> <span class="n">optional</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">$"hosting.</span><span class="p">{</span><span class="n">environment</span><span class="p">}</span><span class="s">.json"</span><span class="p">,</span> <span class="n">optional</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">AddEnvironmentVariables</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+      <span class="kt">var</span> <span class="n">urlSettings</span> <span class="p">=</span> <span class="n">config</span><span class="p">.</span><span class="nf">GetSection</span><span class="p">(</span><span class="s">"urls"</span><span class="p">);</span>
+      <span class="kt">var</span> <span class="n">urls</span> <span class="p">=</span> <span class="n">urlSettings</span><span class="p">.</span><span class="n">Value</span><span class="p">.</span><span class="nf">Split</span><span class="p">(</span><span class="sc">';'</span><span class="p">);</span>
+      <span class="kt">var</span> <span class="n">url</span> <span class="p">=</span> <span class="n">urls</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
+      <span class="kt">var</span> <span class="n">uri</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+      <span class="kt">var</span> <span class="n">port</span> <span class="p">=</span> <span class="n">uri</span><span class="p">.</span><span class="n">Port</span><span class="p">;</span>
+
+      <span class="kt">var</span> <span class="n">host</span> <span class="p">=</span> <span class="n">WebHost</span><span class="p">.</span><span class="nf">CreateDefaultBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">UseConfiguration</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">UseContentRoot</span><span class="p">(</span><span class="n">currentDir</span><span class="p">)</span>
+        <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">UseKestrel</span><span class="p">(</span><span class="n">options</span> <span class="p">=&gt;</span>
+        <span class="p">{</span>
+          <span class="n">options</span><span class="p">.</span><span class="nf">Listen</span><span class="p">(</span><span class="n">IPAddress</span><span class="p">.</span><span class="n">Loopback</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">listenOptions</span> <span class="p">=&gt;</span>
+          <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">certificateSettings</span> <span class="p">=</span> <span class="n">config</span><span class="p">.</span><span class="nf">GetSection</span><span class="p">(</span><span class="s">"certificateSettings"</span><span class="p">);</span>
+            <span class="kt">var</span> <span class="n">certificateFileName</span> <span class="p">=</span> <span class="n">certificateSettings</span><span class="p">.</span><span class="n">GetValue</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="s">"filename"</span><span class="p">);</span>
+            <span class="kt">var</span> <span class="n">certificatePassword</span> <span class="p">=</span> <span class="n">certificateSettings</span><span class="p">.</span><span class="n">GetValue</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="s">"password"</span><span class="p">);</span>
+            <span class="kt">var</span> <span class="n">cert</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">X509Certificate2</span><span class="p">(</span><span class="n">certificateFileName</span><span class="p">,</span> <span class="n">certificatePassword</span><span class="p">);</span>
+
+            <span class="n">listenOptions</span><span class="p">.</span><span class="nf">UseHttps</span><span class="p">(</span><span class="n">cert</span><span class="p">);</span>
+
+          <span class="p">});</span>
+
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+      <span class="k">return</span> <span class="n">host</span><span class="p">;</span>
+
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+<span class="p">}</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Here’s an example of the <code class="highlighter-rouge">hosting.json</code> file. The password will be the same as that used earlier when you created the certificate.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre><span class="o">{</span>
+  <span class="s2">"urls"</span>: <span class="s2">"https://localhost:5000"</span>,
+  <span class="s2">"certificateSettings"</span>: <span class="o">{</span>
+    <span class="s2">"filename"</span>: <span class="s2">"localhost.pfx"</span>,
+    <span class="s2">"password"</span>: <span class="s2">"password"</span>
+  <span class="o">}</span>
+<span class="o">}</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>And here’s a bare bones example of what you need in <code class="highlighter-rouge">Startup</code>. The parts to note are the <code class="highlighter-rouge">RequireHttpsAttribute</code> method called in <code class="highlighter-rouge">ConfigureServices</code> - which basically means no part of your site will execute unless it’s called via https - and the <code class="highlighter-rouge">AddRedirectToHttps</code> method called in <code class="highlighter-rouge">Configure</code> which redirects any http calls to https.</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+</pre></td><td class="code"><pre><span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Builder</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Hosting</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Mvc</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.AspNetCore.Rewrite</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.Configuration</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Microsoft.Extensions.DependencyInjection</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">aspnetcore</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="k">class</span> <span class="nc">Startup</span>
+  <span class="p">{</span>
+    <span class="k">public</span> <span class="n">IHostingEnvironment</span> <span class="n">HostingEnvironment</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="n">IConfigurationRoot</span> <span class="n">Configuration</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">Startup</span><span class="p">(</span><span class="n">IHostingEnvironment</span> <span class="n">env</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">HostingEnvironment</span> <span class="p">=</span> <span class="n">env</span><span class="p">;</span>
+      
+      <span class="kt">var</span> <span class="n">builder</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ConfigurationBuilder</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">SetBasePath</span><span class="p">(</span><span class="n">env</span><span class="p">.</span><span class="n">ContentRootPath</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">"appsettings.json"</span><span class="p">,</span> <span class="n">optional</span><span class="p">:</span> <span class="k">true</span><span class="p">,</span> <span class="n">reloadOnChange</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">$"appsettings.</span><span class="p">{</span><span class="n">env</span><span class="p">.</span><span class="n">EnvironmentName</span><span class="p">}</span><span class="s">.json"</span><span class="p">,</span> <span class="n">optional</span><span class="p">:</span> <span class="k">true</span><span class="p">,</span> <span class="n">reloadOnChange</span><span class="p">:</span> <span class="k">true</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">AddEnvironmentVariables</span><span class="p">();</span>
+      
+      <span class="n">Configuration</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">ConfigureServices</span><span class="p">(</span><span class="n">IServiceCollection</span> <span class="n">services</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="n">services</span><span class="p">.</span><span class="n">Configure</span><span class="p">&lt;</span><span class="n">MvcOptions</span><span class="p">&gt;(</span><span class="n">options</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="n">options</span><span class="p">.</span><span class="n">Filters</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">new</span> <span class="nf">RequireHttpsAttribute</span><span class="p">());</span> <span class="p">});</span>
+      <span class="n">services</span><span class="p">.</span><span class="nf">AddMvc</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Configure</span><span class="p">(</span><span class="n">IApplicationBuilder</span> <span class="n">app</span><span class="p">,</span> <span class="n">IHostingEnvironment</span> <span class="n">env</span><span class="p">)</span>
+    <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">env</span><span class="p">.</span><span class="nf">IsDevelopment</span><span class="p">())</span>
+      <span class="p">{</span>
+        <span class="n">app</span><span class="p">.</span><span class="nf">UseDeveloperExceptionPage</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="n">app</span><span class="p">.</span><span class="nf">UseRewriter</span><span class="p">(</span><span class="k">new</span> <span class="nf">RewriteOptions</span><span class="p">().</span><span class="nf">AddRedirectToHttps</span><span class="p">());</span>
+      <span class="n">app</span><span class="p">.</span><span class="nf">UseMvc</span><span class="p">();</span>
+
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+  
+<span class="p">}</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>If you type <code class="highlighter-rouge">dotnet run</code> from the command line you should be able to access the site at <code class="highlighter-rouge">https://localhost:5000</code>.</p>
+
+<h2 id="production">Production</h2>
+
+<p>So far this is pretty much as in the other tutorial. However when I came to deploy was when it got a bit confusing. If you check the official ASP.NET Core documents <a href="https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x">here</a> on how to deploy to Linux it gives you a lot of detail on <code class="highlighter-rouge">nginx</code> (too much in fact, you don’t need to build <code class="highlighter-rouge">nginx</code> from source on Ubuntu as it instructs) but is missing how to tie in the ASP.NET code. There’s also a super easy way to install certificates and their configuration (which we’ll get to).</p>
+
+<p>The main thing that threw me was the <code class="highlighter-rouge">nginx</code> site configuration here.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="code"><pre>server <span class="o">{</span>
+    listen 80<span class="p">;</span>
+    location / <span class="o">{</span>
+        proxy_pass http://localhost:5000<span class="p">;</span>
+        proxy_http_version 1.1<span class="p">;</span>
+        proxy_set_header Upgrade <span class="nv">$http_upgrade</span><span class="p">;</span>
+        proxy_set_header Connection keep-alive<span class="p">;</span>
+        proxy_set_header Host <span class="nv">$host</span><span class="p">;</span>
+        proxy_cache_bypass <span class="nv">$http_upgrade</span><span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>I’ve deployed a few ASP.NET Core sites and at first glance there doesn’t seem anything wrong. But if we look at our <code class="highlighter-rouge">hosting.json</code> file we have the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>  ...
+
+  <span class="s2">"urls"</span>: <span class="s2">"https://localhost:5000"</span>,
+
+  ...</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>That’s <code class="highlighter-rouge">https</code> in the <code class="highlighter-rouge">urls</code> property. I confess it took me a while messing around before I realised this! You just need to change this to make sure it corresponds correctly with <code class="highlighter-rouge">hosting.json</code>. For the rest of the configuration we’ll take the easy route …</p>
+
+<h3 id="install-certbot">Install certbot</h3>
+
+<p>This uses the excellent (and free) Let’s Encrypt Certificate Authority. <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">Here’s</a> a good tutorial on installation but the lines you’ll need to run are.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="code"><pre><span class="nb">sudo </span>add-apt-repository ppa:certbot/certbot
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>python-certbot-nginx</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Now to install a certificate for your site run the following (replacing <code class="highlighter-rouge">domain.com</code> with whatever your domain is).</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>certbot <span class="nt">--nginx</span> <span class="nt">-d</span> domain.com</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>And … er that’s it for your server certificate! If you check your <code class="highlighter-rouge">nginx</code> file you’ll see the appropriate changes have been made (<code class="highlighter-rouge">domain.com</code> in my case refers to my real world domain).</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="code"><pre>server <span class="o">{</span>
+        server_name domain.com<span class="p">;</span>
+
+        location / <span class="o">{</span>
+                proxy_pass https://localhost:5000<span class="p">;</span>
+                proxy_http_version 1.1<span class="p">;</span>
+                proxy_set_header Upgrade <span class="nv">$http_upgrade</span><span class="p">;</span>
+                proxy_set_header Connection keep-alive<span class="p">;</span>
+                proxy_set_header Host <span class="nv">$host</span><span class="p">;</span>
+                proxy_cache_bypass <span class="nv">$http_upgrade</span><span class="p">;</span>
+        <span class="o">}</span>
+
+        listen 443 ssl<span class="p">;</span> <span class="c"># managed by Certbot</span>
+        ssl_certificate /etc/letsencrypt/live/domain.com/fullchain.pem<span class="p">;</span> <span class="c"># managed by Certbot</span>
+        ssl_certificate_key /etc/letsencrypt/live/domain.com/privkey.pem<span class="p">;</span> <span class="c"># managed by Certbot</span>
+        include /etc/letsencrypt/options-ssl-nginx.conf<span class="p">;</span> <span class="c"># managed by Certbot</span>
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem<span class="p">;</span> <span class="c"># managed by Certbot</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nv">$scheme</span> <span class="o">!=</span> <span class="s2">"https"</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return </span>301 https://<span class="nv">$host$request_uri</span><span class="p">;</span>
+        <span class="o">}</span> <span class="c"># managed by Certbot</span>
+
+<span class="o">}</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>One point of note is these certificates need to be renewed and if you google you’ll see this referred to but when you install <code class="highlighter-rouge">certbot</code> it does this for you with a package crontab (see <code class="highlighter-rouge">/etc/cron.d/certbot</code>).</p>
+
+<p>But … we still have a problem. What’s the certificate that’s being loaded in our ASP.NET Core code? Right. Well we could ditch this code and just use a standard ASP.NET Core site and use the <code class="highlighter-rouge">nginx</code> rules. Again, I hit a problem: I simply could not find a way to load our <code class="highlighter-rouge">certbot</code> certificate with ASP.NET Core. The <code class="highlighter-rouge">certbot</code> certificate does not use a password (a good thing, we don’t want our users having to enter a password when they browse our site) but there’s no way I could get the certificate to load with a blank password. So, simple. I just followed the same steps at the start with <code class="highlighter-rouge">openssl</code> and created a local certificate for the site on the production server. It’s up to you if you want to use one certificate for all your sites or one per site (just change localhost to something else and reference it in <code class="highlighter-rouge">/etc/hosts</code> to <code class="highlighter-rouge">127.0.0.1</code>). It would be better if we could get both <code class="highlighter-rouge">nginx</code> and ASP.NET Core using the same certificate but I think this is a good enough work around.</p>
+
+<p>Useful links ….</p>
+
+<p><a href="https://peteskelly.com/testing-ssl-in-asp-net-core-mac/amp/">https://peteskelly.com/testing-ssl-in-asp-net-core-mac/amp/</a></p>
+
+<p><a href="https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core">https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core</a></p>
+
+<p><a href="https://certsimple.com/blog/localhost-ssl-fix">https://certsimple.com/blog/localhost-ssl-fix</a></p>
+
+  </article>
+
+  
+
+    <div id="disqus_thread"></div>
+    <script>
+      var disqus_shortname = 'matthewblott';
+
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.async = true;
+        dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+
+  
+
+</div>
+  </div>
+
+  <div class="">
+    <div class="row bg-dark pl-5 pt-3">
+  <div class="col-sm-3 navbar-dark">
+    <ul class="navbar-nav">
+      <li><a href="/" class="nav-link">Home</a></li>
+      <li><a href="/about" class="nav-link">About</a></li>
+      <li><a href="/contact" class="nav-link">Contact</a></li>
+    </ul>
+  </div>
+  <div class="col-sm-3 navbar-dark">
+    <ul class="navbar-nav">
+      <li>
+        <a href="/other-stuff" class="nav-link">Other Stuff</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" class="nav-link"><i class="fab fa-twitter-square"></i> Twitter</a>
+        </li>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" class="nav-link"><i class="fab fa-github-square"></i> Github</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-sm-3 navbar-dark">
+    <ul class="navbar-nav">
+      <li>
+        <a href="https://www.facebook.com/matthew.blott" target="_blank" class="nav-link"><i class="fab fa-facebook-square"></i> Facebook</a>
+      </li>
+      <li>
+        <a href="https://www.youtube.com/" target="_blank" class="nav-link"><i class="fab fa-youtube-square"></i> YouTube</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-sm-3">
+  </div>
+</div>
+  </div>
+
+  <script src="/lib/bootstrap/js/bootstrap-native-v4.min.js"></script>
+<script src="/lib/cookieconsent/js/cookieconsent.min.js"></script>
+<script src="/assets/main-7f55d6dc92fe9cdfdffb149bc7ed9419345ba8aee69014c132ec1bcea88b11cf.js"></script>
+  
+</body>
+</html>

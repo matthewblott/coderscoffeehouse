@@ -129,6 +129,6 @@ DISPLAY=:1 xvfb-run fsharpi canopy.fsx
 
 And the result was the following.
 
-![]({% asset posts/20170117/011012-sm.jpg %})
+{% asset posts/20170117/011012-sm.jpg %}
 
 This is a pretty rudimentary example but it's all the information you need if you want to include headless testing in your CI build. Any comments please leave below, thanks :-)

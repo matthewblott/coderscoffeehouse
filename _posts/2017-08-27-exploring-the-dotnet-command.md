@@ -323,7 +323,7 @@ dotnet test mylib.tests
 
 You should see something like the following in your terminal.
 
-![href text]({% asset posts/20170827/204913-md.jpg %})
+{% asset posts/20170827/204913-sm.jpg %}
 
 If you execute ```dotnet``` from within the test project itself the last argument (the path of the ```.cpsproj``` file) isn't necessary.
 
