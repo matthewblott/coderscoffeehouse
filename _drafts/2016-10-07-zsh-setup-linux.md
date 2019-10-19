@@ -99,7 +99,7 @@ source $ZSH/oh-my-zsh.sh
 
 sudo update-alternatives --config editor # ?
 
-export EDITOR=vim # makes it the default editor, userful when using crontab
+export EDITOR=vim # makes it the default editor, useful when using crontab
 
 # default location for installed default themes (for reference)
 /usr/share/vim/vimrc[version]/colors
@@ -131,7 +131,6 @@ Defaults env_reset,timestamp_timeout=30
 
 pbcopy
 ======
-
 
 # -- OLD
 # alias
