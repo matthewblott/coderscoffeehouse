@@ -14,9 +14,8 @@ excerpt_separator: ""   # Workaround for http://blog.slaks.net/2013-08-09/jekyll
 # highlighter: pygments
 
 # Build settings
-gems: ['jekyll-lunr-js-search', 'jekyll-assets', 'uglifier', 'jekyll-paginate']
+gems: ['jekyll-assets', 'uglifier', 'jekyll-paginate']
 # markdown: kramdown
-
 # highlighter: rouge
 
 # kramdown:

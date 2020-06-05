@@ -1,36 +1,4 @@
-{% if jekyll.environment == 'production' %}
-<script src="/js/mustache-0.8.1.min.js"></script>
-{% else %}
-<script src="/js/mustache-0.8.1.js"></script>
-{% endif %}
-
-
-{% if jekyll.environment == 'production' %}
-
 {% javascript main %}
-
-{% else %}
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.3.2/js/tether.min.js"></script>
-<script src="//cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
-<!-- 0.4.5 in version that works -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/lunr.js/0.5.12/lunr.min.js"></script>
-
-<!--
-//= require libs/lunr-0.4.5
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/mustache.js/2.1.3/mustache.min.js"></script>
-
--->
-
-
-<script src="//stevenlevithan.com/assets/misc/date.format.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
-<script src="//cdn.rawgit.com/slashdotdash/jekyll-lunr-js-search/master/js/jquery.lunr.search.js"></script>
-
-{% endif %}
-
 
 {% if jekyll.environment == 'production' %}
 {% javascript google-analytics %}

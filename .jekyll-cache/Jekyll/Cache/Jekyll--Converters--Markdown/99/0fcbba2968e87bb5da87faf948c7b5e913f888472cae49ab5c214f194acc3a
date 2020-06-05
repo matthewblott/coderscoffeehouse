@@ -1,0 +1,96 @@
+I"^<p>I’ve been using Xamarin Studio for some time and now use it daily for my work with Mono. I’ve also been dabbling a bit in F# and have been keen to start using it at work. Untypically for a Xamarin Studio user I don’t use it for building mobile apps but have been writing various parts of a production system which I’m slowly moving off Windows. Anyhow, what better place to start than converting some of the C# libraries to F#?</p>
+
+<h3 id="setup">Setup</h3>
+
+<p>The setup should be very simple. A C# console application that calls an F# library. As you can see in this very simple example I’ve just created a standard C# console project that calls a standard F# library project. There are no special libraries required.</p>
+
+<p><img src="/assets/posts/20160930/153605-sm-e001da3eff440cd6ec42dc4720aa008b.jpg" alt="" /></p>
+
+<p>Normally when working with Xamarin Studio adding a library project is much the same as you would do with Visual Studio. Be aware the referenced version of .NET might be different when creating a new project, the defaults for C# and F# are different on my system which I had to change (I needed to change it to Mono / .NET 4.5.).</p>
+
+<p><img src="/assets/posts/20160930/154422-xs-dabfd3843a25cbadcbe5352f55cf879b.jpg" alt="" /></p>
+
+<p><img src="/assets/posts/20160930/154725-xs-184ace49215dae1eda0c77eff5aa3d0e.jpg" alt="" /></p>
+
+<p>So, once I have the correct framework referenced I just add the project as a reference.</p>
+
+<p><img src="/assets/posts/20160930/154858-xs-9f4ff91dd5d7d908846d3a28366b4aa5.jpg" alt="" /></p>
+
+<p>Great, now we’re all good to go. Here’s my crude F# library that I want to call.</p>
+
+<figure class="highlight"><pre><code class="language-fsharp" data-lang="fsharp"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="k">namespace</span> <span class="n">fslib</span>
+
+<span class="k">type</span> <span class="nc">Greeter</span><span class="bp">()</span> <span class="p">=</span> 
+  <span class="k">member</span> <span class="n">this</span><span class="p">.</span><span class="nc">Greeting</span> <span class="p">=</span> <span class="s2">"Hello World!"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>And here’s the C# code that calls the library in the console project.</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre><span class="k">using</span> <span class="nn">static</span> <span class="n">System</span><span class="p">.</span><span class="n">Console</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+  <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">greeter</span> <span class="p">=</span> <span class="k">new</span> <span class="n">fslib</span><span class="p">.</span><span class="nf">Greeter</span><span class="p">();</span>
+
+    <span class="kt">var</span> <span class="n">greeting</span> <span class="p">=</span> <span class="n">greeter</span><span class="p">.</span><span class="n">Greeting</span><span class="p">;</span>
+
+    <span class="nf">WriteLine</span><span class="p">(</span><span class="n">greeting</span><span class="p">);</span>
+
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Fairly straightforward and if I hit the play button I get the output in the console I’m expecting.</p>
+
+<p><img src="/assets/posts/20160930/155617-sm-eee23af85ed95462908aeb923d639be6.jpg" alt="" /></p>
+
+<p>But although it works as expected the Xamarin Studio experience isn’t so smooth. In my code editor the statement completion doesn’t work and I have the unwanted red squigglies. If your project expands it looks like it’s littered with errors.</p>
+
+<p><img src="/assets/posts/20160930/160020-xs-ac9b9763d119687bea1cc977e51994c6.jpg" alt="" /></p>
+
+<p>The way out of this is to reference the dll file and not the project itself. So untick the project in the Edit References dialog.</p>
+
+<p><img src="/assets/posts/20160930/160148-xs-56f948ebaeea60d5447b2aa16e8131ce.jpg" alt="" /></p>
+
+<p>And then browse to the dll file from the browse button on the .NET Assembly tab.</p>
+
+<p><img src="/assets/posts/20160930/160654-xs-272ab6eaf2f3e9fb791cd838842b3c24.jpg" alt="" /></p>
+
+<p>Now if I build my project the red squigglies disappear and I have statement completion.</p>
+
+<p><img src="/assets/posts/20160930/160849-sm-b3a9046a725b95ca7edd724e2b24d831.jpg" alt="" /></p>
+
+<p>However, when hit the play button I am no longer able to debug the F# code. I struggled with this for a while and should have guessed the Mono debug files are missing (a big thanks to Jason Imison from the Xamarin team for point this out to me <a href="https://twitter.com/JasonImison/status/781864690733445120">here</a>!). So just copy over the mdb file from the F# library and place it in the Debug folder of the C# project …</p>
+
+<p><img src="/assets/posts/20160930/161310-xs-0746d8815888bf3dd6a8d6c6622ea7e2.jpg" alt="" /></p>
+
+<p>… and the debugging will work as expected.</p>
+
+<p><img src="/assets/posts/20160930/161358-xs-a563054c671b3a883779f259a76b4db6.jpg" alt="" /></p>
+
+<p>You’ll need to do this with each build if your code changes but this can be done by adding a simple <code class="language-plaintext highlighter-rouge">cp</code> command to your build step.</p>
+
+<p><img src="/assets/posts/20160930/162300-sm-79eed0139fb8f168fa738e4ad1a60c0c.jpg" alt="" /></p>
+
+<p>That’s it. Hopefully the Xamarin team will get this fixed but if you follow these simple steps you can work effectively without too much bother!</p>
+:ET

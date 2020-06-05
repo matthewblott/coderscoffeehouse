@@ -5,36 +5,27 @@ footer_fixed: true
 ---
 
 <style>
-    
-    li {
-        list-style: none;
-    }
-    
+  li {
+    list-style: none;
+  }
 </style>
 
-<div id="search-results">
-    <ul class="entries list-unstyled">
-            
-        <!--<li>
-            <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-            <h2>
-                <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-            </h2>
-            
-        </li>-->
-        
-    </ul>
-</div>
+<ul id="search-results"></ul>
 
-
-{% raw %}
-<script id="search-results-template" type="text/mustache">
-    {{#entries}}
-    <li>
-        <span>{{#date}}<small><time datetime="{{pubdate}}" pubdate>{{displaydate}}</time></small>{{/date}}</span>
-        <h2>
-            <a href="{{url}}">{{title}}</a></h2>
-    </li>
-    {{/entries}}
+<script>
+  window.store = {
+    {% for post in site.posts %}
+      "{{ post.url | slugify }}": {
+        "title": "{{ post.title | xml_escape }}",
+        "author": "{{ post.author | xml_escape }}",
+        "category": "{{ post.category | xml_escape }}",
+        "pubdate": "{{ post.date }}",
+        "content": {{ post.content | strip_html | strip_newlines | jsonify }},
+        "url": "{{ post.url | xml_escape }}"
+      }
+      {% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  };
 </script>
-{% endraw %}
+
+{% javascript search %}

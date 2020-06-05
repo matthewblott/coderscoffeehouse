@@ -1,0 +1,330 @@
+I"�G<p>Another one in my .NET / Linux series :-)</p>
+
+<p>So, TeamCity seems to be the de facto build server in the .NET world and we want install it on Linux. I thought this would be straightforward - after all it’s written in Java which runs pretty well on Linux so I shouldn’t have any problem. Well, I’ve got it running but it’s not as simple as I’d hoped so here are the steps you’ll need to go through.</p>
+
+<p>For this exercise I created a new VM running Ubuntu 16.04.2 LTS with nothing installed.</p>
+
+<h2 id="install-java">Install Java</h2>
+
+<p>Add the package repository and install.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="code"><pre><span class="nb">sudo </span>add-apt-repository ppa:openjdk-r/ppa
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>openjdk-8-jre
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Check Java is installed with the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>java <span class="nt">-version</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>You should see something like the following in the terminal.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>openjdk version <span class="s2">"1.8.0_121"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h2 id="setup-mysql">Setup MySQL</h2>
+
+<p>TeamCity comes bundled with a Java based database called HSQLDB but it supports all the major RDBMS systems. I’m going to use MySQL here. So the next step is to install it.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="code"><pre><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>mysql-server
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Check it’s installed.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>mysql <span class="nt">--version</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>You should see some like the following in the terminal.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>mysql  Ver 14.14 Distrib 5.7.17, <span class="k">for </span>Linux <span class="o">(</span>x86_64<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Login to MySQL and create the database and user.</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="k">create</span> <span class="k">database</span> <span class="n">teamcity</span> <span class="k">collate</span> <span class="n">utf8_bin</span><span class="p">;</span>
+<span class="k">create</span> <span class="k">user</span> <span class="n">teamcity</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">'password'</span><span class="p">;</span>
+<span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="n">teamcity</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">teamcity</span><span class="p">;</span>
+<span class="k">grant</span> <span class="n">process</span> <span class="k">on</span> <span class="o">*</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="n">teamcity</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h2 id="install-teamcity">Install TeamCity</h2>
+
+<p>Move to the opt folder as that’s where we’re going to install TeamCity (I’m just following convention here).</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">cd</span> /opt
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Download and extract the TeamCity package.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="code"><pre><span class="nb">sudo </span>wget https://download-cf.jetbrains.com/teamcity/TeamCity-10.0.2.tar.gz
+<span class="nb">sudo tar</span> <span class="nt">-xzvf</span> TeamCity-10.0.2.tar.gz
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>There should now be an <code class="language-plaintext highlighter-rouge">/opt/TeamCity</code> directory. Create an application user and set the appropriate permissions.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="code"><pre><span class="nb">sudo </span>useradd teamcity
+<span class="nb">sudo chown</span> <span class="nt">-R</span> teamcity:teamcity /opt/TeamCity
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h2 id="create-the-service">Create the service</h2>
+
+<p>This is simple enough. Create the service file.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>vim /etc/init.d/teamcity
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Copy and paste the following then save the file.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="code"><pre><span class="nb">export </span><span class="nv">TEAMCITY_DATA_PATH</span><span class="o">=</span><span class="s2">"/opt/TeamCity/.BuildServer"</span>
+
+<span class="k">case</span> <span class="nv">$1</span> <span class="k">in
+  </span>start<span class="p">)</span>
+    <span class="nb">echo</span> <span class="s2">"Starting Team City"</span>
+    start-stop-daemon <span class="nt">--start</span>  <span class="nt">-c</span> teamcity <span class="nt">--exec</span> /opt/TeamCity/bin/teamcity-server.sh start
+    <span class="p">;;</span>
+  stop<span class="p">)</span>
+    <span class="nb">echo</span> <span class="s2">"Stopping Team City"</span>
+    start-stop-daemon <span class="nt">--start</span> <span class="nt">-c</span> teamcity  <span class="nt">--exec</span>  /opt/TeamCity/bin/teamcity-server.sh stop
+    <span class="p">;;</span>
+  restart<span class="p">)</span>
+    <span class="nb">echo</span> <span class="s2">"Restarting Team City"</span>
+    start-stop-daemon <span class="nt">--start</span>  <span class="nt">-c</span> teamcity <span class="nt">--exec</span> /opt/TeamCity/bin/teamcity-server.sh stop
+    start-stop-daemon <span class="nt">--start</span>  <span class="nt">-c</span> teamcity <span class="nt">--exec</span> /opt/TeamCity/bin/teamcity-server.sh start
+    <span class="p">;;</span>
+  <span class="k">*</span><span class="p">)</span>
+    <span class="nb">echo</span> <span class="s2">"Usage: /etc/init.d/teamcity {start|stop|restart}"</span>
+    <span class="nb">exit </span>1
+    <span class="p">;;</span>
+<span class="k">esac</span>
+
+<span class="nb">exit </span>0
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Register as a startup script.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>update-rc.d teamcity defaults
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Make the file executable.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo chmod</span> +x /etc/init.d/teamcity
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>And start the service.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>serivce teamcity start
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Now if you browse to the IP address of your server using port 8111 you should see the TeamCity web interface.</p>
+
+<p><img src="/assets/posts/20170407/235832-md-3e523bfdd9133c721c83981fe58375da.jpg" alt="" /></p>
+
+<p>Here you’re prompted to enter where you want your data directory. The convention seems to be within your installation which is what I’ve gone with here.</p>
+
+<p>Click proceed and then you’ll be prompted to fill out the details for the database. You don’t need to fill in the host if you’ve done a local installation as we have in this tutorial (this screenshot was taken for another installation I have).</p>
+
+<p><img src="/assets/posts/20170407/08-md-1820665e60cd13316033f453921cf0d5.jpg" alt="" /></p>
+
+<p>At this point if you fill out the details and click Proceed you’ll get an error.</p>
+
+<p><img src="/assets/posts/20170407/122326-md-7fc437ccae77410b26feffe39ddc236c.jpg" alt="" /></p>
+
+<p>Unfortunately this is because the Java MySQL connector needs to be installed. But this was still a useful exercise as the data directory and some of the system files were created during this process. And this was needed as we are going to put the connector in one of these directories.</p>
+
+<p>First stop the service.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>service teamcity start
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Move to <code class="language-plaintext highlighter-rouge">opts</code> directory if you’re not there already.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">cd</span> /opt
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Download the MySQL Java connector and extract the package.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="code"><pre><span class="nb">sudo </span>wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz
+<span class="nb">sudo tar</span> <span class="nt">-xzvf</span> mysql-connector-java-5.1.40.tar.gz
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Move the file to the required destination.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo mv</span> /opt/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /opt/TeamCity/.BuildServer/lib/jdbc/
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>We’ll need to set permissions so the file runs under the <code class="language-plaintext highlighter-rouge">teamcity</code> account we created earlier.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo chown </span>teamcity:teamcity /opt/TeamCity/.BuildServer/lib/jdbc/mysql-connector-java-5.1.40-bin.jar
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Start the service again.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>service teamcity start
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Now open a browser and fill out the MySQL details as before then click Proceed. At this point you might want to go and make a cup of tea or take the dog for a walk - it really can take some time and you might think it’s crashed. Eventually you’ll come to the license agreement page. Tick the accept check box and click Continue.</p>
+
+<p><img src="/assets/posts/20170407/37-md-4c74ce93f7028526a8d0aa598e1141a0.jpg" alt="" /></p>
+
+<p>Proceed and create an admin account and you’re good to go.</p>
+
+<p><img src="/assets/posts/20170407/49-md-e2442f44ec63e1e60e2cc4d284c73b2c.jpg" alt="" /></p>
+
+<h2 id="setup-nginx">Setup nginx</h2>
+
+<p>The next step is optional but pretty straightforward enough. We’re going to install <code class="language-plaintext highlighter-rouge">nginx</code> so we can browse using port 80.</p>
+
+<p>First install <code class="language-plaintext highlighter-rouge">nginx</code> as so.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>apt-get <span class="nb">install </span>nginx
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Then create the config file for the site.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>vim /etc/nginx/sites-available/teamcity
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Paste the following in - swap <code class="language-plaintext highlighter-rouge">intercrus</code> in the example below for whatever your domain name is.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="code"><pre>map <span class="nv">$http_upgrade</span> <span class="nv">$connection_upgrade</span> <span class="o">{</span>
+    default upgrade<span class="p">;</span>
+    <span class="s1">''</span>   <span class="s1">''</span><span class="p">;</span>
+<span class="o">}</span>
+
+server <span class="o">{</span>
+
+    listen       80<span class="p">;</span>
+    server_name  localhost intercrus<span class="p">;</span>
+
+    proxy_read_timeout     1200<span class="p">;</span>
+    proxy_connect_timeout  240<span class="p">;</span>
+    client_max_body_size   0<span class="p">;</span>
+
+    location / <span class="o">{</span>
+
+        proxy_pass          http://localhost:8111/<span class="p">;</span>
+        proxy_http_version  1.1<span class="p">;</span>
+        proxy_set_header    X-Forwarded-For <span class="nv">$remote_addr</span><span class="p">;</span>
+        proxy_set_header    Host <span class="nv">$server_name</span>:<span class="nv">$server_port</span><span class="p">;</span>
+        proxy_set_header    Upgrade <span class="nv">$http_upgrade</span><span class="p">;</span>
+        proxy_set_header    Connection <span class="nv">$connection_upgrade</span><span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Create a symlink for the new site.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo ln</span> <span class="nt">-s</span> /etc/nginx/sites-available/teamcity /etc/nginx/sites-enabled/teamcity
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Restart the <code class="language-plaintext highlighter-rouge">nginx</code> service.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="nb">sudo </span>service nginx restart
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Now if you browse to the same address under port 80 you should see the login page as shown below.</p>
+
+<p><img src="/assets/posts/20170407/000335-md-1520683f9e645843a02ef01f4027d72e.jpg" alt="" /></p>
+
+<p>A couple of final points.</p>
+
+<ol>
+  <li>
+    <p>There’s a serious issue with the startup time of TeamCity as explained <a href="https://youtrack.jetbrains.com/issue/TW-41035">here</a>. I’ve found once it’s up it’s ‘okay’ but I think you really need a decent spec machine to run it on in a production environment.</p>
+  </li>
+  <li>
+    <p>I had some real issues with the MySQL installation. I haven’t documented it here as it’s somewhat out the scope of this tutorial but it seems to be a problem with the latest version of Ubuntu - it’s probably best to direct the package directly when doing an installation.</p>
+  </li>
+</ol>
+
+<p>That’s it :-)</p>
+
+<p>Links …</p>
+
+<p>http://blog.fire-development.com/2014/09/23/teamcity-8-setup-on-linux/
+http://ubuntuhandbook.org/index.php/2015/01/install-openjdk-8-ubuntu-14-04-12-04-lts/
+https://confluence.jetbrains.com/display/TCD9/Setting+up+an+External+Database
+https://gist.github.com/sandcastle/9282638</p>
+:ET
