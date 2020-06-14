@@ -5,7 +5,7 @@ date:   2017-11-24 00:00:00
 categories: tech
 ---
 
-You pretty have to use SSL these days but getting started with ASP.NET Core was a bit of a challenge for me. As usual I had to scour the net for bits of information and then cobble a solution together and this post is basically what I did to get from development to production. The code for this tutorial can be found [here](https://github.com/matthewblott/aspnetcore-ssl).
+You pretty have to use SSL these days but getting started with ASP.NET Core was a bit of a challenge for me. As usual I had to scour the net for bits of information and then cobble a solution together and this post is basically what I did to get from development to production. The [code for this tutorial can be found here](https://github.com/matthewblott/aspnetcore-ssl).
 
 ## Development (macOS)
 
