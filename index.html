@@ -1,33 +1,58 @@
 ---
-layout: paged
-content_bg: true
-
-footer_fixed: false
+layout: default
 pagination: 
   enabled: true
   category: tech
 ---
 
-<h1 class="display-4">{{ site.title }}
-  <i class="fa fa-coffee padding-left-md"></i>
-</h1>
-<div>
-  <h2>
-    Useful titbits from the projects I'm working on plus other things that interest me in the programming world
-  </h2>
-  <p>
-    <h2>   
-      <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
-    </h2>
-  </p>
-  <ul class="list-unstyled">
-    {% for post in paginator.posts  %}
-    <li>
-      <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-      <h2>
-        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-      </h2>
-    </li>
+<ul>
+  {% for post in paginator.posts %}
+  <li>
+    <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+    {{ post.excerpt }}
+  </li>
+  {% endfor %}
+</ul>
+
+{% assign path_base = paginator.first_page_path | replace: "index.html", "" %}
+
+<nav>
+
+  <ul class="pager">
+
+    <!-- pager__item pager__item--selected -->
+
+    {%
+      assign total_my = paginator.total_pages
+    %}
+
+    {% for page in (1..paginator.total_pages) %}
+
+      <li class="pager__item">
+
+        {% 
+          assign path_my = site.paginate_path 
+          | replace: ":num", page 
+          | replace: "/page", "page/" 
+          | prepend: path_base 
+        %}
+
+        {% if page == 1 %}
+          <a href="{{ path_base }}">First</a>
+        {% endif %}
+
+        {% if page > 1 and page < total_my %}
+          <a href="{{ path_my }}">{{ page }}</a>
+        {% endif %}
+
+        {% if page == total_my %}
+          <a href="{{ path_my }}">Last</a>
+        {% endif %}
+
+      </li>
+
     {% endfor %}
+
   </ul>
-</div>
+
+</nav>

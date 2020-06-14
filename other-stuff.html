@@ -1,33 +1,11 @@
 ---
-layout: paged
-content_bg: true
-permalink: /other-stuff/
-footer_fixed: false
-pagination: 
+layout: default
+permalink: /other-stuff
+title: Other Stuff
+pagination:
   enabled: true
-  category: misc
+  category: other
 ---
 
-<h1 class="display-4">Other Stuff
-  <i class="fa fa-coffee padding-left-md"></i>
-</h1>
-<div>
-  <h2>
-    Stuff that (probably) isn't related to tech / programming.
-  </h2>
-  <p>
-    <h2>   
-      <a href="//twitter.com/matthewblott" target="_blank">@MatthewBlott</a>
-    </h2>
-  </p>
-  <ul class="list-unstyled">
-    {% for post in paginator.posts  %}
-    <li>
-      <span>{{ post.date | date: "%b %-d, %Y" }}</span>
-      <h2>
-        <a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-      </h2>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
+{% for post in paginator.posts %}
+{% endfor %}

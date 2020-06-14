@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexbox Example</title>
+  <style>
+    :root {
+      --text-primary: #474747;
+      --text-secondary: #c6c6c6;
+      --bg-primary: #474747;
+      --border-primary: #474747;
+      --border-secondary: #c6c6c6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* header */
+    .header {
+      border: solid var(--border-primary) 1px;
+    }
+
+    .header__toggler {
+      display: none;
+    }
+
+    .header__toggler-button {
+      display: none;
+    }
+
+    .header__toggler-button-item {
+      display: none;
+    }
+
+    .header-nav {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .header-nav__left {
+      display: flex;
+    }
+
+    .header-nav__center {
+      display: flex;
+      justify-content: flex-start;
+      flex-grow: 1;
+    }
+
+    .header-nav__right {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .header-menu {
+      display: flex;
+      list-style: none;
+    }
+
+    @media screen and (max-width: 968px) {
+
+      .header__toggler {
+        display: none;
+      }
+
+      .header__toggler:checked~.header-nav>.header-nav__center {
+        display: none;
+      }
+
+      .header__toggler:checked~.header-nav>.header-nav__right {
+        display: none;
+      }
+
+      .header__toggler:checked~.header-nav {
+        display: flex;
+      }
+
+      .header__toggler-button {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 0;
+      }
+
+      .header__toggler-button-item {
+        display: flex;
+        height: 2px;
+        width: 20px;
+        background-color: var(--bg-primary);
+        margin-top: 3px;
+      }
+
+      .header-nav {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header-nav__center {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      .header-nav__right {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+
+      .header-menu {
+        display: flex;
+        flex-direction: column;
+      }
+
+    }
+
+    /* main */
+    .main {
+      display: flex;
+      flex-grow: 1;
+    }
+
+    /* footer */
+
+    .footer {
+      border: solid var(--border-primary) 1px;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+    .footer-menu {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media screen and (max-width: 968px) {
+
+      .footer-nav {
+        display: flex;
+        flex-direction: column;
+      }
+
+    }
+
+  </style>
+
+  <header class="header">
+
+    <input type="checkbox" id="t" class="header__toggler">
+
+    <label for="t" class="header__toggler-button">
+      <span class="header__toggler-button-item"></span>
+      <span class="header__toggler-button-item"></span>
+      <span class="header__toggler-button-item"></span>
+    </label>
+
+    <nav class="header-nav">
+      <div class="header-nav__left">
+        <div class="brand">This is my brand</div>
+      </div>
+
+      <div class="header-nav__center">
+        <ul class="header-menu">
+          <li>About</li>
+          <li>Services</li>
+          <li>Contact</li>
+        </ul>
+      </div>
+
+      <div class="header-nav__right">
+        <div class="search">
+          <input placeholder="Search"><button>Submit</button>
+        </div>
+
+        <div class="message">
+          <span>Message</span>
+        </div>
+      </div>
+
+    </nav>
+
+
+  </header>
+
+  <main class="main">
+
+  </main>
+
+  <footer class="footer">
+
+    <nav class="footer-nav">
+      <ul class="footer-menu">
+        <li>About</li>
+        <li>Services</li>
+        <li>Contact</li>
+      </ul>
+      <ul class="footer-menu">
+        <li>About</li>
+        <li>Services</li>
+        <li>Contact</li>
+      </ul>
+
+    </nav>
+
+  </footer>
+
+  </body>
+
+</html>

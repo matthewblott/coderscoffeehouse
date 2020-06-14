@@ -1,0 +1,37 @@
+@import '_background';
+@import '_header';
+@import '_footer';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, Verdana, Tahoma, sans-serif;
+}
+
+.main {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+}

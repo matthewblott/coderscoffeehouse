@@ -1,16 +1,22 @@
+(function () {
+  function displaySearchResults(results, store) {
+    var searchResults = document.getElementById('search-results');
 
-(() => {
+    if (results.length) { // Are there any results?
+      var appendString = ``;
 
-  function getSearchResults(results, store) {
+      for (var i = 0; i < results.length; i++) {  // Iterate over the results
+        var item = store[results[i].ref];
+        
+        appendString += `<li><a href="${item.url}"><h3>${item.title}</h3></a>`;
+        appendString += `<p>${item.content.substring(0, 150)}...</p></li>`;
 
-    var list = [];
+      }
 
-    for (var i = 0; i < results.length; i++) {
-      list.push(store[results[i].ref]);
+      searchResults.innerHTML = appendString;
+    } else {
+      searchResults.innerHTML = `<li>No results found</li>`;
     }
-
-    return list;
-
   }
 
   function getQueryVariable(variable) {
@@ -30,40 +36,43 @@
 
   if (searchTerm) {
 
-    fetch('/search_data.json')
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
+    fetch('index.json')
+      .then(response => response.json())
+      .then(data => {
 
         // Initalize lunr with the fields it will be searching on. I've given title
         // a boost of 10 to indicate matches on this field are more important.
         var idx = lunr(function () {
+
           this.field('id');
           this.field('title', { boost: 10 });
           this.field('author');
-          this.field('category');
+          this.field('categories');
           this.field('content');
+          this.field('url');
+          this.field('date');
 
-          for (var key in json) {
-            this.add({
+          for (var key in data) { // Add the data to lunr
+
+            var item = {
               'id': key,
-              'title': json[key].title,
-              'author': json[key].author,
-              'category': json[key].category,
-              'content': json[key].content
-            });
+              'title': data[key].title,
+              'author': data[key].author,
+              'categories': data[key].categories,
+              'content': data[key].content,
+              'url': data[key].url,
+              'date': data[key].date
+            };
+
+            this.add(item);
+
           }
 
         });
 
-        var results = idx.search(searchTerm);
-        var list = getSearchResults(results, json);
-        var template = document.getElementById('sample_template').innerHTML;
-        var output = Mustache.render(template, list);
-        var newoutput = JSON.parse(JSON.stringify(output));
-
-        document.getElementById('search-results').innerHTML = output;
+        var results = idx.search(searchTerm); // Get lunr to perform a search
+        
+        displaySearchResults(results, data);
 
       });
 

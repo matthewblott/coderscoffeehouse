@@ -1,8 +1,0 @@
----
-layout: page
-title: About
-permalink: /about/
-footer_fixed: true
----
-
-I'm a full stack developer with a focus on web technologies. I've written production software in C#, Visual Basic, Python, Ruby and Node. I love learning new technologies :-)
