@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Contact
-permalink: /contact
+permalink: /contact/
 ---
 
 <form action="//formspree.io/matthew.blott@gmail.com" method="post">

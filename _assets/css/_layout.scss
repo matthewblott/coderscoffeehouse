@@ -16,10 +16,11 @@ body {
   flex-direction: column;
   height: 100vh;
   font-family: Arial, Verdana, Tahoma, sans-serif;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .main {
-  display: flex;
   flex-grow: 1;
   flex-direction: column;
 }
