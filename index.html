@@ -24,8 +24,11 @@ pagination:
       <li class="pager__item">
         Pages
       </li>
+      <li class="pager__item">
+        <a href="{{ path_base }}">1</a>
+      </li>
 
-      {% for page in (1..paginator.total_pages) %}
+      {% for page in (2..paginator.total_pages) %}
         {% 
           assign path_my = site.paginate_path 
           | replace: ":num", page 
