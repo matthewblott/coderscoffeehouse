@@ -1,54 +1,40 @@
-// See
-// https://www.webfx.com/blog/web-design/responsive-background-image/
-
-// $min-width-xs: 0;
-$max-width-xs: 543px;
-$min-width-sm: 544px;
-$max-width-sm: 767px;
-$min-width-md: 768px;
-$max-width-md: 991px;
-$min-width-lg: 992px;
-$max-width-lg: 1199px;
-$min-width-xl: 1200px;
-// $max-width-xl: 100%;
-
-body {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
 .bg {
-  background-image: asset_url('site/bg-1-xl.jpg');
-  background-position: center center;
+  background-image: asset_url('site/bg-2-md.jpg');
+  background-size: contain;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
 }
 
 @media screen and (max-width: $max-width-xs) {
   .bg {
-    background-image: asset_url('site/bg-1-xs.jpg');
+    background-image: asset_url('site/bg-2-xs.jpg');
   }
 }
 
 @media screen and (min-width: $min-width-sm) and (max-width: $max-width-sm) {
   .bg {
-    background-image: asset_url('site/bg-1-sm.jpg');
+    background-image: asset_url('site/bg-2-sm.jpg');
   }
 }
 
 @media screen and (min-width: $min-width-md) and (max-width: $max-width-md) {
   .bg {
-    background-image: asset_url('site/bg-1-md.jpg');
+    background-image: asset_url('site/bg-2-md.jpg');
   }
 }
 @media screen and (min-width: $min-width-lg) and (max-width: $max-width-lg) {
   .bg {
-    background-image: asset_url('site/bg-1-lg.jpg');
+    background-image: asset_url('site/bg-2-lg.jpg');
   }
 }
 @media screen and (min-width: $min-width-xl) {
   .bg {
-    background-image: asset_url('site/bg-1-xl.jpg');
+    background-image: asset_url('site/bg-2-xl.jpg');
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .bg {
+    flex-grow: 1;
+    // order: -1;
   }
 }

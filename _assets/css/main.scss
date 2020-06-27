@@ -5,20 +5,9 @@
 @import '_disqus';
 @import '_syntax-highlighting';
 
+@import '_background';
+@import '_about';
+
 .main {
   margin: 5px;
-}
-
-.post > p {
-  padding: 10px;
-  padding-bottom: 20px;
-}
-
-.post__content {
-  padding: 10px;
-  padding-bottom: 20px;
-}
-
-.code, .pre, .nb {
-  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }

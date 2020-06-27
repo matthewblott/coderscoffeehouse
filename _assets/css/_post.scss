@@ -11,9 +11,24 @@
 }
 
 .post {
-  background-color: white;
+  // background-color: white;
 }
 
 .post__content {
-  background-color: white;
+}
+
+td.gl {
+  border-left: solid 1px lightgray;
+}
+
+.highlight {
+  padding-bottom: 15px;
+}
+
+p {
+  padding-bottom: 5px;
+}
+
+.code, .pre, .nb {
+  font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }

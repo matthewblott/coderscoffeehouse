@@ -9,9 +9,19 @@ button:hover {
   cursor: pointer;
 }
 
+textarea {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 4px;
+  padding: 5px;
+  border-color: var(--border-secondary);
+  font-size: 1.2rem;
+}
+
 button {
   background-color: var(--bg-primary);
   border: none;
+  font-size: 1.2rem;
 }
 
 svg {
@@ -21,6 +31,7 @@ svg {
 }
 
 input {
+  font-size: 1.2rem;
   border-style: solid;
   border-width: 1px;
   border-radius: 4px;
@@ -50,7 +61,7 @@ input {
 .button {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  border: solid var(--border-primary) 1px;
+  border: solid var(--border-secondary) 1px;
   padding: 5px;
   border-radius: 5px;
 }

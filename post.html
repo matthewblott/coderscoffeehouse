@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="_site/assets/main-3b254346d857b3526d5499600cdf9802746d0a6cdc478d7f5b914a3d17f688f9.css">
+  <!-- <link rel="stylesheet" href="/lib/cookieconsent/css/cookieconsent.min.css"> -->
+  <title>Simple ASP.NET Auth (Update) | Coder’s Coffee House</title>
+
+  <style>
+    /* home page */
+
+    .bg {
+      background-image: none;
+    }
+
+    h1 {
+      margin-left: 5px;
+      font-size: 1.8rem;
+    }
+
+    .pager__item {
+      background-color: white;
+      color: var(--text-primary);
+    }
+
+    .pager__item:hover {
+      background-color: var(--border-secondary);
+      /* color: var(--text-primary); */
+    }
+
+    /* post */
+    .post__content {
+      padding: 0;
+      padding-bottom: 0;
+    }
+
+    td.gl {
+      border-left: solid 1px lightgray;
+    }
+
+    /* contact */
+    textarea {
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 4px;
+      padding: 5px;
+      border-color: var(--border-secondary);
+      font-size: 1rem;
+    }
+
+    .button {
+      border-color: var(--border-secondary);
+      font-size: 1rem;
+
+    }
+
+  </style>
+
+  <style>
+        /* nav */
+        nav {
+      font-size: 1.2rem;
+    }
+
+    input, textarea, button {
+      font-size: 1.2rem;
+    }
+
+    h2 {
+      padding-bottom: 5px;
+      padding-top: 15px;
+    }
+
+    h3 {
+      padding-bottom: 5px;
+      padding-top: 15px;
+    }
+
+    p {
+      padding-bottom: 5px;
+    }
+
+    .highlight {
+      padding-bottom: 15px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  
+
+<header class="header">
+  <input type="checkbox" id="t" class="header__toggler">
+  <label for="t" class="header__toggler-button">
+    <span class="header__toggler-button-item"></span>
+    <span class="header__toggler-button-item"></span>
+    <span class="header__toggler-button-item"></span>
+  </label>
+  <nav class="header-nav">
+    <div class="header-nav__left">
+      <div class="header-menu__item header-menu__item--selected">
+        <a href="/">Coder's Coffee House</a>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+          <path
+            d="M192 384h192c53 0 96-43 96-96h32c70.6 0 128-57.4 128-128S582.6 32 512 32H120c-13.3 0-24 10.7-24 24v232c0 53 43 96 96 96zM512 96c35.3 0 64 28.7 64 64s-28.7 64-64 64h-32V96h32zm47.7 384H48.3c-47.6 0-61-64-36-64h583.3c25 0 11.8 64-35.9 64z" />
+        </svg>
+      </div>
+    </div>
+    <div class="header-nav__center header-nav__expander">
+      <ul class="header-menu">
+        
+        <li class="header-menu__item">
+          <a href="/about" class="header-menu__item ">
+            About
+          </a>
+        </li>
+        
+        <li class="header-menu__item">
+          <a href="/contact" class="header-menu__item ">
+            Contact
+          </a>
+        </li>
+        
+        <li class="header-menu__item">
+          <a href="/other-stuff" class="header-menu__item ">
+            Other Stuff
+          </a>
+        </li>
+        
+      </ul>
+    </div>
+    <div class="header-nav__right">
+      <div class="search header-menu__item">
+        <form action="/search">
+          <label aria-label="Search">
+            <input name="q" placeholder="Search">
+          </label>
+          <button aria-label="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+<h1>Simple ASP.NET Auth (Update)</h1>
+
+  <main class="main post">
+
+
+    <h2>30 Jul 2018</h2>
+    
+    <h3></h3>
+    
+    <article class="post__content">
+      <p>A few months ago I put together a simple <a href="/tech/2017/09/05/simple-aspnet-auth.html">starter project</a> for ASP.NET authorisation without any dependencies or configuration setup requirements. The motivation was my frustration with the complexity of the tutorials for something that should really be quite simple. I did leave the token based authorisation only partially complete however - there was no refresh token included which was an oversight on my part. Anyhow, I’ve gone ahead and done this plus a few other changes.</p>
+
+<h2 id="token-based-authorisation">Token Based Authorisation</h2>
+
+<p>As mentioned this will now generate a refresh token upon login. The concept is simple - when your token times out you send it along with the refresh token and receive another so you can continue with your session. I’m not going to go down into too much detail - the whole point of the project was to provide a code sample so simple it’s easy to follow. There’s a service <code class="language-plaintext highlighter-rouge">TokenService</code> which has three public methods <code class="language-plaintext highlighter-rouge">GenerateAccessToken</code>, <code class="language-plaintext highlighter-rouge">GenerateRefreshToken</code>, and <code class="language-plaintext highlighter-rouge">GetPrincipalFromExpiredToken</code>. The first two are fairly obvious, the last is required so we can locate our refresh token in the database. That’s a minor change from the previous project - there’s now a database (of sorts!). Don’t worry though, it’s just a text file but it’s to simulate what you would do in a real world scenario - the refresh token would be saved against the logged in user.</p>
+
+<p>There’s a new <code class="language-plaintext highlighter-rouge">TokenController</code> which has two actions <code class="language-plaintext highlighter-rouge">Refresh</code> and <code class="language-plaintext highlighter-rouge">Revoke</code> which again should be fairly obvious.</p>
+
+<h3 id="putting-it-together">Putting it together</h3>
+
+<p>It works much the same as before. To login as the <code class="language-plaintext highlighter-rouge">admin</code> user run the following in your terminal.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>curl <span class="nt">-X</span> POST http://localhost:5000/api/login <span class="nt">-H</span> <span class="s2">"Content-Type: application/x-www-form-urlencoded"</span> <span class="nt">-d</span> <span class="s2">"Name=admin&amp;Password=password"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>This will return something similar to the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre><span class="o">{</span><span class="s2">"token"</span>:<span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJhZG1pbnMiLCJuYmYiOjE1MzI5ODI5OTYsImV4cCI6MTUzMjk4MzA1NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MDAwL2FwaS8iLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUwMDAvYXBpLyJ9.PwL9AKuVh0yIheBG-bXMdK5X8Q1USzvE2gebYyBgVT0"</span>,<span class="s2">"refreshToken"</span>:<span class="s2">"xmUsVDGtPpaMDqkkZqAwEv2T7n07zFwL31aYddf0WSY="</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Save both the <code class="language-plaintext highlighter-rouge">token</code> and the <code class="language-plaintext highlighter-rouge">refreshToken</code> as variables your terminal as follows as we’ll need these in a bit.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="code"><pre><span class="nv">TOKEN_VALUE</span><span class="o">=</span>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHR ...
+
+<span class="nv">REFRESH_TOKEN</span><span class="o">=</span><span class="nv">xmUsVDGtPpaMDqkkZqAwEv2T7n07zFwL31aYddf0WSY</span><span class="o">=</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">refreshToken</code> will be saved against the user - if you open the <code class="language-plaintext highlighter-rouge">users.json</code> file you should see something like the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="code"><pre><span class="o">{</span>
+  <span class="s2">"Id"</span>: 1,
+  <span class="s2">"Name"</span>: <span class="s2">"admin"</span>,
+  <span class="s2">"Password"</span>: <span class="s2">"password"</span>,
+  <span class="s2">"RefreshToken"</span>: <span class="s2">"xmUsVDGtPpaMDqkkZqAwEv2T7n07zFwL31aYddf0WSY="</span>,
+  <span class="s2">"Groups"</span>: <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"Id"</span>: 1,
+      <span class="s2">"Name"</span>: <span class="s2">"admins"</span>
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"Id"</span>: 2,
+      <span class="s2">"Name"</span>: <span class="s2">"superusers"</span>
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"Id"</span>: 3,
+      <span class="s2">"Name"</span>: <span class="s2">"users"</span>
+    <span class="o">}</span>
+  <span class="o">]</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>You can then run your commands as before like the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>curl http://localhost:5000/api/admin <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_VALUE</span><span class="s2">"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>Which returns the following expected text.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>Only authenticated token based requests from admins receive this message
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>When this no longer works we just request a new token with the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>curl <span class="nt">-X</span> POST http://localhost:5000/api/token/refresh <span class="nt">-H</span> <span class="s2">"Content-Type: application/x-www-form-urlencoded"</span> <span class="nt">-d</span> <span class="s2">"token=</span><span class="nv">$TOKEN_VALUE</span><span class="s2">&amp;refreshToken=</span><span class="nv">$REFRESH_TOKEN</span><span class="s2">"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>This will return json similar to that returned with the login step containing both the <code class="language-plaintext highlighter-rouge">token</code> and <code class="language-plaintext highlighter-rouge">refreshToken</code>.</p>
+
+<p>To revoke the token at any time (if for example, when you wish to logout) run the following.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>curl <span class="nt">-X</span> POST http://localhost:5000/api/token/revoke <span class="nt">-H</span> <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN_VALUE</span><span class="s2">"</span> <span class="nt">-H</span> <span class="s2">"Content-Length: 0"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>There’s now a signup method which allows you to create a new user. Once you’ve done this you can login as show earlier.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+</pre></td><td class="code"><pre>curl <span class="nt">-X</span> POST http://localhost:5000/api/signup <span class="nt">-H</span> <span class="s2">"Content-Type: application/x-www-form-urlencoded"</span> <span class="nt">-d</span> <span class="s2">"Name=test1&amp;Password=password"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<h3 id="other-changes">Other changes</h3>
+
+<p>I’ve created some example projects to keep the code size down for the different scenarios (since that was the whole point of the exercise). Below is the <code class="language-plaintext highlighter-rouge">tree</code> of the folder where they reside which is in the root of the repository.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="nb">.</span>
+└── examples
+    ├── api
+    ├── cookies
+    ├── cookies+api
+    └── cookies+api+policies
+</pre></td></tr></tbody></table></code></pre></figure>
+
+<p>To run all the tests as shown on the home page you probably should use the <code class="language-plaintext highlighter-rouge">cookies+api</code> project. I’ve removed ASP.NET policies from the projects as these aren’t actually necessary. You can use roles which does the same and the code base is now very small. I’ve kept the <code class="language-plaintext highlighter-rouge">cookies+api+policies</code> project for legacy purposes. The <code class="language-plaintext highlighter-rouge">api</code> and <code class="language-plaintext highlighter-rouge">cookies</code> projects are for when you only require one of those authentication types.</p>
+
+<p>I should probably do some proper documentation as the home page is now slightly out of date and the repo is starting to expand a bit but I’ll see what the feedback is like.</p>
+
+<p>Here’s the <a href="https://github.com/matthewblott/simple_aspnet_auth">link</a> to the code on Github.</p>
+
+<p>Enjoy :-)</p>
+
+    </article>
+
+  </main> 
+
+  
+
+    <div id="disqus_thread"></div>
+<script>
+
+  document.addEventListener('DOMContentLoaded', (e) => {
+    var disqus_shortname = 'matthewblott';
+    var dsq = document.createElement('script');
+    dsq.async = true;
+    dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  });
+
+</script>
+
+  
+
+  <footer class="footer">
+  <nav class="footer-nav">
+    <ul class="footer-menu">
+      <li>
+        <a href="/">Home</a>
+      </li>
+    </ul>
+    <ul class="footer-menu">
+      
+      <li>
+        <a href="/about">
+          About
+        </a>
+      </li>
+      
+      <li>
+        <a href="/contact">
+          Contact
+        </a>
+      </li>
+      
+      <li>
+        <a href="/other-stuff">
+          Other Stuff
+        </a>
+      </li>
+      
+    </ul>
+    <ul class="footer-menu">
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path
+              d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zM277.3 415.7c-8.4 1.5-11.5-3.7-11.5-8 0-5.4.2-33 .2-55.3 0-15.6-5.2-25.5-11.3-30.7 37-4.1 76-9.2 76-73.1 0-18.2-6.5-27.3-17.1-39 1.7-4.3 7.4-22-1.7-45-13.9-4.3-45.7 17.9-45.7 17.9-13.2-3.7-27.5-5.6-41.6-5.6-14.1 0-28.4 1.9-41.6 5.6 0 0-31.8-22.2-45.7-17.9-9.1 22.9-3.5 40.6-1.7 45-10.6 11.7-15.6 20.8-15.6 39 0 63.6 37.3 69 74.3 73.1-4.8 4.3-9.1 11.7-10.6 22.3-9.5 4.3-33.8 11.7-48.3-13.9-9.1-15.8-25.5-17.1-25.5-17.1-16.2-.2-1.1 10.2-1.1 10.2 10.8 5 18.4 24.2 18.4 24.2 9.7 29.7 56.1 19.7 56.1 19.7 0 13.9.2 36.5.2 40.6 0 4.3-3 9.5-11.5 8-66-22.1-112.2-84.9-112.2-158.3 0-91.8 70.2-161.5 162-161.5S388 165.6 388 257.4c.1 73.4-44.7 136.3-110.7 158.3zm-98.1-61.1c-1.9.4-3.7-.4-3.9-1.7-.2-1.5 1.1-2.8 3-3.2 1.9-.2 3.7.6 3.9 1.9.3 1.3-1 2.6-3 3zm-9.5-.9c0 1.3-1.5 2.4-3.5 2.4-2.2.2-3.7-.9-3.7-2.4 0-1.3 1.5-2.4 3.5-2.4 1.9-.2 3.7.9 3.7 2.4zm-13.7-1.1c-.4 1.3-2.4 1.9-4.1 1.3-1.9-.4-3.2-1.9-2.8-3.2.4-1.3 2.4-1.9 4.1-1.5 2 .6 3.3 2.1 2.8 3.4zm-12.3-5.4c-.9 1.1-2.8.9-4.3-.6-1.5-1.3-1.9-3.2-.9-4.1.9-1.1 2.8-.9 4.3.6 1.3 1.3 1.8 3.3.9 4.1zm-9.1-9.1c-.9.6-2.6 0-3.7-1.5s-1.1-3.2 0-3.9c1.1-.9 2.8-.2 3.7 1.3 1.1 1.5 1.1 3.3 0 4.1zm-6.5-9.7c-.9.9-2.4.4-3.5-.6-1.1-1.3-1.3-2.8-.4-3.5.9-.9 2.4-.4 3.5.6 1.1 1.3 1.3 2.8.4 3.5zm-6.7-7.4c-.4.9-1.7 1.1-2.8.4-1.3-.6-1.9-1.7-1.5-2.6.4-.6 1.5-.9 2.8-.4 1.3.7 1.9 1.8 1.5 2.6z" />
+          </svg>
+          Github
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path
+              d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-48.9 158.8c.2 2.8.2 5.7.2 8.5 0 86.7-66 186.6-186.6 186.6-37.2 0-71.7-10.8-100.7-29.4 5.3.6 10.4.8 15.8.8 30.7 0 58.9-10.4 81.4-28-28.8-.6-53-19.5-61.3-45.5 10.1 1.5 19.2 1.5 29.6-1.2-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3a65.447 65.447 0 0 1-29.2-54.6c0-12.2 3.2-23.4 8.9-33.1 32.3 39.8 80.8 65.8 135.2 68.6-9.3-44.5 24-80.6 64-80.6 18.9 0 35.9 7.9 47.9 20.7 14.8-2.8 29-8.3 41.6-15.8-4.9 15.2-15.2 28-28.8 36.1 13.2-1.4 26-5.1 37.8-10.2-8.9 13.1-20.1 24.7-32.9 34z" />
+          </svg>
+          Twitter</a>
+      </li>
+    </ul>
+    <ul class="footer-menu">
+      <li>
+        <a href="https://www.facebook.com/matthew.blott" target="_blank" rel="noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path
+              d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z" />
+          </svg>
+          Facebook</a>
+      </li>
+      <li>
+        <a href="https://www.youtube.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <path
+              d="M186.8 202.1l95.2 54.1-95.2 54.1V202.1zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-42 176.3s0-59.6-7.6-88.2c-4.2-15.8-16.5-28.2-32.2-32.4C337.9 128 224 128 224 128s-113.9 0-142.2 7.7c-15.7 4.2-28 16.6-32.2 32.4-7.6 28.5-7.6 88.2-7.6 88.2s0 59.6 7.6 88.2c4.2 15.8 16.5 27.7 32.2 31.9C110.1 384 224 384 224 384s113.9 0 142.2-7.7c15.7-4.2 28-16.1 32.2-31.9 7.6-28.5 7.6-88.1 7.6-88.1z" />
+          </svg>
+          YouTube</a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+  <script src="/lib/cookieconsent/js/cookieconsent.min.js"></script>
+
+</body>
+</html>

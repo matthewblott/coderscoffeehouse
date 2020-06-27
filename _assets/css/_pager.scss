@@ -4,15 +4,20 @@
 }
 
 .pager__item {
-  color: var(--text-secondary);
-  background-color: var(--bg-primary);
+  // color: var(--text-secondary);
+  // background-color: var(--bg-primary);
   border: solid var(--border-secondary) 1px;
   border-right: none;
   padding: 5px;
+
+  // background-color: white;
+  color: var(--text-primary);
+
 }
 
 .pager__item:hover {
-  color: var(--text-secondary-selected)
+  color: var(--text-secondary-selected);
+  background-color: var(--border-secondary);
 }
 
 .pager__item--selected {

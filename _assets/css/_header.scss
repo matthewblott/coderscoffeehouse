@@ -4,6 +4,7 @@
   padding-left: 5px;
   padding-top: 5px;
   padding-bottom: 5px;
+  font-size: 1.2rem;
 }
 .header__toggler {
   display: none;
@@ -57,7 +58,7 @@
 }
 
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: $min-width-md) {
 
   .header__toggler {
     display: none;
