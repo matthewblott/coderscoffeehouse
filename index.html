@@ -8,7 +8,8 @@ pagination:
 <ul>
   {% for post in paginator.posts %}
   <li>
-    <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+    <h2>
+      <a href="{{ post.url }}">{{ post.title }}</a></h2>
     {{ post.excerpt }}
   </li>
   {% endfor %}
@@ -16,20 +17,15 @@ pagination:
 
 {% assign path_base = paginator.first_page_path | replace: "index.html", "" %}
 
-<nav>
+{% if paginator.total_pages > 1 %}
 
-  <ul class="pager">
-
-    <!-- pager__item pager__item--selected -->
-
-    {%
-      assign total_my = paginator.total_pages
-    %}
-
-    {% for page in (1..paginator.total_pages) %}
-
+  <nav>
+    <ul class="pager">
       <li class="pager__item">
+        Pages
+      </li>
 
+      {% for page in (1..paginator.total_pages) %}
         {% 
           assign path_my = site.paginate_path 
           | replace: ":num", page 
@@ -37,22 +33,13 @@ pagination:
           | prepend: path_base 
         %}
 
-        {% if page == 1 %}
-          <a href="{{ path_base }}">First</a>
-        {% endif %}
-
-        {% if page > 1 and page < total_my %}
+        <li class="pager__item">
           <a href="{{ path_my }}">{{ page }}</a>
-        {% endif %}
+        </li>
 
-        {% if page == total_my %}
-          <a href="{{ path_my }}">Last</a>
-        {% endif %}
+      {% endfor %}
 
-      </li>
+    </ul>
+  </nav>
 
-    {% endfor %}
-
-  </ul>
-
-</nav>
+{% endif %}
