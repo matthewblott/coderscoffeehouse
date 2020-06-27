@@ -1,20 +1,16 @@
-.post__title {
+// .post__title {
+// }
+// .post__date {
+// }
+// .post__meta {
+// }
+// .post {
+// }
 
-}
-
-.post__date {
-
-}
-
-.post__meta {
-  
-}
-
-.post {
-  // background-color: white;
-}
-
-.post__content {
+.post__content ul {
+  list-style-type: disc;
+  margin-left: 25px;
+  padding-bottom: 20px;
 }
 
 td.gl {
@@ -25,8 +21,8 @@ td.gl {
   padding-bottom: 15px;
 }
 
-p {
-  padding-bottom: 5px;
+.post__content p {
+  padding-bottom: 20px;
 }
 
 .code, .pre, .nb {

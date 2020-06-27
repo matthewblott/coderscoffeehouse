@@ -16,8 +16,14 @@
 }
 
 .pager__item:hover {
-  color: var(--text-secondary-selected);
   background-color: var(--border-secondary);
+  color: var(--text-secondary-selected);
+}
+
+
+.pager__item a:hover {
+  background-color: var(--border-secondary);
+  color: var(--text-secondary-selected);
 }
 
 .pager__item--selected {
@@ -26,10 +32,6 @@
 
 .pager__item:first-of-type {
   border-radius: 5px 0 0 5px;
-}
-
-.pager__item:hover {
-  color: var(--text-secondary-selected);
 }
 
 .pager__item:last-of-type {
