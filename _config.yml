@@ -1,11 +1,12 @@
 title: Coder's Coffee House
-email: your-email@example.com
+email: matthew.blott@gmail.com
 description: >- # this means to ignore newlines until 'baseurl:''
   Write an awesome description for your new site here.
 baseurl: ''
 url: ''
-twitter_username: jekyllrb
-github_username:  jekyll
+twitter_username: matthewblott
+github_username:  matthewblott
+google_analytics: UA-77648562-1
 
 defaults:
   -

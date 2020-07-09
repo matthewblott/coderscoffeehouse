@@ -19,6 +19,11 @@
   display: flex;
 }
 
+.header-nav__left, .header-nav__center {
+  padding-top: 6px;
+  padding-bottom: 7px;
+}
+
 .header-nav__expander {
   flex-grow: 1;
 }
