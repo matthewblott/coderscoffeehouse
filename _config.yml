@@ -1,7 +1,11 @@
 title: Coder's Coffee House
 email: matthew.blott@gmail.com
+<<<<<<< HEAD
 description: >- # this means to ignore newlines until 'baseurl:''
   Write an awesome description for your new site here.
+=======
+description: Tech blog site and other things that interest me.
+>>>>>>> dev
 baseurl: ''
 url: ''
 twitter_username: matthewblott
@@ -11,11 +15,16 @@ google_analytics: UA-77648562-1
 defaults:
   -
     scope:
+<<<<<<< HEAD
       path: "other" # an empty string here means all files in the project
+=======
+      path: "other"
+>>>>>>> dev
       type: "posts"
     values:
       layout: "default"
 
+<<<<<<< HEAD
 gems: [jekyll-assets, jekyll-paginate-v2, jekyll-seo-tag]
 
 plugins:
@@ -23,6 +32,8 @@ plugins:
   - jekyll-paginate-v2
   - jekyll-seo-tag
 
+=======
+>>>>>>> dev
 pagination:
   enabled: true
   per_page: 5
@@ -31,7 +42,10 @@ pagination:
   limit: 0
   sort_field: 'date'
   sort_reverse: true
+<<<<<<< HEAD
   # trail: 
   #   before: 2
   #   after: 2
   # indexpage: 'index'
+=======
+>>>>>>> dev

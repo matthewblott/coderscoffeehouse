@@ -1,5 +1,9 @@
 ---
 layout: default
+<<<<<<< HEAD
+=======
+title: ''
+>>>>>>> dev
 pagination: 
   enabled: true
   category: tech
@@ -19,12 +23,20 @@ pagination:
 
 {% if paginator.total_pages > 1 %}
 
+<<<<<<< HEAD
   <nav>
     <ul class="pager">
       <li class="pager__item">
         Pages
       </li>
       <li class="pager__item">
+=======
+    <ul class="pager">
+      <li>
+        Pages
+      </li>
+      <li>
+>>>>>>> dev
         <a href="{{ path_base }}">1</a>
       </li>
 
@@ -36,13 +48,20 @@ pagination:
           | prepend: path_base 
         %}
 
+<<<<<<< HEAD
         <li class="pager__item">
+=======
+        <li>
+>>>>>>> dev
           <a href="{{ path_my }}">{{ page }}</a>
         </li>
 
       {% endfor %}
 
     </ul>
+<<<<<<< HEAD
   </nav>
+=======
+>>>>>>> dev
 
 {% endif %}

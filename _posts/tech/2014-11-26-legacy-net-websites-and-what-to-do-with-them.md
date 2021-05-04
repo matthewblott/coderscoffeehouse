@@ -145,11 +145,19 @@ End Class
 
 So now when we navigate to an aspx page and enter the details in the login form we have Web API working alongside Web Forms.
 
+<<<<<<< HEAD:_posts/tech/2014-11-26-legacy-net-websites-and-what-to-do-with-them.md
 {% asset posts/20141126/login-form.jpg %}
         
 And we can debug just as we would if we were using a VS Web Project rather than a more simple website.
 
 {% asset posts/20141126/debugging.jpg %}
+=======
+{ % asset posts/20141126/login-form.jpg % }
+        
+And we can debug just as we would if we were using a VS Web Project rather than a more simple website.
+
+{ % asset posts/20141126/debugging.jpg % }
+>>>>>>> dev:_posts/2014-11-26-legacy-net-websites-and-what-to-do-with-them.md
 
 This is a really basic example and is missing a few things (session state for example) and I usually code in C# but copied this code from a website I currently support. It is possible to have both C# and VB.NET running side by side (another reason I didn't want to convert the website to a project) but that's a post for another day.
 

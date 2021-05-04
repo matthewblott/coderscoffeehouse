@@ -5,7 +5,11 @@ date:   2018-07-30 00:00:00
 categories: tech
 ---
 
+<<<<<<< HEAD
 A few months ago I put together a simple [starter project]({% post_url 2017-09-05-simple-aspnet-auth %}) for ASP.NET authorisation without any dependencies or configuration setup requirements. The motivation was my frustration with the complexity of the tutorials for something that should really be quite simple. I did leave the token based authorisation only partially complete however - there was no refresh token included which was an oversight on my part. Anyhow, I've gone ahead and done this plus a few other changes.
+=======
+A few months ago I put together a simple [starter project]({ % post_url 2017-09-05-simple-aspnet-auth % }) for ASP.NET authorisation without any dependencies or configuration setup requirements. The motivation was my frustration with the complexity of the tutorials for something that should really be quite simple. I did leave the token based authorisation only partially complete however - there was no refresh token included which was an oversight on my part. Anyhow, I've gone ahead and done this plus a few other changes.
+>>>>>>> dev
 
 ## Token Based Authorisation
 

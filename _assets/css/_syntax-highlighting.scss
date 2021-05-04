@@ -67,7 +67,11 @@
 }
 
 /* Make line numbers unselectable: excludes line numbers from copy-paste user ops */
+<<<<<<< HEAD
 .highlight .lineno {-webkit-user-select: none;-moz-user-select: none; -o-user-select: none;} 
+=======
+.highlight .lineno {user-select: none; -webkit-user-select: none;-moz-user-select: none; -o-user-select: none;} 
+>>>>>>> dev
 .lineno::-moz-selection {background-color: transparent;} /* Mozilla specific */
 .lineno::selection {background-color: transparent;} /* Other major browsers */
 
