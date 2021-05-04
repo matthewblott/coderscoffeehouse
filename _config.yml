@@ -1,36 +1,25 @@
-# Site settings
 title: Coder's Coffee House
 email: matthew.blott@gmail.com
-description: > # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://coderscoffeehouse.com" # the base hostname & protocol for your site
+description: Tech blog site and other things that interest me.
+baseurl: ''
+url: ''
 twitter_username: matthewblott
 github_username:  matthewblott
+google_analytics: UA-77648562-1
 
-excerpt_separator: ""   # Workaround for http://blog.slaks.net/2013-08-09/jekyll-tag-was-never-closed
-# highlighter: pygments
+defaults:
+  -
+    scope:
+      path: "other"
+      type: "posts"
+    values:
+      layout: "default"
 
-# Build settings
-gems: ['jekyll-assets', 'uglifier', 'jekyll-paginate']
-# markdown: kramdown
-# highlighter: rouge
-
-# kramdown:
-#   input: GFM # for use with Github
-#   syntax_highlighter: rouge
-
-assets:
-  compress:
-    css:  sass
-    js:   uglifier
-
-#  sources:
-#    - _assets/images
-#    - _assets/javascripts
-#    - _assets/stylesheets
-
-paginate: 5
-paginate_path: "/pages/:num/"
+pagination:
+  enabled: true
+  per_page: 5
+  permalink: '/page/:num/'
+  title: ':title - page :num'
+  limit: 0
+  sort_field: 'date'
+  sort_reverse: true

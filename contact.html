@@ -1,35 +1,27 @@
 ---
-layout: page
+layout: default
 title: Contact
 permalink: /contact/
-footer_fixed: true
 ---
 
-<form class="form-horizontal" action="//formspree.io/matthew.blott@gmail.com" method="post">
-	<input name="_gotcha" style="display:none" />
-    <input type="hidden" name="_next" value="{{ 'thanks' | prepend: site.baseurl }}" />
-    <input type="hidden" name="_subject" value="New submission!" />
-
-  <div class="form-group">
-	  <div class="col-sm-offset-2 col-sm-8">
-	    <label class="sr-only" for="name">name</label>
-		    <input name="name" placeholder="name" id="name" class="form-control" required>
-	    </div>
+<form action="https://formspree.io/matthew.blott@gmail.com" method="post">
+  <input name="_gotcha" style="display:none">
+  <input type="hidden" name="_next" value="/thanks">
+  <input type="hidden" name="_subject" value="New submission!">
+  <div>
+    <label aria-label="name" for="name"></label>
+    <input name="name" placeholder="name" id="name" required>
   </div>
-  <div class="form-group">
-  	<div class="col-sm-offset-2 col-sm-8">
-	    <label class="sr-only" for="email">email</label>
-	    <input type="email" name="_replyto" placeholder="email" id="email" class="form-control margin-top-lg" required>
-    </div>
-	</div>
-
-  <div class="form-group">
-  <div class="col-sm-offset-2 col-sm-8">
-    <label class="sr-only" for="message">message</label>
-	<textarea rows="5" name="message" placeholder="message" id="message" class="form-control margin-top-lg" required></textarea>
+  <div>
+    <label aria-label="email" for="email"></label>
+    <input type="email" name="_replyto" placeholder="email" id="email" required>
   </div>
-	</div>
-  <div class="col-sm-offset-2 col-sm-8">
-	<button type="submit" class="btn btn-success-outline margin-top-lg">Send</button>
-</div>
-	</form>
+  <div>
+    <label aria-label="message" for="message"></label>
+    <textarea rows="5" name="message" placeholder="message" id="message" required></textarea>
+  </div>
+  <div>
+    <button class="button">Send</button>
+  </div>
+
+</form>
