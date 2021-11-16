@@ -155,7 +155,17 @@ scp user@server:filename /some/local/path
 # copy directory
 scp -Cr user@server:/path/to/dir /some/local/path
 
+# zip
+tar -cvzf folder.tar.gz folder
+
+# unzip
+tar -xvzf folder.tar.gz
+
+
 {% endhighlight %}
+
+
+
 
 
 ### FTP
