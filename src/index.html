@@ -1,0 +1,26 @@
+---
+layout: base.html
+title: Home
+pagination:
+  data: collections.tech
+  size: 5
+  reverse: true
+  alias: posts
+---
+
+<ul>
+  {%- for post in posts -%}
+  <li>
+    <h3>{{ post.data.title }}</h3><h4>{{ post.data.date | toUTCString }}</h4>
+    <p>
+      {{ post.templateContent | stripHtml }} <a href="{{ post.url }}">More ...</a>
+    </p>
+  </li>
+  {%- endfor -%}
+</ul>
+{% if pagination.href.previous %}
+<a href="{{pagination.href.previous}}">Newer Posts</a>
+{% endif %}
+{% if pagination.href.next %}
+<a href="{{pagination.href.next}}">Older Posts</a>
+{% endif %}

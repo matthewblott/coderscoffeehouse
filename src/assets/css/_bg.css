@@ -1,0 +1,53 @@
+.bg {
+
+  background-repeat: no-repeat;
+}
+
+@media only screen and (max-width: 320px) {
+  .bg {
+    background-image: url('/assets/img/hero/320x133.jpg');
+  }
+}
+
+/* xs */
+@media only screen and (min-width: 384px) and (max-width: 640px) {
+  .bg {
+    background-image: url('/assets/img/hero/640x265.jpg');
+  }
+}
+
+/* sm */
+@media only screen and (min-width: 640px) and (max-width: 768px) {
+  .bg {
+    background-image: url('/assets/img/hero/800x332.jpg');
+  }
+
+}
+
+/* md */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .bg {
+    background-image: url('/assets/img/hero/1024x425.jpg');
+  }
+}
+
+/* lg */
+@media only screen and (min-width: 1024px) and (max-width: 1280px) {
+  .bg {
+    background-image: url('/assets/img/hero/1280x531.jpg');
+  }
+}
+
+/* xl */
+@media only screen and (min-width: 1280px) {
+  .bg {
+    background-image: url('/assets/img/hero/1920x796.jpg');
+    background-position: left center;
+  }
+}
+
+/* 2xl 1536 */
+
+.hero {
+  height: 400px;
+}
