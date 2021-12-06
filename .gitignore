@@ -1,6 +1,8 @@
-.asset-cache
-.sass-cache
+# macOS
 .DS_Store
-.jekyll-cache
-push.sh
-_site
+
+# Node
+node_modules
+
+# pnpm
+pnpm-lock.yaml
