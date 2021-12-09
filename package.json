@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "build": "postcss ./src/assets/css/main.css -o ./public/dist/bundle.css",
-    "watch": "postcss ./src/assets/css/main.css -o ./public/dist/bundle.css --watch",
-    "dev": "pnpm eleventy --serve & pnpm watch"
+    "build:css": "postcss ./src/assets/css/main.css -o ../www/dist/bundle.css",
+    "watch:css": "postcss ./src/assets/css/main.css -o ../www/dist/bundle.css --watch",
+    "dev": "pnpm eleventy --serve & pnpm watch:css",
+    "prod": "pnpm eleventy --serve & pnpm build:css"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",
