@@ -1,0 +1,3 @@
+[submodule "src/other-stuff"]
+	path = src/other-stuff
+	url = https://github.com/matthewblott/blog-other-stuff
