@@ -1,3 +1,6 @@
 [submodule "src/other-stuff"]
 	path = src/other-stuff
 	url = https://github.com/matthewblott/blog-other-stuff
+[submodule "src/tech"]
+	path = src/tech
+	url = https://github.com/matthewblott/blog-tech
