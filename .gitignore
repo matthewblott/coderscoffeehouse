@@ -7,9 +7,6 @@ node_modules
 # pnpm
 pnpm-lock.yaml
 
-# 11ty
-public
-
 # posts
 src/tech
 src/other-stuff
