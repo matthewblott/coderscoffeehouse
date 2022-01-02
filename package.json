@@ -4,7 +4,9 @@
     "watch:css": "postcss ./src/assets/css/main.css -o ../www/dist/bundle.css --watch",
     "dev": "pnpm eleventy --serve & pnpm watch:css",
     "clean": "rm -rf ../www && mkdir -p ../www",
-    "build": "pnpm clean && pnpm build:css && pnpm eleventy"
+    "build": "pnpm build:css && pnpm eleventy",
+    "package": "cd .. && tar -czvf www.tar.gz www",
+    "package:all": "pnpm clean && pnpm build && pnpm package"
   },
   "devDependencies": {
     "@11ty/eleventy": "^0.12.1",

@@ -10,3 +10,6 @@ pnpm-lock.yaml
 # posts
 src/tech
 src/other-stuff
+
+# other
+.deployer.sh
