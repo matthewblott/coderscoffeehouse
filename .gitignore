@@ -12,4 +12,4 @@ src/tech
 src/other-stuff
 
 # other
-.deployer.sh
+.deploy.sh
