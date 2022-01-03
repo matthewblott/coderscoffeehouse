@@ -11,6 +11,6 @@ pnpm-lock.yaml
 src/tech
 src/other-stuff
 
-# other
+# ignore deployment files
 .deploy.sh
 www
