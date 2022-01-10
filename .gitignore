@@ -12,5 +12,5 @@ src/tech
 src/other-stuff
 
 # ignore deployment files
-.deploy.sh
+_deploy.sh
 www
