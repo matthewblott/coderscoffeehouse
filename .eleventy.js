@@ -10,6 +10,9 @@ module.exports = ((eleventyConfig) => {
 
   eleventyConfig.addPassthroughCopy("./src/assets/img");
 
+  // This is the path to another git repo but the image files need to be included
+  eleventyConfig.addPassthroughCopy({ "./src/tech/img": "assets/img/tech" });
+
   eleventyConfig.addPassthroughCopy("./src/assets/js");
 
   eleventyConfig.addWatchTarget("./src/assets/img");
