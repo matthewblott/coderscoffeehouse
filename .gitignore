@@ -15,3 +15,6 @@ src/other-stuff
 _deploy.sh
 www
 www.tar.gz
+
+# ignore symlink for the 'tech' repo
+src/assets/img/tech
