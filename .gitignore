@@ -14,3 +14,4 @@ src/other-stuff
 # ignore deployment files
 _deploy.sh
 www
+www.tar.gz
