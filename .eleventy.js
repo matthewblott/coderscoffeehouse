@@ -11,7 +11,6 @@ module.exports = ((eleventyConfig) => {
   // Cannot copy the parent img by itself because it contains
   // the symlinked 'tech' folder which requires a hard copy (see below)
   eleventyConfig.addPassthroughCopy("./src/assets/img/hero");
-  eleventyConfig.addPassthroughCopy("./src/assets/img/posts");
 
   // This is the path to another git repo but the image files need to be included
   eleventyConfig.addPassthroughCopy({ "./src/tech/img": "assets/img/tech" });
