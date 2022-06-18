@@ -8,10 +8,14 @@ module.exports = ((eleventyConfig) => {
   // No passthrough required as this file is created with postcss
   eleventyConfig.addWatchTarget("./public/dist/bundle.css");
 
-  eleventyConfig.addPassthroughCopy("./src/assets/img");
+  // Cannot copy the parent img by itself because it contains
+  // the symlinked 'tech' folder which requires a hard copy (see below)
+  eleventyConfig.addPassthroughCopy("./src/assets/img/hero");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/posts");
 
   // This is the path to another git repo but the image files need to be included
   eleventyConfig.addPassthroughCopy({ "./src/tech/img": "assets/img/tech" });
+  eleventyConfig.addPassthroughCopy({ "./src/tech/old": "assets/img/posts" });
 
   eleventyConfig.addPassthroughCopy("./src/assets/js");
 
