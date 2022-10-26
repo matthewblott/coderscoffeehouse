@@ -12,6 +12,18 @@ module.exports = ((eleventyConfig) => {
   // the symlinked 'tech' folder which requires a hard copy (see below)
   eleventyConfig.addPassthroughCopy("./src/assets/img/hero");
 
+  eleventyConfig.addPassthroughCopy("./src/assets/img/angle-right.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/coffee.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/facebook.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/github.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/hamburger.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/hero.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/macbook-1.jpg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/macbook-2.jpg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/search.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/twitter.svg");
+  eleventyConfig.addPassthroughCopy("./src/assets/img/youtube.svg");
+
   // This is the path to another git repo but the image files need to be included
   eleventyConfig.addPassthroughCopy({ "./src/tech/img": "assets/img/tech" });
   eleventyConfig.addPassthroughCopy({ "./src/tech/old": "assets/img/posts" });
