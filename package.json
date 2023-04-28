@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "build:css": "postcss ./src/assets/css/main.css -o ./www/dist/bundle.css",
-    "watch:css": "postcss ./src/assets/css/main.css -o ./www/dist/bundle.css --watch",
+    "build:css": "postcss ./src/assets/css/main.css -o ./www/bundle/bundle.css",
+    "watch:css": "postcss ./src/assets/css/main.css -o ./www/bundle/bundle.css --watch",
     "dev": "pnpm eleventy --serve & pnpm watch:css",
     "clean": "rm -rf ./www && mkdir -p ./www",
     "build": "pnpm build:css && pnpm eleventy",

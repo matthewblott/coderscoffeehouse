@@ -1,12 +1,11 @@
 const cheerio = require("cheerio");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 
-module.exports = ((eleventyConfig) => {
-
+module.exports = (eleventyConfig) => {
   eleventyConfig.setUseGitIgnore(false);
 
   // No passthrough required as this file is created with postcss
-  eleventyConfig.addWatchTarget("./public/dist/bundle.css");
+  eleventyConfig.addWatchTarget("./public/bundle/bundle.css");
 
   // Cannot copy the parent img by itself because it contains
   // the symlinked 'tech' folder which requires a hard copy (see below)
@@ -32,18 +31,19 @@ module.exports = ((eleventyConfig) => {
 
   eleventyConfig.addWatchTarget("./src/assets/img");
 
-  eleventyConfig.addFilter("toUTCString", (value) => value.toISOString().substring(0, 10));
+  eleventyConfig.addFilter("toUTCString", (value) =>
+    value.toISOString().substring(0, 10)
+  );
 
   eleventyConfig.addPlugin(syntaxHighlight);
 
   // todo: strip templateContent to the first line for the home page
   eleventyConfig.addFilter("stripHtml", (value) => {
-
     const $ = cheerio.load(value);
 
     let text = $.text();
 
-    return text.substring(0, 150) + ' ...';
+    return text.substring(0, 150) + " ...";
   });
 
   return {
@@ -53,5 +53,4 @@ module.exports = ((eleventyConfig) => {
       output: "www",
     },
   };
-
-});
+};
