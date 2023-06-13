@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const UpgradeHelper = require("@11ty/eleventy-upgrade-help");
+// const UpgradeHelper = require("@11ty/eleventy-upgrade-help");
 const xmlFiltersPlugin = require("eleventy-xml-plugin");
 
 module.exports = (eleventyConfig) => {
@@ -52,7 +52,7 @@ module.exports = (eleventyConfig) => {
 
   eleventyConfig.addPlugin(xmlFiltersPlugin);
 
-  eleventyConfig.addPlugin(UpgradeHelper);
+  // eleventyConfig.addPlugin(UpgradeHelper);
 
   return {
     passthroughFileCopy: true,
