@@ -1,5 +1,7 @@
 const cheerio = require("cheerio");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const UpgradeHelper = require("@11ty/eleventy-upgrade-help");
+const xmlFiltersPlugin = require("eleventy-xml-plugin");
 
 module.exports = (eleventyConfig) => {
   eleventyConfig.setUseGitIgnore(false);
@@ -35,16 +37,22 @@ module.exports = (eleventyConfig) => {
     value.toISOString().substring(0, 10)
   );
 
+  eleventyConfig.addFilter("escapeBackslash", (value) =>
+    value.replaceAll("\\", "\\\\")
+  );
+
   eleventyConfig.addPlugin(syntaxHighlight);
 
-  // todo: strip templateContent to the first line for the home page
   eleventyConfig.addFilter("stripHtml", (value) => {
     const $ = cheerio.load(value);
-
     let text = $.text();
 
     return text.substring(0, 150) + " ...";
   });
+
+  eleventyConfig.addPlugin(xmlFiltersPlugin);
+
+  eleventyConfig.addPlugin(UpgradeHelper);
 
   return {
     passthroughFileCopy: true,

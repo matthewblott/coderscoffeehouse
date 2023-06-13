@@ -1,7 +1,4 @@
 ---
-# "content": "{{post.templateContent | strip_html | strip_newlines | escape | remove: "\"" }}"
-# "content": "{{post.templateContent | strip_html | strip_newlines | escapeBackslash }}"
-
 # xml_escape - Escape some text for use in XML.
 # strip_html - Removes any HTML tags from a string.
 # strip_newlines - Removes any newline characters (line breaks) from a string.
@@ -16,7 +13,7 @@ permalink: index.json
     "url": " {{ post.url | xml_escape }}",
     "date": " {{ post.data.date  }}",
     "date2": " {{ post.data.date | toUTCString }}",
-    "content": "{{post.templateContent | strip_html | strip_newlines | escapeBackslash }}",
+    "content": "{{post.templateContent | strip_html | strip_newlines | escape | remove: "\"}}",
     "tags": "
       {%- for tag in post.data.tags -%}
        "{{ tag }}"
@@ -32,7 +29,7 @@ permalink: index.json
     "url": " {{ post.url | xml_escape }}",
     "date": " {{ post.data.date }}",
     "date2": " {{ post.data.date | toUTCString }}",
-    "content": "{{post.templateContent | strip_html | strip_newlines | escapeBackslash }}",
+    "content": "{{post.templateContent | strip_html | strip_newlines | escape | remove: "\"}}",
     "tags": "
       {%- for tag in post.data.tags -%}
         "{{ tag }}"

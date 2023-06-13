@@ -4,20 +4,22 @@ title: My Rad Blog
 
 <!DOCTYPE html>
 <html lang="en">
-{% include head.html %}
-<body class="h-screen text-gray-900 bg-gray-100 flex flex-col">
-{%- include header.html %}
+{% include "head.html" %}
 
-<main class="flex-grow p-2 w-[calc(100vh+20)]">
-  <div class="w-full mx-auto p-2">
-    <div class="flex justify-center">
-      <article class="prose lg:prose-xl w-full">
-        <h1 class="text-left">{{ title }}</h1>
-        {{ content | safe }}
+<body class="h-screen text-gray-900 bg-gray-100 flex flex-col">
+  {%- include "header.html" %}
+
+  <main class="flex-grow p-2 w-[calc(100vh+20)]">
+    <div class="w-full mx-auto p-2">
+      <div class="flex justify-center">
+        <article class="prose lg:prose-xl w-full">
+          <h1 class="text-left">{{ title }}</h1>
+          {{ content }}
       </div>
-    </article>
-  </div>
-</main>
-{% include footer.html %}
+      </article>
+    </div>
+  </main>
+  {% include "footer.html" %}
 </body>
+
 </html>
