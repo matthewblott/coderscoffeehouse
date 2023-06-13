@@ -1,12 +1,12 @@
-@import '_tw';
-@import '_bg';
+@import "_tw";
+@import "_bg";
 
 .prose code::before {
-  content: '';
+  content: "";
   margin-left: 2px;
 }
 .prose code::after {
-  content: '';
+  content: "";
   margin-right: 2px;
 }
 
