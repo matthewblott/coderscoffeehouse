@@ -16,10 +16,10 @@ permalink: index.json
     "url": " {{ post.url | xml_escape }}",
     "date": " {{ post.data.date  }}",
     "date2": " {{ post.data.date | toUTCString }}",
-    "content": "{{post.templateContent | strip_html | strip_newlines | escapeBackslash }}",
+    "content": "{{post.templateContent | strip_html | strip_newlines | escape | escapeBackslash }}",
     "tags": "
       {%- for tag in post.data.tags -%}
-       "{{ tag }}"
+       {{ tag }}
       {%- unless forloop.last %}
         ,
       {% endunless -%}
@@ -32,14 +32,14 @@ permalink: index.json
     "url": " {{ post.url | xml_escape }}",
     "date": " {{ post.data.date }}",
     "date2": " {{ post.data.date | toUTCString }}",
-    "content": "{{post.templateContent | strip_html | strip_newlines | escapeBackslash }}",
+    "content": "{{post.templateContent | strip_html | strip_newlines | escape | escapeBackslash }}",
     "tags": "
       {%- for tag in post.data.tags -%}
-        "{{ tag }}"
+        {{ tag }}
       {%- unless forloop.last %}
         ,
       {% endunless -%}
-    {%- endfor %}
+    {%- endfor %}"
   }
   {%- unless forloop.last -%}
     ,
