@@ -15,7 +15,7 @@ module.exports = (eleventyConfig) => {
     "./src/tech/assets/img": "assets/img",
   });
 
-  // eleventyConfig.addWatchTarget("./src");
+  eleventyConfig.addWatchTarget("./src");
 
   eleventyConfig.addFilter("toUTCString", (value) =>
     value.toISOString().substring(0, 10)
