@@ -1,8 +1,8 @@
-const cheerio = require("cheerio");
-const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const xmlFiltersPlugin = require("eleventy-xml-plugin");
+import * as cheerio from 'cheerio'
+import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
+import xmlFiltersPlugin from "eleventy-xml-plugin";
 
-module.exports = (eleventyConfig) => {
+export default function (eleventyConfig) {
   eleventyConfig.setUseGitIgnore(false);
 
   // No passthrough required as this file is created with postcss

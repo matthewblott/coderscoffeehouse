@@ -1,7 +1,7 @@
-const forms = require("@tailwindcss/forms");
-const typography = require("@tailwindcss/typography");
+import forms from "@tailwindcss/forms";
+import typography from "@tailwindcss/typography";
 
-module.exports = {
+export default {
   mode: "jit",
   purge: ["./src/**/*.html"],
   darkMode: false, // or 'media' or 'class'

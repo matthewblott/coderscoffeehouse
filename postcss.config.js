@@ -1,8 +1,8 @@
-const tailwindcss = require('tailwindcss')
-const importer = require('postcss-import')
-const cssnano = require('cssnano')
+import tailwindcss from 'tailwindcss'
+import importer from 'postcss-import'
+import cssnano from 'cssnano'
 
-module.exports = {
+export default {
   plugins: [
     importer,
     tailwindcss({ config: './tailwind.config.js' }),
