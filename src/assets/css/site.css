@@ -1,0 +1,38 @@
+@import url('reset.css');
+@import url('layout.css');
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    color: grey;
+    cursor: pointer;
+  }
+}
+
+em {
+  color: var(--accent-color);
+}
+
+.danger {
+  color: var(--danger-colour);
+}
+
+input {
+  border: 0.05rem solid #F59E0B;
+}
+
+input:focus, textarea:focus {
+  background-color: #FFF9C4;
+  outline: none; 
+}

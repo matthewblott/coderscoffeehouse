@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include "./head.html" %}
+<body>
+  {%- include "./header.html" %}
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>{{ title }}</h1> 
+      {{ content }}
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script>
+
+  {%- include "./footer.html" %}
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  {% if meta.env == 'development' %}
+  <script src="/assets/js/main.js"></script>
+  {% else %}
+  <script src="/assets/js/main.min.js"></script>
+  {% endif %}
+
+</body>
+</html>

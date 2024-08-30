@@ -1,33 +1,22 @@
 {
-  "name": "v1",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "build:css": "postcss ./src/assets/css/main.css -o ./www/bundle/bundle.css",
-    "watch:css": "postcss ./src/assets/css/main.css -o ./www/bundle/bundle.css --watch",
-    "dev": "pnpm eleventy --serve & pnpm watch:css",
-    "build": "pnpm build:css && pnpm eleventy"
+    "build": "pnpm build:css && pnpm build:js && pnpm build:site",
+    "build:site": "rm -rf ./www && pnpm eleventy --output=./www",
+    "build:css": "pnpm lightningcss --minify ./src/assets/css/site.css --output-file ./src/assets/css/site.min.css",
+    "build:js": "pnpm terser --compress --output ./src/assets/js/main.min.js ./src/assets/js/main.js",
+    "build:index": "pnpm pagefind --site ./www",
+    "dev": "NODE_ENV=development pnpm eleventy --serve"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@11ty/eleventy": "^3.0.0-beta.1",
+  "devDependencies": {
+    "@11ty/eleventy": "3.0.0-beta.1",
+    "@11ty/eleventy-img": "^5.0.0-beta.10",
     "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tailwindcss/typography": "^0.5.14",
-    "autoprefixer": "^10.4.20",
     "cheerio": "^1.0.0",
-    "cssnano": "^7.0.5",
-    "eleventy-xml-plugin": "^0.1.0",
-    "fast-xml-parser": "^4.4.1",
-    "modern-normalize": "^3.0.0",
-    "postcss": "^8.4.41",
-    "postcss-cli": "^11.0.0",
-    "postcss-import": "^16.1.0",
-    "tailwindcss": "^3.4.10",
-    "tailwindcss-pseudo-selectors": "^2.0.0"
+    "lightningcss-cli": "^1.26.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-attrs": "4.2.0",
+    "pagefind": "^1.1.0",
+    "terser": "^5.31.6"
   }
 }

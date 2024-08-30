@@ -1,27 +1,29 @@
 ---
-layout: base.html
-title: Coder's Coffee House
+layout: layouts/base.html
+title: Coder's Coffee House 
 pagination:
   data: collections.tech
-  size: 5
   reverse: true
-  alias: posts
+  size: 5
+  alias: posts 
 ---
 
 <ul>
-  {%- for post in posts -%}
+{%- for post in posts -%}
   <li>
-    <h3>{{ post.data.title }}</h3>
-    <h4>{{ post.data.date | toUTCString }}</h4>
+    <h2>{{ post.data.title }}</h2>
+    <h3>{{ post.data.date | toUTCString }}</h3>
     <p>
-      {{ post.templateContent | stripHtml}}
-      <a href="{{ post.url }}">More ...</a>
+      {{ post.templateContent | stripHtml }}
+      <a href="{{ post.url }}"><em> More</em></a>
     </p>
   </li>
-  {%- endfor -%}
+{%- endfor -%}
 </ul>
+
+{% if pagination.href.next %}
+<a href="{{pagination.href.next}}">Older Posts</a>
+{% endif %}
 {% if pagination.href.previous %}
 <a href="{{pagination.href.previous}}">Newer Posts</a>
-{% endif %} {% if pagination.href.next %}
-<a href="{{pagination.href.next}}">Older Posts</a>
 {% endif %}
