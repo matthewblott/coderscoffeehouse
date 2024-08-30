@@ -14,9 +14,11 @@ pagination:
     <h2>{{ post.data.title }}</h2>
     <h3>{{ post.data.date | toUTCString }}</h3>
     <p>
-      {{ post.templateContent | stripHtml }}
-      <a href="{{ post.url }}"><em> More</em></a>
+      <a href="{{ post.url }}">
+        {{ post.templateContent | stripHtml }}
+      </a>
     </p>
+
   </li>
 {%- endfor -%}
 </ul>

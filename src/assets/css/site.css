@@ -15,7 +15,7 @@ a {
   color: inherit;
 
   &:hover {
-    color: grey;
+    color: darkgrey;
     cursor: pointer;
   }
 }
