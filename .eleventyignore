@@ -192,6 +192,7 @@ pnpm-lock.yaml
 
 # ignore deployment files
 www*
+_site*
 
 # ignore symlink for the 'tech' repo
 src/assets/img/tech
