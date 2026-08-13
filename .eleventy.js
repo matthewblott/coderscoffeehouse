@@ -36,7 +36,10 @@ export default function (eleventyConfig) {
     return extractFirst50Words(text); 
   });
 
-  eleventyConfig.on('afterBuild', () => {
+  eleventyConfig.on('eleventy.after', () => {
+    if (process.env.ELEVENTY_RUN_MODE === "build") {
+      execSync("bun lightningcss --minify --bundle src/assets/css/site.css -o _site/assets/css/site.min.css");
+    }
     execSync('bun build:index', { stdio: 'inherit' });
   });
 
