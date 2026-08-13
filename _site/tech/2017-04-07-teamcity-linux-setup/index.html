@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>TeamCity Linux Setup</title>
+  
+  <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
+  <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>TeamCity Linux Setup</h1> 
+      <p>Another one in my .NET / Linux series :-)</p>
+<p>So, TeamCity seems to be the de facto build server in the .NET world and we want install it on Linux. I thought this would be straightforward - after all it's written in Java which runs pretty well on Linux so I shouldn't have any problem. Well, I've got it running but it's not as simple as I'd hoped so here are the steps you'll need to go through.</p>
+<p>For this exercise I created a new VM running Ubuntu 16.04.2 LTS with nothing installed.</p>
+<h2>Install Java</h2>
+<p>Add the package repository and install.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> add-apt-repository ppa:openjdk-r/ppa
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> openjdk-8-jre</code></pre>
+<p>Check Java is installed with the following.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">java</span> <span class="token parameter variable">-version</span></code></pre>
+<p>You should see something like the following in the terminal.</p>
+<pre class="language-shell"><code class="language-shell">openjdk version <span class="token string">"1.8.0_121"</span></code></pre>
+<h2>Setup MySQL</h2>
+<p>TeamCity comes bundled with a Java based database called HSQLDB but it supports all the major RDBMS systems. I'm going to use MySQL here. So the next step is to install it.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> mysql-server</code></pre>
+<p>Check it's installed.</p>
+<pre class="language-shell"><code class="language-shell">mysql <span class="token parameter variable">--version</span></code></pre>
+<p>You should see some like the following in the terminal.</p>
+<pre class="language-shell"><code class="language-shell">mysql  Ver <span class="token number">14.14</span> Distrib <span class="token number">5.7</span>.17, <span class="token keyword">for</span> Linux <span class="token punctuation">(</span>x86_64<span class="token punctuation">)</span></code></pre>
+<p>Login to MySQL and create the database and user.</p>
+<pre class="language-sql"><code class="language-sql"><span class="token keyword">create</span> <span class="token keyword">database</span> teamcity <span class="token keyword">collate</span> utf8_bin<span class="token punctuation">;</span>
+<span class="token keyword">create</span> <span class="token keyword">user</span> teamcity identified <span class="token keyword">by</span> <span class="token string">'password'</span><span class="token punctuation">;</span>
+<span class="token keyword">grant</span> <span class="token keyword">all</span> <span class="token keyword">privileges</span> <span class="token keyword">on</span> teamcity<span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">to</span> teamcity<span class="token punctuation">;</span>
+<span class="token keyword">grant</span> process <span class="token keyword">on</span> <span class="token operator">*</span><span class="token punctuation">.</span><span class="token operator">*</span> <span class="token keyword">to</span> teamcity<span class="token punctuation">;</span></code></pre>
+<h2>Install TeamCity</h2>
+<p>Move to the opt folder as that's where we're going to install TeamCity (I'm just following convention here).</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">cd</span> /opt</code></pre>
+<p>Download and extract the TeamCity package.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">wget</span> https://download-cf.jetbrains.com/teamcity/TeamCity-10.0.2.tar.gz
+<span class="token function">sudo</span> <span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> TeamCity-10.0.2.tar.gz</code></pre>
+<p>There should now be an <code>/opt/TeamCity</code> directory. Create an application user and set the appropriate permissions.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">useradd</span> teamcity
+<span class="token function">sudo</span> <span class="token function">chown</span> <span class="token parameter variable">-R</span> teamcity:teamcity /opt/TeamCity</code></pre>
+<h2>Create the service</h2>
+<p>This is simple enough. Create the service file.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">vim</span> /etc/init.d/teamcity</code></pre>
+<p>Copy and paste the following then save the file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">TEAMCITY_DATA_PATH</span><span class="token operator">=</span><span class="token string">"/opt/TeamCity/.BuildServer"</span>
+
+<span class="token keyword">case</span> <span class="token variable">$1</span> <span class="token keyword">in</span>
+  start<span class="token punctuation">)</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Starting Team City"</span>
+    start-stop-daemon <span class="token parameter variable">--start</span>  <span class="token parameter variable">-c</span> teamcity <span class="token parameter variable">--exec</span> /opt/TeamCity/bin/teamcity-server.sh start
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  stop<span class="token punctuation">)</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Stopping Team City"</span>
+    start-stop-daemon <span class="token parameter variable">--start</span> <span class="token parameter variable">-c</span> teamcity  <span class="token parameter variable">--exec</span>  /opt/TeamCity/bin/teamcity-server.sh stop
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  restart<span class="token punctuation">)</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Restarting Team City"</span>
+    start-stop-daemon <span class="token parameter variable">--start</span>  <span class="token parameter variable">-c</span> teamcity <span class="token parameter variable">--exec</span> /opt/TeamCity/bin/teamcity-server.sh stop
+    start-stop-daemon <span class="token parameter variable">--start</span>  <span class="token parameter variable">-c</span> teamcity <span class="token parameter variable">--exec</span> /opt/TeamCity/bin/teamcity-server.sh start
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+  *<span class="token punctuation">)</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Usage: /etc/init.d/teamcity {start|stop|restart}"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+    <span class="token punctuation">;</span><span class="token punctuation">;</span>
+<span class="token keyword">esac</span>
+
+<span class="token builtin class-name">exit</span> <span class="token number">0</span>
+</code></pre>
+<p>Register as a startup script.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> update-rc.d teamcity defaults</code></pre>
+<p>Make the file executable.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">chmod</span> +x /etc/init.d/teamcity</code></pre>
+<p>And start the service.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> serivce teamcity start</code></pre>
+<p>Now if you browse to the IP address of your server using port 8111 you should see the TeamCity web interface.</p>
+<p><img src="/assets/img/posts/20170407/235832-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Here you're prompted to enter where you want your data directory. The convention seems to be within your installation which is what I've gone with here.</p>
+<p>Click proceed and then you'll be prompted to fill out the details for the database. You don't need to fill in the host if you've done a local installation as we have in this tutorial (this screenshot was taken for another installation I have).</p>
+<p><img src="/assets/img/posts/20170407/08-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>At this point if you fill out the details and click Proceed you'll get an error.</p>
+<p><img src="/assets/img/posts/20170407/122326-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Unfortunately this is because the Java MySQL connector needs to be installed. But this was still a useful exercise as the data directory and some of the system files were created during this process. And this was needed as we are going to put the connector in one of these directories.</p>
+<p>First stop the service.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">service</span> teamcity start</code></pre>
+<p>Move to <code>opts</code> directory if you're not there already.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">cd</span> /opt</code></pre>
+<p>Download the MySQL Java connector and extract the package.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">wget</span> http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz
+<span class="token function">sudo</span> <span class="token function">tar</span> <span class="token parameter variable">-xzvf</span> mysql-connector-java-5.1.40.tar.gz</code></pre>
+<p>Move the file to the required destination.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">mv</span> /opt/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /opt/TeamCity/.BuildServer/lib/jdbc/</code></pre>
+<p>We'll need to set permissions so the file runs under the <code>teamcity</code> account we created earlier.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">chown</span> teamcity:teamcity /opt/TeamCity/.BuildServer/lib/jdbc/mysql-connector-java-5.1.40-bin.jar</code></pre>
+<p>Start the service again.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">service</span> teamcity start</code></pre>
+<p>Now open a browser and fill out the MySQL details as before then click Proceed. At this point you might want to go and make a cup of tea or take the dog for a walk - it really can take some time and you might think it's crashed. Eventually you'll come to the license agreement page. Tick the accept check box and click Continue.</p>
+<p><img src="/assets/img/posts/20170407/37-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Proceed and create an admin account and you're good to go.</p>
+<p><img src="/assets/img/posts/20170407/49-sm.jpg" alt="" eleventy:widths="640"></p>
+<h2>Setup nginx</h2>
+<p>The next step is optional but pretty straightforward enough. We're going to install <code>nginx</code> so we can browse using port 80.</p>
+<p>First install <code>nginx</code> as so.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> nginx</code></pre>
+<p>Then create the config file for the site.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">vim</span> /etc/nginx/sites-available/teamcity</code></pre>
+<p>Paste the following in - swap <code>intercrus</code> in the example below for whatever your domain name is.</p>
+<pre class="language-shell"><code class="language-shell">
+map <span class="token variable">$http_upgrade</span> <span class="token variable">$connection_upgrade</span> <span class="token punctuation">{</span>
+    default upgrade<span class="token punctuation">;</span>
+    <span class="token string">''</span>   <span class="token string">''</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+server <span class="token punctuation">{</span>
+
+    listen       <span class="token number">80</span><span class="token punctuation">;</span>
+    server_name  localhost intercrus<span class="token punctuation">;</span>
+
+    proxy_read_timeout     <span class="token number">1200</span><span class="token punctuation">;</span>
+    proxy_connect_timeout  <span class="token number">240</span><span class="token punctuation">;</span>
+    client_max_body_size   <span class="token number">0</span><span class="token punctuation">;</span>
+
+    location / <span class="token punctuation">{</span>
+
+        proxy_pass          http://localhost:8111/<span class="token punctuation">;</span>
+        proxy_http_version  <span class="token number">1.1</span><span class="token punctuation">;</span>
+        proxy_set_header    X-Forwarded-For <span class="token variable">$remote_addr</span><span class="token punctuation">;</span>
+        proxy_set_header    Host <span class="token variable">$server_name</span><span class="token builtin class-name">:</span><span class="token variable">$server_port</span><span class="token punctuation">;</span>
+        proxy_set_header    Upgrade <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+        proxy_set_header    Connection <span class="token variable">$connection_upgrade</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Create a symlink for the new site.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /etc/nginx/sites-available/teamcity /etc/nginx/sites-enabled/teamcity</code></pre>
+<p>Restart the <code>nginx</code> service.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">service</span> nginx restart</code></pre>
+<p>Now if you browse to the same address under port 80 you should see the login page as shown below.</p>
+<p><img src="/assets/img/posts/20170407/000335-md.jpg" alt="" eleventy:widths="640"></p>
+<p>A couple of final points:</p>
+<ol>
+<li>
+<p>There's a serious issue with the startup time of TeamCity as explained <a href="https://youtrack.jetbrains.com/issue/TW-41035">here</a>. I've found once it's up it's 'okay' but I think you really need a decent spec machine to run it on in a production environment.</p>
+</li>
+<li>
+<p>I had some real issues with the MySQL installation. I haven't documented it here as it's somewhat out the scope of this tutorial but it seems to be a problem with the latest version of Ubuntu - it's probably best to direct the package directly when doing an installation.</p>
+</li>
+</ol>
+<p>That's it :-)</p>
+<p>Links ...</p>
+<p><a href="http://blog.fire-development.com/2014/09/23/teamcity-8-setup-on-linux/">http://blog.fire-development.com/2014/09/23/teamcity-8-setup-on-linux/</a><br>
+<a href="http://ubuntuhandbook.org/index.php/2015/01/install-openjdk-8-ubuntu-14-04-12-04-lts/">http://ubuntuhandbook.org/index.php/2015/01/install-openjdk-8-ubuntu-14-04-12-04-lts/</a><br>
+<a href="https://confluence.jetbrains.com/display/TCD9/Setting+up+an+External+Database">https://confluence.jetbrains.com/display/TCD9/Setting+up+an+External+Database</a><br>
+<a href="https://gist.github.com/sandcastle/9282638">https://gist.github.com/sandcastle/9282638</a></p>
+<p>UPDATE 2017-04-19</p>
+<h2>Build Agent</h2>
+<p>One step I missed last time was setting up the build agent. I realised this when I went to use TeamCity earlier! The relevant section on the TC website is <a href="https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderLinux">here</a> but the details are included here for completeness.</p>
+<p>Navigate to the services start/stop services scripts directory.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">cd</span> /etc/init.d/</code></pre>
+<p>Open the build agent service script.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">vim</span> buildAgent
+</code></pre>
+<p>Paste the following into the file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token comment">#!/bin/sh</span>
+<span class="token comment">### BEGIN INIT INFO</span>
+<span class="token comment"># Provides:          TeamCity Build Agent</span>
+<span class="token comment"># Required-Start:    $remote_fs $syslog</span>
+<span class="token comment"># Required-Stop:     $remote_fs $syslog</span>
+<span class="token comment"># Default-Start:     2 3 4 5</span>
+<span class="token comment"># Default-Stop:      0 1 6</span>
+<span class="token comment"># Short-Description: Start build agent daemon at boot time</span>
+<span class="token comment"># Description:       Enable service provided by daemon.</span>
+<span class="token comment">### END INIT INFO</span>
+<span class="token comment">#Provide the correct user name:</span>
+<span class="token assign-left variable"><span class="token environment constant">USER</span></span><span class="token operator">=</span><span class="token string">"agentuser"</span>
+ 
+<span class="token keyword">case</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token keyword">in</span>
+start<span class="token punctuation">)</span>
+ <span class="token function">su</span> - <span class="token environment constant">$USER</span> <span class="token parameter variable">-c</span> <span class="token string">"cd BuildAgent/bin ; ./agent.sh start"</span>
+<span class="token punctuation">;</span><span class="token punctuation">;</span>
+stop<span class="token punctuation">)</span>
+ <span class="token function">su</span> - <span class="token environment constant">$USER</span> <span class="token parameter variable">-c</span> <span class="token string">"cd BuildAgent/bin ; ./agent.sh stop"</span>
+<span class="token punctuation">;</span><span class="token punctuation">;</span>
+*<span class="token punctuation">)</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"usage start/stop"</span>
+  <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+ <span class="token punctuation">;</span><span class="token punctuation">;</span>
+ 
+<span class="token keyword">esac</span>
+ 
+<span class="token builtin class-name">exit</span> <span class="token number">0</span>
+</code></pre>
+<p>Set the permissions to execute the file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token number">755</span> buildAgent
+</code></pre>
+<p>Make links to start the agent service on the machine boot and on restarts using the appropriate tool.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> update-rc.d buildAgent defaults
+</code></pre>
+<h3>macOS Users</h3>
+<p>If you're a macOS user you can get the build agent on your own system to run automatically by creating a <code>plist</code> file in <code>/Library/LaunchDaemons</code>. The instructions for doing so are <a href="https://confluence.jetbrains.com/display/TCD10/Setting+up+and+Running+Additional+Build+Agents#SettingupandRunningAdditionalBuildAgents-AutomaticAgentStartunderMacOSx">here</a>.</p>
+<p>I did run into a few 'gotchas'.</p>
+<p>Make sure you set the correct permissions</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">chown</span> <span class="token parameter variable">-R</span> root:wheel path-to-agent-on-your-mac/buildAgent
+</code></pre>
+<p>Copy the following file.</p>
+<pre class="language-shell"><code class="language-shell">buildAgent/conf/buildAgent.dist.properties</code></pre>
+<p>To the same directory with the following name.</p>
+<pre class="language-shell"><code class="language-shell">buildAgent/conf/buildAgent.properties</code></pre>
+<h3>Import the certificate</h3>
+<p>Another issue I found was the agent becoming disconnected after adding self-signed https certificate. I found the answer <a href="https://stackoverflow.com/questions/14980207/teamcity-build-agent-becomes-disconnected-after-adding-self-signed-https-certifi">here</a> on StackOverflow.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> keytool <span class="token parameter variable">-importcert</span> <span class="token parameter variable">-file</span> ~/Desktop/certificate-name.cer <span class="token parameter variable">-keystore</span> /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/security/cacerts</code></pre>
+<p>There might be a password to enter which unless changed will be <code>changeit</code> (as explained in the SO answer).</p>
+<p>Remember to start the agent.</p>
+<pre class="language-shell"><code class="language-shell">./bin/agent.sh start</code></pre>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.js"></script>
+  
+
+</body>
+</html>

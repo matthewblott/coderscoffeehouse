@@ -1,22 +1,19 @@
 {
-  "type": "module",
+  "name": "capitol-digital",
   "scripts": {
-    "build": "pnpm build:css && pnpm build:js && pnpm build:site",
-    "build:site": "rm -rf ./www && pnpm eleventy --output=./www",
-    "build:css": "pnpm lightningcss --minify ./src/assets/css/site.css --output-file ./src/assets/css/site.min.css",
-    "build:js": "pnpm terser --compress --output ./src/assets/js/main.min.js ./src/assets/js/main.js",
-    "build:index": "pnpm pagefind --site ./www",
-    "dev": "NODE_ENV=development pnpm eleventy --serve"
+    "dev": "eleventy --serve",
+    "build:index": "pagefind --site ./_site"
   },
   "devDependencies": {
-    "@11ty/eleventy": "3.0.0-beta.1",
-    "@11ty/eleventy-img": "^5.0.0-beta.10",
-    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
-    "cheerio": "^1.0.0",
-    "lightningcss-cli": "^1.26.0",
-    "markdown-it": "^14.1.0",
-    "markdown-it-attrs": "4.2.0",
+    "@11ty/eleventy": "^3.1.6",
+    "@11ty/eleventy-img": "^7.0.0",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.2",
+    "@tailwindcss/cli": "^4.3.3",
+    "cheerio": "^1.2.0",
+    "markdown-it": "^15.0.0",
+    "markdown-it-attrs": "^5.0.1",
+    "npm-run-all": "^4.1.5",
     "pagefind": "^1.1.0",
-    "terser": "^5.31.6"
+    "tailwindcss": "^4.3.3"
   }
 }

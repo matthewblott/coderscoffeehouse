@@ -13,10 +13,12 @@
   {% endif %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="One two buckle shoe">
+  <meta name="description" content="Coders Coffee House blog">
   <title>{{ title }}</title>
+  {% if meta.env == 'development' %}
   <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
   <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  {% endif %}
   <link rel="stylesheet" href="/assets/css/theme-light.css">
   {% if meta.env == 'development' %}
   <link rel="stylesheet" href="/assets/css/site.css">

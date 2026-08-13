@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>SQL in VB .NET</title>
+  
+  <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
+  <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>SQL in VB .NET</h1> 
+      <p>It's generally seen as a good rule of thumb to avoid writing inline SQL and it's a rule I try to observe - the obvious pitfall being it isn't parsed until runtime. Stored procedures can mitigate against this but I tend to avoid - with cached queries the advantage of compilation isn't there anymore and I find they add a layer of abstraction I don't want. So sometimes I find myself getting down and dirty with a bit of inline SQL.</p>
+<p>Anyhow, I've noticed my style of writing inline SQL has changed over the years. The first real world programming I did was in VBA and like a lot of people at the time I employed the Hungarian convention. And impossibly long SQL statements would all be one long continuous string seperated on different lines with underscores.</p>
+<pre class="language-vbnet"><code class="language-vbnet"><span class="token keyword">Dim</span> strSQL <span class="token keyword">As</span> <span class="token keyword">String</span>
+
+strSQL <span class="token operator">=</span> <span class="token string">"SELECT ID, FirstName, LastName, CreatedDate, MofidifedDate "</span> _
+  <span class="token string">"FROM ThisIsAnImpossiblyLongUsersTableName "</span> _
+  <span class="token string">"WHERE ID = "</span> <span class="token operator">&amp;</span> intID</code></pre>
+<p>With the advent of .NET the Hungarian convention went out of fashion.  Code was more elegant and I found this was enhanced by concatenating the SQL string (I also learned to use a command object properly!).</p>
+<pre class="language-vbnet"><code class="language-vbnet">
+<span class="token keyword">Dim</span> sql <span class="token operator">=</span> <span class="token keyword">String</span>.Empty
+
+sql <span class="token operator">&amp;</span><span class="token operator">=</span> <span class="token string">"SELECT Id, FirstName, LastName, CreatedDate, MofidifedDate "</span>
+sql <span class="token operator">&amp;</span><span class="token operator">=</span> <span class="token string">"FROM ThisIsAnImpossiblyLongUsersTableName "</span>
+sql <span class="token operator">&amp;</span><span class="token operator">=</span> <span class="token string">"WHERE Id = @Id "</span>
+</code></pre>
+<p>And this approach served me for quite a while until recently. I don't do much VB.NET these days. In fact I code less on the .NET stack than I used to but when I do it's always C#. But I have legacy applications to support and sometimes there is a requirement for VB.NET. One of the things I like about C# is the ability to write multiline strings using the @ character.</p>
+<pre class="language-vbnet"><code class="language-vbnet">
+var sql <span class="token operator">=</span> @<span class="token string">"
+
+  select Id, FirstName, LastName, CreatedDate, MofidifedDate
+  from ThisIsAnImpossiblyLongUsersTableName
+  where Id = @Id "</span><span class="token punctuation">;</span>
+</code></pre>
+<p>I found out you can do something similar to that above in VB.NET using Linq and XML. Import both the System.XML and System.XML.Linq namespaces and you can do the following.</p>
+<pre class="language-vbnet"><code class="language-vbnet">
+<span class="token keyword">Dim</span> sql <span class="token operator">=</span> <span class="token operator">&lt;</span>sql<span class="token operator">></span>
+
+  <span class="token keyword">select</span> Id<span class="token punctuation">,</span> FirstName<span class="token punctuation">,</span> LastName<span class="token punctuation">,</span> CreatedDate<span class="token punctuation">,</span> MofidifedDate
+  from ThisIsAnImpossiblyLongUsersTableName
+  where Id <span class="token operator">=</span> @Id
+  
+  <span class="token operator">&lt;</span><span class="token operator">/</span>sql<span class="token operator">></span>.Value
+</code></pre>
+<p>I didn't realise you could write inline XML and I think it's pretty cool - I've tried to do the same in C# and not been able to (if someone knows different please let me know). I find this really handy as I can now write very readable SQL statements which can be copied and pasted into SSMS easily if need be.</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.js"></script>
+  
+
+</body>
+</html>

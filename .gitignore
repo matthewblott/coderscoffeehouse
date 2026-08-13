@@ -200,3 +200,6 @@ src/assets/img/posts
 # Ignore minimised files
 src/assets/css/site.min.css
 src/assets/js/main.min.js
+
+# 11ty
+!.eleventy.js

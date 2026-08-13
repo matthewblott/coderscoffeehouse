@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>RESTful APIs With DreamFactory</title>
+  
+  <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
+  <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>RESTful APIs With DreamFactory</h1> 
+      <h2>The Problem</h2>
+<p>Most of the programming I have done over the past twenty years has been writing boring line of business applications and it's probably what any programmer reading this also does most of the time. There are lots of tools in the <a href="https://en.wikipedia.org/wiki/Low-code_development_platform">'low code'</a> area but they're usually targeted at analysts and managers rather than developers.</p>
+<p>I wanted something compliant with the <a href="https://jsonapi.org/">jsaonapi.org</a> specification and although there are things out there like <a href="https://loopback.io/">LoopBack</a> which are mature and well supported they all take a bit of setting up.</p>
+<p>I wanted to be able to point to a data source and convert it into a compliant RESTful API but I struggled to find anything that did this out of the box. <a href="https://postgrest.org/">PostgREST</a> is a good example of something that does what I want and is an excellent project but it only works with PostgreSQL. I do a lot of .NET coding and I recently discovered <a href="https://www.jsonapi.net/">JsonApiDotNetCore</a> which looks promising but it's relatively new.</p>
+<p>Eventually I came across <a href="https://www.dreamfactory.com/">DreamFactory</a> which is both mature and well supported. There is some setting up but it effectively gives you a full API for any database with minimal effort. In fact it appears to be quite a powerful tool and I've barely scratched the surface.</p>
+<h2>DreamFactory Setup</h2>
+<p>For this example I'm going to use SQLite but most well known databases are supported along with various other service types. The database I'm using can be downloaded directly from <a href="https://github.com/matthewblott/northwind-sqlite/blob/master/dist/northwind.db">here</a>. It's a copy of the famous Northwind database familiar to anyone who remembers programming with MS Access back in the day! No setup for the database is required but you will need PHP installed.</p>
+<p>Once the database is downloaded and ready you'll need a copy of DreamFactory which we'll get using Git:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/dreamfactorysoftware/dreamfactory</code></pre>
+<p>Once the repo is cloned <code>cd</code> into the directory:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> dreamfactory</code></pre>
+<p>You'll also need PHP's Composer installed for the next step:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">composer</span> <span class="token function">install</span></code></pre>
+<p>Once that's done <code>cd</code> into the public directory:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> public</code></pre>
+<p>Now we're ready to run DreamFactory which can be done running the following:</p>
+<pre class="language-bash"><code class="language-bash">php <span class="token parameter variable">-S</span> localhost:8000</code></pre>
+<h3>Create Administrator</h3>
+<p>If you now browse to <a href="http://localhost:8000"><code>localhost:8000</code></a> you should see a prompt to create an administrator:</p>
+<p><img src="/assets/img/tech/2023-07-14-login.jpg" alt="Login"></p>
+<p>Fill the details out similar to as shown above and click the CREATE button. You will be redirected to the main dashboard:</p>
+<p><img src="/assets/img/tech/2023-07-14-dashboard.jpg" alt="Login" eleventy:widths="640"></p>
+<h3>Create Service</h3>
+<p>Click the Services tab along the top and the click the Create button. Select the correct Service Type and fill out the details as shown below:</p>
+<p><img src="/assets/img/tech/2023-07-14-create-service.jpg" alt="Create Service"></p>
+<p>Click the Next button and then enter the correct database path for the Northwind SQLite database that was downloaded earlier. Your path will be different to mine:</p>
+<p><img src="/assets/img/tech/2023-07-14-database-path.jpg" alt="Database Path"></p>
+<p>Click Save and you should see your newe service added to the list of managed services:</p>
+<p><img src="/assets/img/tech/2023-07-14-services.jpg" alt="Services"></p>
+<h3>Create Application</h3>
+<p>Next click the Apps tab along the top and click the Create button to create a new application. Fill out the details as shown below:</p>
+<p><img src="/assets/img/tech/2023-07-14-create-app.jpg" alt="Create App"></p>
+<p>Click Save and the application will be added to the list of managed applications:</p>
+<p><img src="/assets/img/tech/2023-07-14-apps.jpg" alt="Apps"></p>
+<h3>Create Role</h3>
+<p>Click the Roles tab along the top and then click the Create button to create a new role. Fill out the Basic section as shown below:</p>
+<p><img src="/assets/img/tech/2023-07-14-role-basic.jpg" alt="Role Basic"></p>
+<p>Click Next and then fill out the Access section as shown below. Make sure to select the service created in the previous section and select all available HTTP verbs under Access:</p>
+<p><img src="/assets/img/tech/2023-07-14-role-access.jpg" alt="Role Access"></p>
+<p>Click Save and the role will be added to the list of managed roles:</p>
+<p><img src="/assets/img/tech/2023-07-14-roles.jpg" alt="Roles"></p>
+<h3>Create Service User</h3>
+<p>Finally click the Users tab along the top and then click the Create button to create a new user. Fill out the Basic section as shown below:</p>
+<p><img src="/assets/img/tech/2023-07-14-create-user.jpg" alt="Create User"></p>
+<p>Click the Roles section and select the role created in the previous step.</p>
+<p><img src="/assets/img/tech/2023-07-14-set-user-role.jpg" alt="Set User Role"></p>
+<p>Click Save and the new user will appear in the users list:</p>
+<p><img src="/assets/img/tech/2023-07-14-users.jpg" alt="Users"></p>
+<p>That's it, you now have a fully managed RESTful API for your database! To test it click the API Docs tab along the top which will then present you with a list of options:</p>
+<h3>Potential Gotchas</h3>
+<p>There are a couple of potential gotchas to look out for. It might be necessary to add an entry for CORS. This is found by selecting the Config tab along the top. Below is an example of what the entries should look like:</p>
+<p><img src="/assets/img/tech/2023-07-14-cors.jpg" alt="CORS"></p>
+<p>You will also require an API Key for the application. This key is generated when the application is created and can easily be found with the rest of the application's details:</p>
+<p><img src="/assets/img/tech/2023-07-14-key.jpg" alt="Key"></p>
+<h2>Testing The API</h2>
+<p><img src="/assets/img/tech/2023-07-14-api-docs.jpg" alt="API Docs"></p>
+<p>There's lots of options for testing but the simple example below retrieves the records from the Employees table:</p>
+<p><img src="/assets/img/tech/2023-07-14-api-execute.jpg" alt="API Docs"></p>
+<p>Click execute and the records are returned. The response also provides an example to use with Curl:</p>
+<p><img src="/assets/img/tech/2023-07-14-api-response.jpg" alt="API Docs"></p>
+<h2>Conclusion</h2>
+<p>There's a lot more to explore with DreamFactory. It appears to be quite powerful and you get a lot for free. There is also a paid option which has lots of other goodies but I was just looking for something to create a RESTful API out the box and this ticks all those boxes. I'm surprised it's not more popular!</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.js"></script>
+  
+
+</body>
+</html>

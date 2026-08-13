@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>Svelte Native - First Impressions</title>
+  
+  <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
+  <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>Svelte Native - First Impressions</h1> 
+      <h2>Svelte</h2>
+<p>Like anyone with a passing interest in front end technologies I've come across the new hotness known as <a href="https://svelte.dev/">Svelte</a>. It's so simple and pleasant to use and I completely get why it's taken off.</p>
+<p>Less well known is the <a href="https://svelte-native.technology/">Svelte Native</a> project, an attempt to occupy the same space as the popular React Native. I've used React Native and prefer it to the other alternative I tried for cross platform mobile development, Xamarin. But it's still React which has its own pitfalls and I'm always looking for new things to try. So I've been playing with Svelte Native for a few days and thought I'd jot my thoughts down.</p>
+<h2>NativeScript</h2>
+<p>The first thing you need to do is install <a href="https://nativescript.org/">NativeScript</a>. This is the underlying technology for calling native mobile APIs in much the same way as happens with React Native. There are pros and cons with both technologies and if I was making a business decision for a company I'd probably go with React Native because it has a much bigger eco system. But NativeScript has improved a lot and it's compatability with other frameworks is a big win.</p>
+<p>I installed it globally like so:</p>
+<pre class="language-bash"><code class="language-bash">
+<span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">-g</span> nativescript
+</code></pre>
+<p>That was all the setting up I needed to do with NativeScript. One thing of note though is I use <code>pnpm</code> instead of <code>npm</code> as it works with all the same commands but uses symlinks and prevents your drive getting bloated with Node packages. NativeScript works fine but I couldn't use <code>pnpm</code> with Svelte Native itself and it took me a few attempts to realise this as sometimes the project would build. I followed the instructions on the main Svelte Native website and created a quick basic app:</p>
+<pre class="language-bash"><code class="language-bash">
+ns create myapp <span class="token parameter variable">--svelte</span>
+</code></pre>
+<p>To get it running it was a case of running the following command:</p>
+<pre class="language-bash"><code class="language-bash">
+<span class="token function">npm</span> run
+</code></pre>
+<p>I did hit some problems. The first issue was the Svelte template that was packaged with NativeScript was out of date. As a result the libraries being loaded were all old and I spent a bit of time working out what worked with what.</p>
+<p>SvelteNative has been updated and the correct template now loads but then the next issue popped up. The default app setup doesn't work correctly. It throws an error on iOS if you try and save anything:</p>
+<p><img src="/assets/img/tech/2022-01-08-quit.jpg" alt=""></p>
+<p>Sometimes it will restart correctly but Hot Module Replacement simply will not work. In the <code>app.ts</code> file <code>svelteNativeNoFrame</code> component is imported:</p>
+<pre class="language-js"><code class="language-js">
+<span class="token keyword">import</span> <span class="token punctuation">{</span> svelteNativeNoFrame <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'svelte-native'</span>
+<span class="token keyword">import</span> App <span class="token keyword">from</span> <span class="token string">'./App.svelte'</span>
+
+<span class="token function">svelteNativeNoFrame</span><span class="token punctuation">(</span>App<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+</code></pre>
+<p>There were problems with this component and I had to use <code>svelteNative</code> instead:</p>
+<pre class="language-js"><code class="language-js">
+<span class="token keyword">import</span> <span class="token punctuation">{</span> svelteNative <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'svelte-native'</span>
+<span class="token keyword">import</span> App <span class="token keyword">from</span> <span class="token string">'./App.svelte'</span>
+
+<span class="token function">svelteNative</span><span class="token punctuation">(</span>App<span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+</code></pre>
+<p>This meant the <code>App.svelte</code> root component required changing from:</p>
+<pre class="language-html"><code class="language-html">
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>frame</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Home</span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>frame</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>ts<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">import</span> Home <span class="token keyword">from</span> <span class="token string">'./components/Home.svelte'</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>To the following:</p>
+<pre class="language-html"><code class="language-html">
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>page</span> <span class="token attr-name">actionBarHidden</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>frame</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>rootFrame<span class="token punctuation">"</span></span> <span class="token attr-name">defaultPage</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span>{Home}</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>frame</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>page</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">import</span> Home <span class="token keyword">from</span> <span class="token string">'./components/Home.svelte'</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>The <code>actionBarHidden</code> attribute is optional but adding this made it look consistent across Android and iOS.</p>
+<p>Now <code>npn run</code> will work. Depending on what simulators you have running it will try and run the app in one of them. The only caveat being it wouldn't automatically start the Android simulator and I had to start Android Studio and then manually start the simulator. The iOS simulator started automatically.</p>
+<hr>
+<p>There's a tutorial for a todo app on the main website <a href="https://svelte-native.technology/tutorial">here</a> and I decided to give this a go. After configuring my setup like above I managed to get things running fairly easily. My working repo can be found <a href="https://github.com/matthewblott/svelte-native-todoapp">here</a>.</p>
+<p>The todo app is useful but I wanted to check the full power of the library and I noticed some other demo apps which I thought I'd try and get running:</p>
+<p>The first was the set of examples that came with the main library <a href="https://github.com/halfnelson/svelte-native/tree/master/demo">here</a>. I obviously ran into the same issues described above but I also had a problem loading the menu icon, particularly the <code>svg</code> file. I switched to using a good old simple <code>png</code> file. My working repo is <a href="https://github.com/matthewblott/svelte-native-demo">here</a><br>
+.</p>
+<p>I also came across the related <code>svelte-native-nativescript-ui</code> library. I'm not sure how active this project is, the last commit was in October but I thought I'd give it a try as well. <a href="https://github.com/halfnelson/svelte-native-nativescript-ui/tree/master/demo">Here</a> are the demo apps I tried to get working. I had an annoying formatting error to fix first:</p>
+<p><img src="/assets/img/tech/2022-01-08-listview.jpg" alt=""></p>
+<p>Unfortunately there were some things I just could not get to work. Some properties with the <code>radDataForm</code> component won't work. I have highlighted the two I came across in the <code>DataFormPage.svelte</code> markup:</p>
+<pre class="language-html"><code class="language-html">
+<span class="token comment">&lt;!-- Crashes if the following attribute is added:
+ converter={movieConverter} --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entityProperty</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>movie<span class="token punctuation">"</span></span> 
+  <span class="token attr-name">displayName</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Movie Name<span class="token punctuation">"</span></span> 
+  <span class="token attr-name">index</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>0<span class="token punctuation">"</span></span> 
+  <span class="token attr-name">valuesProvider</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span>{movieNames}</span>
+<span class="token punctuation">></span></span>
+</code></pre>
+<p>And here:</p>
+<pre class="language-html"><code class="language-html">
+<span class="token comment">&lt;!-- Crashes if agreeTerms is selected --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>entityProperty</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>agreeTerms<span class="token punctuation">"</span></span> <span class="token attr-name">displayName</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>I Agree with Terms<span class="token punctuation">"</span></span> <span class="token attr-name">index</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>9<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>propertyEditor</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Switch<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>entityProperty</span><span class="token punctuation">></span></span>
+</code></pre>
+<p>Most other things worked although using the <code>radListView</code> wasn't as smooth an experience as it should have been. As I say, I don't know if the project is active and I'd suggest using the NativeScript components only at this stage.</p>
+<p>My working repo is <a href="https://github.com/matthewblott/svelte-native-ui-demo">here</a>.</p>
+<hr>
+<h2>In Summary</h2>
+<p>All my projects listed above were tested successfully on an iPhone 12 simulator running iOS 15 and the Pixel 5 Android simulator. I didn't investigate but the Pixel 2 did not work.</p>
+<h3>The Good</h3>
+<p>Svelte Native works! You can defintely use this to build native phone apps with the same code base and once you're past the rough edges the development is reasonably straightforward. HMR works pretty well and I didn't have issues different from those I already experience on other platforms.</p>
+<h3>The Not So Good</h3>
+<p>For me this is still beta software and not a 1.0 release. Getting up and running isn't simple and requires some effort. Someone who is not an experienced developer will not like it even though it does have a lot of promise.</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.js"></script>
+  
+
+</body>
+</html>

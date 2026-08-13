@@ -1,13 +1,14 @@
-import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
 import { execSync } from "child_process";
 import markdownIt from "markdown-it";
 import markdownItAttrs from "markdown-it-attrs";
 import syntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import * as cheerio from 'cheerio'
 
-export default (eleventyConfig) => {
+export default function (eleventyConfig) {
   eleventyConfig.setUseGitIgnore(false);
   eleventyConfig.addPassthroughCopy("./src/assets");
+  eleventyConfig.addPassthroughCopy({ "./src/other-stuff/assets": "assets" });
+  eleventyConfig.addPassthroughCopy({ "./src/tech/assets": "assets" });
 
   let options = {
     html: true,
@@ -19,7 +20,6 @@ export default (eleventyConfig) => {
 
   eleventyConfig.setLibrary("md", markdownLib);
   eleventyConfig.addPlugin(syntaxHighlight);
-  eleventyConfig.addPlugin(eleventyImageTransformPlugin);
   eleventyConfig.addFilter("toUTCString", (value) => value.toISOString().substring(0, 10));
 
   eleventyConfig.addFilter("stripHtml", (value) => {
@@ -37,13 +37,13 @@ export default (eleventyConfig) => {
   });
 
   eleventyConfig.on('afterBuild', () => {
-    execSync('pnpm build:index', { stdio: 'inherit' });
+    execSync('bun build:index', { stdio: 'inherit' });
   });
 
   return {
     dir: {
       input: "src",
-      output: "www",
+      output: "_site",
     },
   };
 };

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>Real World ASP.NET Core Linux Example</title>
+  
+  <!-- <link rel="stylesheet" href="/assets/css/theme-light.css" media="(prefers-color-scheme: light)"> -->
+  <!-- <link rel="stylesheet" href="/assets/css/theme-dark.css" media="(prefers-color-scheme: dark)"> -->
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>Real World ASP.NET Core Linux Example</h1> 
+      <p>Anyone who's been reading my stuff knows one of my motivations is to provide documentation that is otherwise lacking for getting .NET to run on Linux. Part of the problem historically has been Microsoft only officially supporting Windows which has meant tutorials, Stack Overflow answers, user forums et al have been dominated by Windows and its tools (particularly Visual Studio). But in this brave new world of MS and Linux that is all about to change right? Well I hope so but we still have a way to go.</p>
+<h4>.NET Installation</h4>
+<p>Anyway, my first port of call was the official MS docs <a href="https://docs.asp.net/en/latest/publishing/linuxproduction.html">here</a> which got me up and running but like a lot of the .NET Linux tutorials it left a few things out which will guarantee to leave anyone not familar with Linux scratching their head.</p>
+<p>My previous tutorial for Mono <a href="http://coderscoffeehouse.com/tech/2016/01/19/aspnet-linux-setup.html">here</a> showed you how to get multiple ASP.NET sites up and running under a service and that's what I'm going to show you here.</p>
+<p>I'll skip the first stage - installing Linux - as there's a short tutorial I did before <a href="http://coderscoffeehouse.com/tech/2015/12/09/mono-linux-setup.html">here</a> which shows you how to get Ubuntu Server installed along with Mono (not necessary for this tutorial). Make sure to install the firewall (and ssh server so you can login remotely!) and vim which I use as my Linux text editor (and is used throughout the rest of this tutorial).</p>
+<p>Once your server is up and running sign in and follow the steps <a href="https://www.microsoft.com/net/core#ubuntu">here</a> for installing <code>dotnet</code> itself. First you'll need to update the source list and install a key. Depending on your version the steps may vary slightly but they're all straightforward. I'm using version 14.04 so the steps I executed were the following.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">sh</span> <span class="token parameter variable">-c</span> <span class="token string">'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'</span>
+<span class="token function">sudo</span> apt-key adv <span class="token parameter variable">--keyserver</span> apt-mo.trafficmanager.net --recv-keys 417A0893
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+</code></pre>
+<p>Then execute the following to install the runtime.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> dotnet-dev-1.0.0-preview2-003121
+</code></pre>
+<p>That's it for the installation. You can run the example as shown on the download page but it isn't necessary. Just run <code>dotnet --version</code> as a quick check and you'll see the following.</p>
+<p><img src="/assets/img/posts/20160819/212703-sm.jpg" alt="" eleventy:widths="640"></p>
+<h4>Web Server Setup</h4>
+<p>Next install the webserver. Run the following.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> nginx
+</code></pre>
+<p>If you haven't already, enable the firewal and add following rules.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> ufw <span class="token builtin class-name">enable</span>
+<span class="token function">sudo</span> ufw allow <span class="token number">22</span>/tcp
+<span class="token function">sudo</span> ufw allow <span class="token number">80</span>/tcp
+</code></pre>
+<h4>Website Creation</h4>
+<p>Now it's time to set up a site. Yeoman has some really good ASP.NET templates but for this example will go with something even more bare bones (I always prefer the absolute minimum when I'm trying out a new framework for the first time).</p>
+<p>We'll stay on our Linux server for this task - you would normally upload the files but that's not necessary to demonstrate for this tutorial as we'll still go through the process of packaging the application. Create a directory for the new site and then navigate to the directory itself.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">mkdir</span> aspnetcore
+<span class="token builtin class-name">cd</span> aspnetcore
+<span class="token function">touch</span> Program.cs Startup.cs project.json appsettings.json
+</code></pre>
+<p>This will have created some empty files we'll use to create our simple website. This will be a very basic 'Hello World' site. First copy and paste the following into the Program.cs file.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">System<span class="token punctuation">.</span>IO</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Hosting</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>Extensions<span class="token punctuation">.</span>Configuration</span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Program</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Main</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> args<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token class-name"><span class="token keyword">var</span></span> builder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">ConfigurationBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">SetBasePath</span><span class="token punctuation">(</span>Directory<span class="token punctuation">.</span><span class="token function">GetCurrentDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">AddJsonFile</span><span class="token punctuation">(</span><span class="token string">"appsettings.json"</span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">optional</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token class-name"><span class="token keyword">var</span></span> host <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">WebHostBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">UseKestrel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">UseConfiguration</span><span class="token punctuation">(</span>builder<span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">UseContentRoot</span><span class="token punctuation">(</span>Directory<span class="token punctuation">.</span><span class="token function">GetCurrentDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token generic-method"><span class="token function">UseStartup</span><span class="token generic class-name"><span class="token punctuation">&lt;</span>Startup<span class="token punctuation">></span></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    host<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token punctuation">}</span>
+  
+<span class="token punctuation">}</span>
+</code></pre>
+<p>As you can see, in ASP.NET Core a website is invoked the same way as a console application! Next we need to create the <code>Startup</code> class referenced in the <code>.UseStartup&lt;Startup&gt;()</code> line near the bottom so copy and paste the following into the Startup.cs file.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Builder</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Hosting</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Http</span><span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Startup</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Configure</span><span class="token punctuation">(</span><span class="token class-name">IApplicationBuilder</span> app<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    app<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span>context <span class="token operator">=></span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> context<span class="token punctuation">.</span>Response<span class="token punctuation">.</span><span class="token function">WriteAsync</span><span class="token punctuation">(</span><span class="token string">"Hello World!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h4>Website Configuration</h4>
+<p>Next copy and paste the following into the project.json file. This is a pretty bare bones settings file in terms of references.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">{</span>
+  <span class="token string">"version"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0-*"</span>,
+  <span class="token string">"buildOptions"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"debugType"</span><span class="token builtin class-name">:</span> <span class="token string">"portable"</span>,
+    <span class="token string">"emitEntryPoint"</span><span class="token builtin class-name">:</span> <span class="token boolean">true</span>
+  <span class="token punctuation">}</span>,
+  <span class="token string">"dependencies"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"Microsoft.AspNetCore.Mvc"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>,
+    <span class="token string">"Microsoft.AspNetCore.Server.Kestrel"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>,
+    <span class="token string">"Microsoft.Extensions.Configuration.Json"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>,
+    <span class="token string">"Microsoft.Extensions.Options.ConfigurationExtensions"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>
+  <span class="token punctuation">}</span>,
+  <span class="token string">"frameworks"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"netcoreapp1.0"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+      <span class="token string">"dependencies"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+        <span class="token string">"Microsoft.NETCore.App"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+          <span class="token string">"type"</span><span class="token builtin class-name">:</span> <span class="token string">"platform"</span>,
+          <span class="token string">"version"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>
+        <span class="token punctuation">}</span>,
+        <span class="token string">"Microsoft.AspNetCore.Server.Kestrel"</span><span class="token builtin class-name">:</span> <span class="token string">"1.0.0"</span>
+      <span class="token punctuation">}</span>,
+      <span class="token string">"imports"</span><span class="token builtin class-name">:</span> <span class="token string">"dnxcore50"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>,
+  <span class="token string">"publishOptions"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"include"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"wwwroot"</span>,
+      <span class="token string">"Views"</span>,
+      <span class="token string">"appsettings.json"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Finally copy and paste the following into the appsettings.json file (if you look at the project.json file you'll see appsettings.json is referenced in the <code>publishOptions</code> section).</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">{</span>
+  <span class="token string">"server.urls"</span><span class="token builtin class-name">:</span> <span class="token string">"http://localhost:5001"</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>This appsettings.json file is important and was a crucial part missing from the official documentation. ASP.NET Core runs on the default port of 5000 but if you're hosting more than one site - a very 'real world' scenario - then you need to be able to specify a different port for each site (of course to the outside world everything will appear on port 80 but we do some reverse proxying with nginx which we'll come to in a minute).</p>
+<h4>.NET Publishing</h4>
+<p>Once you've created all your files run the following.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet restore
+</code></pre>
+<p>This will grab the necessary packages referenced in the project.json file for you to be able to run your site. Once this is done you can check your site is working by running the following command.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet run
+</code></pre>
+<p>You should see something like the following which shows the program is listening on port 5001.</p>
+<p><img src="/assets/img/posts/20160819/125552-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Press Ctrl+C to terminate the command as we're not quite ready to view the site in a browser yet. We need to package the application so run the following command.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet publish
+</code></pre>
+<p>Again, this is where the official docs lack a bit of an explanation as it doesn't tell you where the published files are but if you look in your terminal you'll see it gives you a location.</p>
+<p><img src="/assets/img/posts/20160819/130533-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>In my case it's the following path.</p>
+<pre class="language-shell"><code class="language-shell">
+/home/deployer/aspnetcore/bin/Debug/netcoreapp1.0/publish
+</code></pre>
+<p>I've been using Linux for a couple of years now but I'm still finding my way round as there are varying opinions on where to put your website files but for this I'm going to (mainly) follow the official documentation and put them in the var directory. I'm going to add a www subfolder as I've seen that used a few times. You'll need to create it if it doesn't exist (using sudo). Afterwards copy the files in the project directory to a site folder.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">mkdir</span> /var/www
+<span class="token function">sudo</span> <span class="token function">cp</span> <span class="token parameter variable">-r</span> /home/deployer/aspnetcore/bin/Debug/netcoreapp1.0/publish /var/www/aspnetcore
+</code></pre>
+<h4>Web Server Configuration</h4>
+<p>Our site is now ready to run but it can't be viewed by the outside world until we've configured nginx. This is where the offical documentation is a bit unhelpful as it tells you to edit the default config file but this only works if you have one site on your server. I've noticed a lot of web tutorials for other languages do this and it confused me at first as when you go to the nginx website you can get a bit overwhelemed by documentation. In fact some people recommend deleting the default file as it's not really needed and you instead should create an nginx config file for each website on your server which you do here with the following</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/nginx/sites-available/aspnetcore
+</code></pre>
+<p>Next copy and paste the following adjusting the <code>server_name</code> property to whatever your domain address is. I'm using a local VM for my example here hence the the top level domain as opposed to something more familiar like <code>coderscoffeehouse.com</code> but if you're using a publicly available server then you'll need to edit the DNS settings in your hosting provider's configuration settings.</p>
+<pre class="language-bash"><code class="language-bash">server <span class="token punctuation">{</span>
+        listen <span class="token number">80</span><span class="token punctuation">;</span>
+        server_name aspnetcore.ubuntu<span class="token punctuation">;</span>
+
+        location / <span class="token punctuation">{</span>
+                proxy_pass http://localhost:5001<span class="token punctuation">;</span>
+                proxy_http_version <span class="token number">1.1</span><span class="token punctuation">;</span>
+                proxy_set_header Upgrade <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+                proxy_set_header Connection keep-alive<span class="token punctuation">;</span>
+                proxy_set_header Host <span class="token variable">$host</span><span class="token punctuation">;</span>
+                proxy_cache_bypass <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+</code></pre>
+<p>Save the file with <code>!wq</code>. Then create a symlink in the nginx sites-enabled directory (otherwise it will just be ignored).</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /etc/nginx/sites-available/aspnetcore aspnetcore 
+</code></pre>
+<p>The site is now ready to viewed from a browser which we can test by starting the nginx service and the dotnet app by running the following.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">service</span> nginx restart
+dotnet /var/www/aspnetcore/aspnetcore.dll
+</code></pre>
+<p>If you now browse to the address you used for the <code>server_name</code> in the nginx aspnetcore file you should see the following.</p>
+<p><img src="/assets/img/posts/20160819/135007-sm.jpg" alt="" eleventy:widths="640"></p>
+<h4>Automate Startup</h4>
+<p>Obviously from a practical point of view you can't run the application from the command line everytime you want your site up so we need to create a background process to do this. The offical documentation uses supervisor which I hadn't heard of but it seems to do the job. Press Ctrl+C to stop the current dotnet command (if necessary) and then run the following to install supervisor.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> supervisor
+</code></pre>
+<p>Then create a supervisor config file the site.</p>
+<p>sudo vim /etc/supervisor/conf.d/aspnetcore.conf</p>
+<p>Then paste the following.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">[</span>program:aspnetcore<span class="token punctuation">]</span>
+<span class="token assign-left variable">command</span><span class="token operator">=</span>/usr/bin/dotnet /var/www/aspnetcore/aspnetcore.dll
+<span class="token assign-left variable">directory</span><span class="token operator">=</span>/var/www/aspnetcore
+<span class="token assign-left variable">autostart</span><span class="token operator">=</span>true
+<span class="token assign-left variable">autorestart</span><span class="token operator">=</span>true
+<span class="token assign-left variable">stderr_logfile</span><span class="token operator">=</span>/var/log/aspnetcore.err.log
+<span class="token assign-left variable">stdout_logfile</span><span class="token operator">=</span>/var/log/aspnetcore.out.log
+<span class="token assign-left variable">environment</span><span class="token operator">=</span>ASPNETCORE_ENVIRONMENT<span class="token operator">=</span>Production
+<span class="token assign-left variable">user</span><span class="token operator">=</span>www-data
+<span class="token assign-left variable">stopsignal</span><span class="token operator">=</span>INT
+</code></pre>
+<p>The important lines here are the second and third which point to the correct locations for our site. Run <code>!wq</code> and save the file then run the following to the start the necessary services.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">service</span> supervisor restart
+<span class="token function">sudo</span> <span class="token function">service</span> nginx restart
+</code></pre>
+<p>If you open a browser you should now see your site up and running. You can restart the server and the site will automatically start.</p>
+<h4>Multiple Site Scenario</h4>
+<p>That's great but in the real world we might well have multiple ASP.NET sites on our server. Again the doc site didn't really give the necessary details for this but we've already covered what's necessary for this. To quickly create a duplicate site with a slight change navigate to the original aspnetcore website with the code files and go into the Startup.cs file (your original location might be different).</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token builtin class-name">cd</span> ~/aspnetcore
+<span class="token function">vim</span> Startup.cs
+</code></pre>
+<p>Then and change <code>Hello World!</code> to <code>Hello World!!</code> and save with <code>!wq</code>. Next edit the appsettings.json file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">vim</span> appsettings.json
+</code></pre>
+<p>Change the value of the <code>server.urls</code> port from <code>5001</code> to <code>5002</code> and then type <code>!wq</code> to save the file.</p>
+<p>Now run the following to create a new package.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet publish
+</code></pre>
+<p>Now make copies of the previous files we needed to get our site running. You don't have to stick with what I've done below but to keep things simple I've just created the same files before apart from the <code>2</code> appended at the end.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">cp</span> <span class="token parameter variable">-r</span> ~/aspnetcore/bin/Debug/netcoreapp1.0/publish /var/www/aspnetcore2
+<span class="token function">sudo</span> <span class="token function">cp</span> /etc/nginx/sites-available/aspnetcore /etc/nginx/sites-available/aspnetcore2
+<span class="token function">sudo</span> <span class="token function">cp</span> /etc/supervisor/conf.d/aspnetcore.conf /etc/supervisor/conf.d/aspnetcore2.conf
+<span class="token function">sudo</span> <span class="token function">ln</span> <span class="token parameter variable">-s</span> /etc/nginx/sites-available/aspnetcore2 aspnetcore2
+</code></pre>
+<p>Open up the newly created <code>nginx</code> site configuration file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/nginx/sites-available/aspnetcore2
+</code></pre>
+<p>Change the value of the <code>server_name</code> to the relevant another domain name (I've changed <code>aspnetcore.ubuntu</code> to <code>aspnetcore2.ubuntu</code> for this tutorial). Then change the <code>proxypass</code> port from <code>5001</code> to <code>5002</code> and type <code>!wq</code> to save the file.</p>
+<pre class="language-shell"><code class="language-shell">
+server <span class="token punctuation">{</span>
+        listen <span class="token number">80</span><span class="token punctuation">;</span>
+        server_name aspnetcore2.ubuntu<span class="token punctuation">;</span>
+
+        location / <span class="token punctuation">{</span>
+                proxy_pass http://localhost:5002<span class="token punctuation">;</span>
+                proxy_http_version <span class="token number">1.1</span><span class="token punctuation">;</span>
+                proxy_set_header Upgrade <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+                proxy_set_header Connection keep-alive<span class="token punctuation">;</span>
+                proxy_set_header Host <span class="token variable">$host</span><span class="token punctuation">;</span>
+                proxy_cache_bypass <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Open the <code>supservisor</code> configuration file we created a few moments ago.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">vim</span> /etc/supervisor/conf.d/aspnetcore2.conf
+</code></pre>
+<p>Change the second part of the <code>command</code> line from <code>/var/www/aspnetcore/aspnetcore.dll</code> to <code>/var/www/aspnetcore2/aspnetcore.dll</code> plus the other changes show below and then type <code>!wq</code> to save the file.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">[</span>program:aspnetcore2<span class="token punctuation">]</span>
+<span class="token assign-left variable">command</span><span class="token operator">=</span>/usr/bin/dotnet /var/www/aspnetcore2/aspnetcore.dll
+<span class="token assign-left variable">directory</span><span class="token operator">=</span>/var/www/aspnetcore
+<span class="token assign-left variable">autostart</span><span class="token operator">=</span>true
+<span class="token assign-left variable">autorestart</span><span class="token operator">=</span>true
+<span class="token assign-left variable">stderr_logfile</span><span class="token operator">=</span>/var/log/aspnetcore2.err.log
+<span class="token assign-left variable">stdout_logfile</span><span class="token operator">=</span>/var/log/aspnetcore2.out.log
+<span class="token assign-left variable">environment</span><span class="token operator">=</span>ASPNETCORE_ENVIRONMENT<span class="token operator">=</span>Production
+<span class="token assign-left variable">user</span><span class="token operator">=</span>www-data
+<span class="token assign-left variable">stopsignal</span><span class="token operator">=</span>INT
+</code></pre>
+<p>Restart the necessary services.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> <span class="token function">service</span> supervisor restart
+<span class="token function">sudo</span> <span class="token function">service</span> nginx restart
+</code></pre>
+<p>Check you can still browse to your first website successfully.</p>
+<p><img src="/assets/img/posts/20160819/135007-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>And then you can browse to the second website successfully as well.</p>
+<p><img src="/assets/img/posts/20160819/135042-sm.jpg" alt="" eleventy:widths="640"></p>
+<h4>Conclusion</h4>
+<p>This is by no means an exhaustive tutorial but I think it provides enough information to get a production site running (in fact I will be doing just that for an internal API I have planned imminently). Please leave any comments below.</p>
+<p>Thanks :-)</p>
+<p><a href="http://www.jeffreyfritz.com/2016/08/should-i-use-asp-net-core-or-mvc-5/">http://www.jeffreyfritz.com/2016/08/should-i-use-asp-net-core-or-mvc-5/</a></p>
+<p><a href="https://docs.asp.net/en/latest/publishing/linuxproduction.html">https://docs.asp.net/en/latest/publishing/linuxproduction.html</a></p>
+<p><a href="http://benfoster.io/blog/how-to-configure-kestrel-urls-in-aspnet-core-rc2">http://benfoster.io/blog/how-to-configure-kestrel-urls-in-aspnet-core-rc2</a></p>
+<p><a href="http://stackoverflow.com/questions/36001695/setting-base-path-using-configurationbuilder">http://stackoverflow.com/questions/36001695/setting-base-path-using-configurationbuilder</a></p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.js"></script>
+  
+
+</body>
+</html>
