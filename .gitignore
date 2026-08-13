@@ -204,3 +204,6 @@ src/assets/js/main.min.js
 
 # 11ty
 !.eleventy.js
+
+# Bun
+bun.lock
