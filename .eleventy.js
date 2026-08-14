@@ -38,7 +38,8 @@ export default function (eleventyConfig) {
 
   eleventyConfig.on('eleventy.after', () => {
     if (process.env.ELEVENTY_RUN_MODE === "build") {
-      execSync("bun lightningcss --minify --bundle src/assets/css/site.css -o _site/assets/css/site.min.css");
+      execSync("bun build:css") 
+      execSync("bun build:js") 
     }
     execSync('bun build:index', { stdio: 'inherit' });
   });

@@ -2,7 +2,10 @@
   "name": "capitol-digital",
   "scripts": {
     "dev": "eleventy --serve",
-    "build:index": "pagefind --site ./_site"
+    "build": "bun eleventy",
+    "build:index": "pagefind --site ./_site",
+    "build:css": "bun lightningcss --minify --bundle src/assets/css/site.css -o src/assets/css/site.min.css",
+    "build:js": "bun build src/assets/js/main.js --outfile=src/assets/js/main.min.js --minify"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
