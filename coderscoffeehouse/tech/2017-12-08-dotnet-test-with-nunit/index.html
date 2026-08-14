@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>DotNet Test With NUnit</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>DotNet Test With NUnit</h1> 
+      <p>I wrote a post a few weeks ago <a href="https://coderscoffeehouse.com/tech/2017/08/27/exploring-the-dotnet-command.html">Exploring The DotNet Command</a> about ... well anyway one of the commands mentioned was the <code>test</code> command which is what this post is about.</p>
+<p>There's some info on this in the official docs <a href="https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-test?tabs=netcore2x">here</a> with a few examples. To find out a list of the available switches (and their description) to use with <code>test</code> just type <code>dotnet test --help</code>. For example to list the available tests using the <code>--list-tests</code> switch run the following in your terminal:</p>
+<pre class="language-bash"><code class="language-bash">dotnet <span class="token builtin class-name">test</span> --list-tests</code></pre>
+<p>The following is a more complicated example: run all tests using a settings file, under release without building the project:</p>
+<pre class="language-bash"><code class="language-bash">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--settings</span> appsettings.json <span class="token parameter variable">--configuration</span> release --no-build</code></pre>
+<p>All good so far but as mentioned in the post I refer to at the start, I like to use NUnit and the only examples in the offical docs are for xUnit (which seems to be the new hotness) and MSTest. For the most part there aren't many differences to how you use the <code>test</code> command with each framework except for when using filters.</p>
+<h2>Filters</h2>
+<p>Filters are useful because they allow you to run specific tests rather than the whole test suite. I couldn't find any listings of the available NUnit filters so I decided to have a guess by running the following:</p>
+<pre class="language-shell"><code class="language-shell">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--filter</span> <span class="token assign-left variable">Hello</span><span class="token operator">=</span>x</code></pre>
+<p>This printed out the following:</p>
+<p><img src="/assets/img/posts/20171209/224440-md.jpg" alt="" eleventy:widths="640"></p>
+<p>Which tells us the available filters are <code>FullyQualifiedName</code>, <code>Name</code>, <code>Priority</code> and <code>TestCategory</code>. The available operators are listed in the official docs and they are <code>=</code> (equals), <code>!=</code> (does not equal) and <code>~</code> (contains) with both <code>|</code> (or) and <code>&amp;</code> (and) for more complicated scenarios.</p>
+<h3>Examples</h3>
+<p>We'll use the following test case for our examples:</p>
+<pre class="language-csharp"><code class="language-csharp"><span class="token keyword">using</span> <span class="token namespace">NUnit<span class="token punctuation">.</span>Framework</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">nunit_exercise</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Tests</span>
+  <span class="token punctuation">{</span>
+    <span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">Test</span></span><span class="token punctuation">]</span>
+    <span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">Category</span><span class="token attribute-arguments"><span class="token punctuation">(</span><span class="token string">"Foo"</span><span class="token punctuation">)</span></span></span><span class="token punctuation">]</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Test1</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      Assert<span class="token punctuation">.</span><span class="token function">Pass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">Test</span></span><span class="token punctuation">]</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      Assert<span class="token punctuation">.</span><span class="token function">Pass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Running an individual test is pretty straightforward, you can use the <code>Name</code> filter like so:</p>
+<pre class="language-shell"><code class="language-shell">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--filter</span> <span class="token assign-left variable">Name</span><span class="token operator">=</span>Test1</code></pre>
+<p>The <code>Category</code> filter is probably the simplest way to group tests. The filter corresponds to the attribute of the same name which can be used at either the class or method level (as shown in the example below). So to run all tests under <code>Foo</code> execute the following:</p>
+<pre class="language-shell"><code class="language-shell">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--filter</span> <span class="token assign-left variable">TestCategory</span><span class="token operator">=</span>Foo</code></pre>
+<p>This is great but I don't use <code>Category</code> myself but wanted a convenient way to group tests without having to add unwanted attributes to my test cases. I found the best way to do this is to use the <code>FullyQualifiedName</code> filter and the <code>~</code> (contains) operator. I could also use the <code>Name</code> filter but it might be you have test methods of the same name in different classes. To run the tests in the <code>Tests</code> class from the our above example execute the following:</p>
+<pre class="language-shell"><code class="language-shell">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--filter</span> FullyQualifiedName~nunit_exercise.Tests</code></pre>
+<p>Basically after the <code>~</code> operator type the value <code>namespace.className</code>. You can filter this down further if you wish using the name (you might only want to run certain tests in one class for example) which would follow the rule <code>namespace.className.StartOfTestName</code>.  For example the following will also run all tests in the <code>Tests</code> class:</p>
+<pre class="language-shell"><code class="language-shell">dotnet <span class="token builtin class-name">test</span> <span class="token parameter variable">--filter</span> FullyQualifiedName~nunit_exercise.Tests.Test</code></pre>
+<p>This includes all tests in the class prefixed with <code>Test</code> so if another test is added that doesn't start the same it won't be included.</p>
+<p>That's it for this one! <a href="https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests">Here's</a> some further reading on using filters :-)</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>Mono Linux Setup</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>Mono Linux Setup</h1> 
+      <p>I started playing around with Linux a couple of years ago as I had some customer requirements that didn't fit with Windows. It was soon after that I decided to make the switch permanent and although I've enjoyed playing with new languages and frameworks as someone who has primarily been a .NET developer I've not found the ride entirely smooth. The biggest frustration is the fact Windows dominates .NET even with the announcement (some time ago now) that it would have official MS support for cross platform compatibility. There's a real dearth of tutorials and I've had to hunt about for scraps of information with little in the way of an end to end tutorial for building and deploying an app from development to production. So I decided to put together what I've learned (as much for my own reference as it is for others) and hopefully it can be of help to some like myself who are coming from the world of Windows GUI snap in consoles to the cold world of the Linux terminal.</p>
+<p>The first part of this series will be setting up a Linux VM. For this demo I'm using Parallels on my Mac but you could just as easily use VirtualBox. I'm using Ubuntu Sever 14.04 because Ubuntu seems to be the best supported and 14.04 is the most recent LTS version.</p>
+<p>Usually when I setup a VM I name the server the same name as its OS but I already have one on my machine called &quot;ubuntu&quot; so I'll call this one &quot;mono-demo&quot;.</p>
+<p><img src="/assets/img/posts/20160107/2016-01-07@22.11.19-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Then I just go through the defaults until prompted for a user which I call 'deployer' and give a simple password.</p>
+<p><img src="/assets/img/posts/20160107/2016-01-07@22.28.32-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>And then continue until prompted for the software selection. The only one I tick here is OpenSSH as otherwise I'll only be able to login to the machine directly. If you're using a VM on a cloud platform then you'll need to use SSH (for my part I find Parallels doesn't play very well when you access the Linux VM directly as the keys get 'sticky').</p>
+<p><img src="/assets/img/posts/20160107/2016-01-07@22.46.49-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>If you've skipped ahead and didn't tick OpenSSH you can always install it after with the following commannd:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> openssh-server</code></pre>
+<p>That's the end of the process for creating the server. Once the sever boots login with the credentails you created during setup (in my case the user 'deployer') so we're ready to install the required packages.</p>
+<p>First we'll install the firewall so run the following from the terminal:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> ufw</code></pre>
+<p>Next enable the firewall and allow ports 22 and 80 for SSH and HTTP respectively. It's a good idea to test you can connect with SSH from another session before you exit your current terminal session just in case there are any issues and you don't lock yourself out!</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> ufw <span class="token builtin class-name">enable</span>
+<span class="token function">sudo</span> ufw allow <span class="token number">22</span>/tcp
+<span class="token function">sudo</span> ufw allow <span class="token number">80</span>/tcp</code></pre>
+<p>Now we'll install mono itself. The process is pretty simple and the documentation on the website is pretty good but for completeness I'll include the steps here. First run the following commands:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> apt-key adv <span class="token parameter variable">--keyserver</span> hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+<span class="token builtin class-name">echo</span> <span class="token string">"deb http://download.mono-project.com/repo/debian wheezy main"</span> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/mono-xamarin.list
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update </code></pre>
+<p>If you're using a different version of Ubuntu from the one here (14.04) there may be some additonal steps but if not then just run the following:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> mono-devel
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> mono-complete</code></pre>
+<p>There are a couple of other packages that are recommended, the first will prevent some framework errors and the latter is for SSL:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> referenceassemblies-pcl
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> ca-certificates-mono</code></pre>
+<p>That's the mono installation complete. You can run the following which will print the mono details to the terminal:</p>
+<pre class="language-shell"><code class="language-shell">mono <span class="token parameter variable">--version</span></code></pre>
+<p>Now we'll just create and compile a quick Hello World app to show Mono can successfully run .NET code. For this tutorial I haven't shown how to install any of the tools I like to use such as &quot;vim&quot; and &quot;oh-my-zsh&quot; and if you're not used to working on Linux even simple things can be confusing. &quot;vi&quot; is the precursor to &quot;vim&quot; and is preinstalled on Linux and uses most of the same commands so we'll use that. From the terminal type the following to start the text editor and create a file named &quot;hello.cs&quot;.</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">vi</span> hello.cs</code></pre>
+<p>Now press the 'i' key once for insert so we can add some code. Then copy and paste the following:</p>
+<pre class="language-csharp"><code class="language-csharp"><span class="token keyword">using</span> <span class="token keyword">static</span> <span class="token class-name">System<span class="token punctuation">.</span>Console</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Program</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">static</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Main</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> args<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token function">WriteLine</span><span class="token punctuation">(</span><span class="token string">"Hello World!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>Now hit escape so no more changes are made then type the following in the terminal:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token operator">!</span>wq</code></pre>
+<p>The exclamation mark is what you put before sending a command to vim and the 'w' is for writing the changes and 'q' is for quitting. Once the changes are written compile the newly created file with the following:</p>
+<pre class="language-shell"><code class="language-shell">mcs hello.cs</code></pre>
+<p>This will have created a compiled exe file which we can then run with the following:</p>
+<pre class="language-shell"><code class="language-shell">mono hello.exe</code></pre>
+<p>And this will hopefully print &quot;Hello World!&quot; to the terminal as shown below:</p>
+<p><img src="/assets/img/posts/20160107/2016-01-11@23.05.34-sm.jpg" alt="" eleventy:widths="640"></p>
+<p>Okay that concludes the first part of this series, I'll be posting part 2 in the next few days and it will show how to configure the web server and run ASP.NET. If you have any questions please add them to the comments, thanks :-)</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>

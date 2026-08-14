@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>Exploring The DotNet Command</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>Exploring The DotNet Command</h1> 
+      <p>I've been using the new <code>dotnet</code> command in my workflow for a little while (anyone that's made the switch to .NET Core will soon realise you can't stay away from it, probably even if you're using Visual Studio). It's quite powerful but I haven't really explored it beyond the basics so thought I'd have a bash at using it for more than just doing simple build stuff.</p>
+<p>When I'm not sure of terminal switches to get familiar I type out the full switch names so I can see what I've done when I scan my terminal (the point being here that a lot of the following examples can be shorted with one character switches).</p>
+<h2>Console App</h2>
+<p>So I knocked together a basic console app with a seperate class library.</p>
+<p>First I created my root directory.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">mkdir</span> vscode_fun
+<span class="token builtin class-name">cd</span> vscode_fun
+</code></pre>
+<p>Then created the console app.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet new console <span class="token parameter variable">--name</span> myconsole <span class="token parameter variable">--output</span> myconsole
+</code></pre>
+<p>The <code>output</code> switch created the directory named (I expected this would happen but didn't know until I'd tried!) with the <code>.csproj</code> project file inside and a simple <code>Program.cs</code> file for simple 'Hello World' style program.</p>
+<p>Sure enough if you <code>cd</code> to the directory and run <code>dotnet run</code> you'll see <code>&quot;Hello World!&quot; </code> printed to the console but to run it from the current location you'll need include the <code>project</code> switch.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet run <span class="token parameter variable">--project</span> myconsole
+</code></pre>
+<p>The <code>project</code> switch is for a <code>.csproj</code> file but it's intelligent enough to search any provided path and locate the file itself.</p>
+<h2>Class Library</h2>
+<p>So for the second part, creating a class library.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet new classlib <span class="token parameter variable">--name</span> mylib <span class="token parameter variable">--output</span> mylib
+</code></pre>
+<p>The above command is much the same as before apart from the project type is different, <code>classlib</code> is specified instead of <code>console</code>. This creates a <code>.csproj</code> and a simple class file named <code>Class1.cs</code>. I changed this to a basic <code>Greeter</code> class with the following code.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">namespace</span> <span class="token namespace">mylib</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Greeter</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> <span class="token function">GetGreeting</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span></span> name<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token interpolation-string"><span class="token string">$"Hello </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">name</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+  <span class="token punctuation">}</span>
+  
+<span class="token punctuation">}</span>
+</code></pre>
+<h2>Project Reference</h2>
+<p>Pretty simple so far but how do you add a project reference to the console app so it can call the library? That's done with the following command.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet <span class="token function">add</span> myconsole reference mylib/mylib.csproj
+</code></pre>
+<p>The <code>myconsole</code> after <code>add</code> above is an optional path to the project file you wish to change and can be just a path to the directory the file resides. If none is supplied the current directory is used. In our example here we have to specify the path as we're in the directory above. The argument after <code>reference</code> must be a full path to the project you wish to include and must include the <code>.csproj</code> file name.</p>
+<p>If we check the console app project file with <code>cat myconsole/myconsole.csproj</code> we can see it's added a reference.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token operator">&lt;</span>ItemGroup<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token class-name">ProjectReference</span> Include<span class="token operator">=</span><span class="token string">"..\mylib\mylib.csproj"</span> <span class="token operator">/</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>ItemGroup<span class="token operator">></span>
+</code></pre>
+<p>To remove a project refernece just substitute the <code>add</code> option to <code>remove</code>.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet remove myconsole reference mylib/mylib.csproj
+</code></pre>
+<h3>Putting it together</h3>
+<p>Now the console app's <code>Program.cs</code> file can be changed to reference the new added library.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">System</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">mylib</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">myconsole</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">class</span> <span class="token class-name">Program</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">static</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Main</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> args<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> greeter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Greeter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> name <span class="token operator">=</span> <span class="token string">"dotnet demo"</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> greeting <span class="token operator">=</span> greeter<span class="token punctuation">.</span><span class="token function">GetGreeting</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span>greeting<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Again simple stuff. We can just run the simple <code>dotnet run</code> command which does a build for us and then executes the program so we have <code>Hello dotnet demo</code> printed to the console as expected.</p>
+<h2>Nuget Packages</h2>
+<p>Adding Nuget packages is an essential part of a .NET program and that can also be easily achieved using the <code>dotnet</code> command like so.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet <span class="token function">add</span> mylib package newtonsoft.json
+</code></pre>
+<p>Have a look in the <code>.csproj</code> file and you'll see the package reference is added.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token operator">&lt;</span>ItemGroup<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token class-name">PackageReference</span> Include<span class="token operator">=</span><span class="token string">"newtonsoft.json"</span> Version<span class="token operator">=</span><span class="token string">"10.0.3"</span> <span class="token operator">/</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>ItemGroup<span class="token operator">></span>
+</code></pre>
+<p>As with removing project references to remove Nuget packages just change <code>add</code> to <code>remove</code>.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet remove mylib package newtonsoft.json
+</code></pre>
+<h3>Putting it together</h3>
+<p>To test I just modified my <code>Class1.cs</code> file with the following contrived example.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">System</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Newtonsoft<span class="token punctuation">.</span>Json</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">mylib</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Person</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">int</span></span> Id <span class="token punctuation">{</span><span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> FirstName <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> LastName <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Greeter</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> <span class="token function">GetGreeting</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span></span> name<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token interpolation-string"><span class="token string">$"Hello </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">name</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">TestJsonExample</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> person <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Person</span>
+      <span class="token punctuation">{</span>
+        Id <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span>
+        FirstName <span class="token operator">=</span> <span class="token string">"John"</span><span class="token punctuation">,</span>
+        LastName <span class="token operator">=</span> <span class="token string">"Wayne"</span>
+      <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+      <span class="token class-name"><span class="token keyword">var</span></span> json <span class="token operator">=</span> JsonConvert<span class="token punctuation">.</span><span class="token function">SerializeObject</span><span class="token punctuation">(</span>person<span class="token punctuation">,</span> Formatting<span class="token punctuation">.</span>Indented<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      Console<span class="token punctuation">.</span><span class="token function">WriteLine</span><span class="token punctuation">(</span>json<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+  <span class="token punctuation">}</span>
+  
+<span class="token punctuation">}</span>
+</code></pre>
+<p>And then added the line <code>greeter.TestJsonExample();</code> to the <code>Program.cs</code> file of the console app. Then I could run the following again.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet run <span class="token parameter variable">--project</span> myconsole
+</code></pre>
+<p>Now as well as my <code>Hello dotnet demo</code> message I get the following printed to the console.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">{</span>
+  <span class="token string">"Id"</span><span class="token builtin class-name">:</span> <span class="token number">1</span>,
+  <span class="token string">"FirstName"</span><span class="token builtin class-name">:</span> <span class="token string">"John"</span>,
+  <span class="token string">"LastName"</span><span class="token builtin class-name">:</span> <span class="token string">"Wayne"</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>There are a few other commands that I thought I might need to run like <code>restore</code> and <code>build</code> but the <code>run</code> command does a good job of detecting changes and restoring packages and project references to simplify your workflow.</p>
+<h2>Testing</h2>
+<p>A core part of any project is testing. The <code>test</code> command allows us to do this but I noticed when I selected <code>dotnet new --help</code> to see the available templates there are only ones available for xUnit and MSTest. I use NUnit because it allows me to order tests which I sometimes need to do with integration testing so I wondered if that was possible and I found that it is.</p>
+<h3>Install Template</h3>
+<p>There is a list of available templates <a href="https://github.com/dotnet/templating/wiki/Available-templates-for-dotnet-new">here</a> and fortunately I found there is one for NUnit which I installed as below.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet new <span class="token parameter variable">-i</span> <span class="token string">"NUnit3.DotNetNew.Template::*"</span>
+</code></pre>
+<p>I then created the test project.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet new nunit <span class="token parameter variable">--name</span> mylib.tests <span class="token parameter variable">--output</span> mylib.tests
+</code></pre>
+<p>This creates a basic NUnit 3 test project which includes the following test file.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">NUnit<span class="token punctuation">.</span>Framework</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">Tests</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Tests</span>
+  <span class="token punctuation">{</span>
+    <span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">SetUp</span></span><span class="token punctuation">]</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Setup</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">Test</span></span><span class="token punctuation">]</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Test1</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      Assert<span class="token punctuation">.</span><span class="token function">Pass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Again we'll create a somewhat contrived example for our tests. First add the project we want to test.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet <span class="token function">add</span> mylib.tests reference mylib/mylib.csproj
+</code></pre>
+<p>Then add a test.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token punctuation">[</span><span class="token attribute"><span class="token class-name">Test</span></span><span class="token punctuation">]</span>
+<span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Should_return_expected_greeting</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token class-name"><span class="token keyword">var</span></span> greeter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Greeter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token class-name"><span class="token keyword">var</span></span> name <span class="token operator">=</span> <span class="token string">"Jack"</span><span class="token punctuation">;</span>
+
+  <span class="token class-name"><span class="token keyword">var</span></span> expectedGreeting <span class="token operator">=</span> <span class="token interpolation-string"><span class="token string">$"Hello </span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">name</span><span class="token punctuation">}</span></span><span class="token string">"</span></span><span class="token punctuation">;</span>
+
+  <span class="token class-name"><span class="token keyword">var</span></span> greeting <span class="token operator">=</span> greeter<span class="token punctuation">.</span><span class="token function">GetGreeting</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  Assert<span class="token punctuation">.</span><span class="token function">AreEqual</span><span class="token punctuation">(</span>expectedGreeting<span class="token punctuation">,</span> greeting<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>The test project can then be run with the following command.</p>
+<pre class="language-shell"><code class="language-shell">
+dotnet <span class="token builtin class-name">test</span> mylib.tests
+</code></pre>
+<p>You should see something like the following in your terminal.</p>
+<p><img src="/assets/img/posts/20170827/204913-sm.jpg" alt=""></p>
+<p>If you execute <code>dotnet</code> from within the test project itself the last argument (the path of the <code>.cpsproj</code> file) isn't necessary.</p>
+<h2>Summary</h2>
+<p>I was pleasantly surprised at how easy it was to get up and running, particuarly setting up a test project. Anyone who's done any front end work will know what a PITA setting up build and test projects with the associated tools is (at least that's always been my experience) but here everything worked as expected with little in way of configuration. Of course there's a lot more for creating builds but this was just a quick exploration and is something I expect I'll be using a lot more.</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>

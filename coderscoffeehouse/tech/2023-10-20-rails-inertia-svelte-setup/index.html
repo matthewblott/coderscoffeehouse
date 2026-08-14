@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>Rails Inertia Svelte Setup</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>Rails Inertia Svelte Setup</h1> 
+      <p>I've been working with Rails a lot lately and I also happen to be a big fan of Svelte. Svelte is a sort of Rails for the front end (low barrier of entry, sensible defaults etc) and I wanted to get the two working together. I also wanted to use Inertia which is a sort of 'glue' between your front and backend that allows you to use standard controllers without having to write an API.</p>
+<p>It's not well documented and I struggled a bit hence I thought it a good idea to jot down what I did.</p>
+<p>I'm using the latest Rails 7.1.1 and the latest Ruby 3.2.2.</p>
+<h2>Setup Rails and Gems</h2>
+<p>First create a new Rails app:</p>
+<pre class="language-bash"><code class="language-bash">rails new rails-inertia-svelte</code></pre>
+<p>Some of the instructions I came across said you need to run with the <code>--skip-hotwire</code> flag. Initially I did this and disabled everything but after a few trials I found it didn't make any difference. I haven't done too much with it so far so maybe there's a banana skin I'm yet to trip on but so far I haven't had any problems.</p>
+<p>Add the relevant gems:</p>
+<pre class="language-bash"><code class="language-bash">bundle <span class="token function">add</span> inertia_rails
+bundle <span class="token function">add</span> vite_rails</code></pre>
+<p>Install Vite:</p>
+<pre class="language-bash"><code class="language-bash">bundle <span class="token builtin class-name">exec</span> vite <span class="token function">install</span></code></pre>
+<h2>Setup front end libraries</h2>
+<p>The previous step will create the <code>package.json</code> file so you can then install the required npm packages:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> --save-dev @inertiajs/inertia
+<span class="token function">npm</span> <span class="token function">install</span> --save-dev @inertiajs/svelte
+<span class="token function">npm</span> <span class="token function">install</span> --save-dev @sveltejs/vite-plugin-svelte
+<span class="token function">npm</span> <span class="token function">install</span> --save-dev svelte</code></pre>
+<p>The above took a bit of jiggery pokery to work out what was needed but the above packages are the only ones required (though there are others that can be added).</p>
+<p>Also another gotcha is make sure the <code>package.json</code> allows modules. To do so make sure the file includes the following:</p>
+<pre class="language-json"><code class="language-json">...
+
+  <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"module"</span><span class="token punctuation">,</span>
+
+...</code></pre>
+<h2>Configure Vite Plugin</h2>
+<p>Add the Vite Svelte plugin to the project by editing the <code>vite.config.ts</code> file (found in the project's root). After editing it should look like the following:</p>
+<pre class="language-js"><code class="language-js">
+<span class="token keyword">import</span> <span class="token punctuation">{</span> defineConfig <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'vite'</span>
+<span class="token keyword">import</span> RubyPlugin <span class="token keyword">from</span> <span class="token string">'vite-plugin-ruby'</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> svelte <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@sveltejs/vite-plugin-svelte'</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token function">defineConfig</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token function">RubyPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token function">svelte</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Next configure the <code>vite.json</code> file (located in the config folder) to point to the correct location for our entrypoint. The <code>sourceCodeDir</code> value needs to be <code>frontend</code> like so:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"all"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"sourceCodeDir"</span><span class="token operator">:</span> <span class="token string">"app/frontend"</span><span class="token punctuation">,</span>
+    <span class="token property">"watchAdditionalPaths"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+...</code></pre>
+<p>In the next step we'll create the entrypoint we refer to above.</p>
+<h2>Setup Rails Svelte entrypoint</h2>
+<p>This step was a bit different in the few places I found examples however this seems to be the accepted and most orthodox way of organising the files.</p>
+<p>First create the <code>application.js</code> file:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> app/frontend/entrypoints
+<span class="token function">touch</span> app/frontend/entrypoints/application.js</code></pre>
+<p>The contents of <code>application.js</code> should be the following:</p>
+<pre class="language-js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> createInertiaApp <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'@inertiajs/svelte'</span>
+
+<span class="token function">createInertiaApp</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token function-variable function">resolve</span><span class="token operator">:</span> <span class="token parameter">name</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> pages <span class="token operator">=</span> <span class="token keyword">import</span><span class="token punctuation">.</span>meta<span class="token punctuation">.</span><span class="token function">glob</span><span class="token punctuation">(</span><span class="token string">'../pages/**/*.svelte'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">eager</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> pages<span class="token punctuation">[</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">../pages/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.svelte</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">setup</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> el<span class="token punctuation">,</span> App<span class="token punctuation">,</span> props <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">new</span> <span class="token class-name">App</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token literal-property property">target</span><span class="token operator">:</span> el<span class="token punctuation">,</span> props <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>Next create a front end Svelte component as an example.</p>
+<p>First create the <code>Home.svelte</code> file:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> app/frontend/pages
+<span class="token function">touch</span> app/frontend/pages/Home.svelte</code></pre>
+<p>Then add some HTML markup to the <code>Home.svelte</code> component:</p>
+<pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>Home<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span></code></pre>
+<h2>Generate Rails Code</h2>
+<p>To load our <code>Home.svelte</code> component we'll need a Rails controller which we'll create like so:</p>
+<pre class="language-bash"><code class="language-bash">rails generate controller Home index</code></pre>
+<p>Then make sure the <code>index</code> method sends the correct response using the Inertia library:</p>
+<pre class="language-ruby"><code class="language-ruby"><span class="token keyword">class</span> <span class="token class-name">HomeController</span> <span class="token operator">&lt;</span> ApplicationController
+  <span class="token keyword">def</span> <span class="token method-definition"><span class="token function">index</span></span>
+    render inertia<span class="token operator">:</span> <span class="token string-literal"><span class="token string">'Home'</span></span><span class="token punctuation">,</span> <span class="token symbol">props</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token symbol">name</span><span class="token operator">:</span> <span class="token string-literal"><span class="token string">'Inertia Rails'</span></span>
+    <span class="token punctuation">}</span>
+  <span class="token keyword">end</span>
+<span class="token keyword">end</span></code></pre>
+<p>To get the above to work on the main path edit the <code>routes.rb</code> file like so:</p>
+<pre class="language-ruby"><code class="language-ruby">Rails<span class="token punctuation">.</span>application<span class="token punctuation">.</span>routes<span class="token punctuation">.</span>draw <span class="token keyword">do</span>
+  root <span class="token string-literal"><span class="token string">'home#index'</span></span>
+<span class="token keyword">end</span></code></pre>
+<h2>Final Steps</h2>
+<p>We're almost done. In fact we have everything we need but this bit is to make it a bit simpler to run. Create a <code>dev</code> file in the bin folder and make it executable:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">touch</span> bin/dev
+<span class="token function">chmod</span> +x bin/dev</code></pre>
+<p>Edit the newly created <code>dev</code> file and add the following bash code:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># !/usr/bin/env sh</span>
+
+<span class="token keyword">if</span> <span class="token operator">!</span> gem list foreman <span class="token parameter variable">-i</span> --silent<span class="token punctuation">;</span> <span class="token keyword">then</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"Installing foreman..."</span>
+  gem <span class="token function">install</span> foreman
+<span class="token keyword">fi</span>
+
+<span class="token builtin class-name">exec</span> foreman start <span class="token parameter variable">-f</span> Procfile.dev <span class="token string">"<span class="token variable">$@</span>"</span>
+</code></pre>
+<p>Finally create the <code>Procfile.dev</code> file which is referred to above:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">touch</span> Procfile.dev</code></pre>
+<p>And then add the following lines. The <code>p</code> flag is important and is what caught me out:</p>
+<pre class="language-bash"><code class="language-bash">vite: bin/vite dev
+web: bin/rails s <span class="token parameter variable">-p</span> <span class="token number">3000</span></code></pre>
+<p>And that's it! Now you can run <code>bin/dev</code> from your terminal and you should see something like the following:</p>
+<p><img src="/assets/img/tech/2023-10-20-rails-inertia-svelte.jpg" alt="Vimspector" eleventy:widths="640"></p>
+<p>That's not very exciting but it's the minimum to get going with Svelte, Inertia and Rails. I prefer minimal setups that don't overwhelm you when I'm starting so I hope this is helpful. <a href="https://github.com/matthewblott/rails-inertia-svelte">The source code can be found here</a>.</p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>
