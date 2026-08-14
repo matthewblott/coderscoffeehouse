@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>ASP.NET Core SSL from Development to Production</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>ASP.NET Core SSL from Development to Production</h1> 
+      <p>You pretty have to use SSL these days but getting started with ASP.NET Core was a bit of a challenge for me. As usual I had to scour the net for bits of information and then cobble a solution together and this post is basically what I did to get from development to production. The <a href="https://github.com/matthewblott/aspnetcore-ssl">code for this tutorial can be found here</a>.</p>
+<h2>Development (macOS)</h2>
+<p>First it's nice to use SSL in development so your coding environment best simulates what you'll be doing in production. There's an excellent post <a href="https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core">here</a> on setting up SSL locally with ASP.NET Core. It's well worth reading so I won't go into too much detail but this is basically what you need to do.</p>
+<p>First create a certificate and key using <code>openssl</code>. Create a <code>localhost.conf</code> file for the default values like mine <a href="https://github.com/matthewblott/aspnetcore-ssl/blob/master/localhost.conf">here</a> and substitute <code>password</code> at the end for something else (if desired).</p>
+<pre class="language-shell"><code class="language-shell">
+openssl req <span class="token parameter variable">-x509</span> <span class="token parameter variable">-nodes</span> <span class="token parameter variable">-days</span> <span class="token number">365</span> <span class="token parameter variable">-newkey</span> rsa:2048 <span class="token parameter variable">-keyout</span> localhost.key <span class="token parameter variable">-out</span> localhost.crt <span class="token parameter variable">-config</span> localhost.conf <span class="token parameter variable">-passin</span> pass:password
+</code></pre>
+<p>Then create the <code>.pfx</code> file which will be added to your local keychain. Again this uses <code>openssl</code>. Enter the password used in the previous step when prompted.</p>
+<pre class="language-shell"><code class="language-shell">
+openssl pkcs12 <span class="token parameter variable">-export</span> <span class="token parameter variable">-out</span> localhost.pfx <span class="token parameter variable">-inkey</span> localhost.key <span class="token parameter variable">-in</span> localhost.crt
+</code></pre>
+<p>Open the macOS Keychain Access and drag the <code>pfx</code> file into the System section. Enter the system / admin password when prompted.</p>
+<p><img src="/assets/img/posts/20171123/114511-xs.jpg" alt=""></p>
+<p>Then enter the password created with the file in the step earlier.</p>
+<p><img src="/assets/img/posts/20171123/114526-xs.jpg" alt=""></p>
+<p>Then double-click on the Keychain Access entry and set to Always Trust so you don't continue to get a warning in the address bar when using https.</p>
+<p><img src="/assets/img/posts/20171123/120132-xs.jpg" alt=""></p>
+<p>You can run the following as a check if desired.</p>
+<pre class="language-shell"><code class="language-shell">
+openssl x509 <span class="token parameter variable">-in</span> localhost.crt <span class="token parameter variable">-text</span>
+</code></pre>
+<h2>ASP.NET Core Code</h2>
+<p>My code for loading the certificate is pretty similar to that of the tutorial I refer to at the start. Below is the code for the <code>Program.cs</code> file where you'll have the <code>Main</code> method. One change is I've included the <code>environment</code> variable as I like to have a <code>hosting.json</code> file for each environment (I went to deploy and realised I already had a site using the default port 5000).</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">System</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">System<span class="token punctuation">.</span>IO</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">System<span class="token punctuation">.</span>Linq</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">System<span class="token punctuation">.</span>Net</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">System<span class="token punctuation">.</span>Security<span class="token punctuation">.</span>Cryptography<span class="token punctuation">.</span>X509Certificates</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Hosting</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>Extensions<span class="token punctuation">.</span>Configuration</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">aspnetcore</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Program</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Main</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> args<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token function">BuildWebHost</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token return-type class-name">IWebHost</span> <span class="token function">BuildWebHost</span><span class="token punctuation">(</span><span class="token class-name"><span class="token keyword">string</span><span class="token punctuation">[</span><span class="token punctuation">]</span></span> args<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> environment <span class="token operator">=</span> Environment<span class="token punctuation">.</span><span class="token function">GetEnvironmentVariable</span><span class="token punctuation">(</span><span class="token string">"ASPNETCORE_ENVIRONMENT"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> currentDir <span class="token operator">=</span> Directory<span class="token punctuation">.</span><span class="token function">GetCurrentDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token class-name"><span class="token keyword">var</span></span> config <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">ConfigurationBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">SetBasePath</span><span class="token punctuation">(</span>Directory<span class="token punctuation">.</span><span class="token function">GetCurrentDirectory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddJsonFile</span><span class="token punctuation">(</span><span class="token string">"hosting.json"</span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">optional</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddJsonFile</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"hosting.</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">environment</span><span class="token punctuation">}</span></span><span class="token string">.json"</span></span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">optional</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddEnvironmentVariables</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token class-name"><span class="token keyword">var</span></span> urlSettings <span class="token operator">=</span> config<span class="token punctuation">.</span><span class="token function">GetSection</span><span class="token punctuation">(</span><span class="token string">"urls"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> urls <span class="token operator">=</span> urlSettings<span class="token punctuation">.</span>Value<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span><span class="token char">';'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> url <span class="token operator">=</span> urls<span class="token punctuation">.</span><span class="token function">First</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> uri <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Uri</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token class-name"><span class="token keyword">var</span></span> port <span class="token operator">=</span> uri<span class="token punctuation">.</span>Port<span class="token punctuation">;</span>
+
+      <span class="token class-name"><span class="token keyword">var</span></span> host <span class="token operator">=</span> WebHost<span class="token punctuation">.</span><span class="token function">CreateDefaultBuilder</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">UseConfiguration</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">UseContentRoot</span><span class="token punctuation">(</span>currentDir<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token generic-method"><span class="token function">UseStartup</span><span class="token generic class-name"><span class="token punctuation">&lt;</span>Startup<span class="token punctuation">></span></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">UseKestrel</span><span class="token punctuation">(</span>options <span class="token operator">=></span>
+        <span class="token punctuation">{</span>
+          options<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span>IPAddress<span class="token punctuation">.</span>Loopback<span class="token punctuation">,</span> port<span class="token punctuation">,</span> listenOptions <span class="token operator">=></span>
+          <span class="token punctuation">{</span>
+            <span class="token class-name"><span class="token keyword">var</span></span> certificateSettings <span class="token operator">=</span> config<span class="token punctuation">.</span><span class="token function">GetSection</span><span class="token punctuation">(</span><span class="token string">"certificateSettings"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name"><span class="token keyword">var</span></span> certificateFileName <span class="token operator">=</span> certificateSettings<span class="token punctuation">.</span><span class="token generic-method"><span class="token function">GetValue</span><span class="token generic class-name"><span class="token punctuation">&lt;</span><span class="token keyword">string</span><span class="token punctuation">></span></span></span><span class="token punctuation">(</span><span class="token string">"filename"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name"><span class="token keyword">var</span></span> certificatePassword <span class="token operator">=</span> certificateSettings<span class="token punctuation">.</span><span class="token generic-method"><span class="token function">GetValue</span><span class="token generic class-name"><span class="token punctuation">&lt;</span><span class="token keyword">string</span><span class="token punctuation">></span></span></span><span class="token punctuation">(</span><span class="token string">"password"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token class-name"><span class="token keyword">var</span></span> cert <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">X509Certificate2</span><span class="token punctuation">(</span>certificateFileName<span class="token punctuation">,</span> certificatePassword<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            listenOptions<span class="token punctuation">.</span><span class="token function">UseHttps</span><span class="token punctuation">(</span>cert<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">return</span> host<span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Here's an example of the <code>hosting.json</code> file. The password will be the same as that used earlier when you created the certificate.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token punctuation">{</span>
+  <span class="token string">"urls"</span><span class="token builtin class-name">:</span> <span class="token string">"https://localhost:5000"</span>,
+  <span class="token string">"certificateSettings"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"filename"</span><span class="token builtin class-name">:</span> <span class="token string">"localhost.pfx"</span>,
+    <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"password"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>And here's a bare bones example of what you need in <code>Startup</code>. The parts to note are the <code>RequireHttpsAttribute</code> method called in <code>ConfigureServices</code> - which basically means no part of your site will execute unless it's called via https - and the <code>AddRedirectToHttps</code> method called in <code>Configure</code> which redirects any http calls to https.</p>
+<pre class="language-csharp"><code class="language-csharp">
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Builder</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Hosting</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Mvc</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>AspNetCore<span class="token punctuation">.</span>Rewrite</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>Extensions<span class="token punctuation">.</span>Configuration</span><span class="token punctuation">;</span>
+<span class="token keyword">using</span> <span class="token namespace">Microsoft<span class="token punctuation">.</span>Extensions<span class="token punctuation">.</span>DependencyInjection</span><span class="token punctuation">;</span>
+
+<span class="token keyword">namespace</span> <span class="token namespace">aspnetcore</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Startup</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name">IHostingEnvironment</span> HostingEnvironment <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+    <span class="token class-name">IConfigurationRoot</span> Configuration<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token function">Startup</span><span class="token punctuation">(</span><span class="token class-name">IHostingEnvironment</span> env<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      HostingEnvironment <span class="token operator">=</span> env<span class="token punctuation">;</span>
+      
+      <span class="token class-name"><span class="token keyword">var</span></span> builder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">ConfigurationBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">SetBasePath</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>ContentRootPath<span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddJsonFile</span><span class="token punctuation">(</span><span class="token string">"appsettings.json"</span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">optional</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">reloadOnChange</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddJsonFile</span><span class="token punctuation">(</span><span class="token interpolation-string"><span class="token string">$"appsettings.</span><span class="token interpolation"><span class="token punctuation">{</span><span class="token expression language-csharp">env<span class="token punctuation">.</span>EnvironmentName</span><span class="token punctuation">}</span></span><span class="token string">.json"</span></span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">optional</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token named-parameter punctuation">reloadOnChange</span><span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">AddEnvironmentVariables</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      
+      Configuration <span class="token operator">=</span> builder<span class="token punctuation">.</span><span class="token function">Build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">ConfigureServices</span><span class="token punctuation">(</span><span class="token class-name">IServiceCollection</span> services<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      services<span class="token punctuation">.</span><span class="token generic-method"><span class="token function">Configure</span><span class="token generic class-name"><span class="token punctuation">&lt;</span>MvcOptions<span class="token punctuation">></span></span></span><span class="token punctuation">(</span>options <span class="token operator">=></span> <span class="token punctuation">{</span> options<span class="token punctuation">.</span>Filters<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token constructor-invocation class-name">RequireHttpsAttribute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      services<span class="token punctuation">.</span><span class="token function">AddMvc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">void</span></span> <span class="token function">Configure</span><span class="token punctuation">(</span><span class="token class-name">IApplicationBuilder</span> app<span class="token punctuation">,</span> <span class="token class-name">IHostingEnvironment</span> env<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>env<span class="token punctuation">.</span><span class="token function">IsDevelopment</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token punctuation">{</span>
+        app<span class="token punctuation">.</span><span class="token function">UseDeveloperExceptionPage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+
+      app<span class="token punctuation">.</span><span class="token function">UseRewriter</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token constructor-invocation class-name">RewriteOptions</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">AddRedirectToHttps</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      app<span class="token punctuation">.</span><span class="token function">UseMvc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+
+  <span class="token punctuation">}</span>
+  
+<span class="token punctuation">}</span>
+</code></pre>
+<p>If you type <code>dotnet run</code> from the command line you should be able to access the site at <code>https://localhost:5000</code>.</p>
+<h2>Production</h2>
+<p>So far this is pretty much as in the other tutorial. However when I came to deploy was when it got a bit confusing. If you check the official ASP.NET Core documents <a href="https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction?tabs=aspnetcore2x">here</a> on how to deploy to Linux it gives you a lot of detail on <code>nginx</code> (too much in fact, you don't need to build <code>nginx</code> from source on Ubuntu as it instructs) but is missing how to tie in the ASP.NET code. There's also a super easy way to install certificates and their configuration (which we'll get to).</p>
+<p>The main thing that threw me was the <code>nginx</code> site configuration here.</p>
+<pre class="language-shell"><code class="language-shell">
+server <span class="token punctuation">{</span>
+    listen <span class="token number">80</span><span class="token punctuation">;</span>
+    location / <span class="token punctuation">{</span>
+        proxy_pass http://localhost:5000<span class="token punctuation">;</span>
+        proxy_http_version <span class="token number">1.1</span><span class="token punctuation">;</span>
+        proxy_set_header Upgrade <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+        proxy_set_header Connection keep-alive<span class="token punctuation">;</span>
+        proxy_set_header Host <span class="token variable">$host</span><span class="token punctuation">;</span>
+        proxy_cache_bypass <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>I've deployed a few ASP.NET Core sites and at first glance there doesn't seem anything wrong. But if we look at our <code>hosting.json</code> file we have the following.</p>
+<pre class="language-shell"><code class="language-shell">
+  <span class="token punctuation">..</span>.
+
+  <span class="token string">"urls"</span><span class="token builtin class-name">:</span> <span class="token string">"https://localhost:5000"</span>,
+
+  <span class="token punctuation">..</span>.
+</code></pre>
+<p>That's <code>https</code> in the <code>urls</code> property. I confess it took me a while messing around before I realised this! You just need to change this to make sure it corresponds correctly with <code>hosting.json</code>. For the rest of the configuration we'll take the easy route ...</p>
+<h3>Install certbot</h3>
+<p>This uses the excellent (and free) Let's Encrypt Certificate Authority. <a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04">Here's</a> a good tutorial on installation but the lines you'll need to run are.</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> add-apt-repository ppa:certbot/certbot
+<span class="token function">sudo</span> <span class="token function">apt-get</span> update
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> python-certbot-nginx
+</code></pre>
+<p>Now to install a certificate for your site run the following (replacing <code>domain.com</code> with whatever your domain is).</p>
+<pre class="language-shell"><code class="language-shell">
+<span class="token function">sudo</span> certbot <span class="token parameter variable">--nginx</span> <span class="token parameter variable">-d</span> domain.com
+</code></pre>
+<p>And ... er that's it for your server certificate! If you check your <code>nginx</code> file you'll see the appropriate changes have been made (<code>domain.com</code> in my case refers to my real world domain).</p>
+<pre class="language-shell"><code class="language-shell">
+server <span class="token punctuation">{</span>
+        server_name domain.com<span class="token punctuation">;</span>
+
+        location / <span class="token punctuation">{</span>
+                proxy_pass https://localhost:5000<span class="token punctuation">;</span>
+                proxy_http_version <span class="token number">1.1</span><span class="token punctuation">;</span>
+                proxy_set_header Upgrade <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+                proxy_set_header Connection keep-alive<span class="token punctuation">;</span>
+                proxy_set_header Host <span class="token variable">$host</span><span class="token punctuation">;</span>
+                proxy_cache_bypass <span class="token variable">$http_upgrade</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        listen <span class="token number">443</span> ssl<span class="token punctuation">;</span> <span class="token comment"># managed by Certbot</span>
+        ssl_certificate /etc/letsencrypt/live/domain.com/fullchain.pem<span class="token punctuation">;</span> <span class="token comment"># managed by Certbot</span>
+        ssl_certificate_key /etc/letsencrypt/live/domain.com/privkey.pem<span class="token punctuation">;</span> <span class="token comment"># managed by Certbot</span>
+        include /etc/letsencrypt/options-ssl-nginx.conf<span class="token punctuation">;</span> <span class="token comment"># managed by Certbot</span>
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem<span class="token punctuation">;</span> <span class="token comment"># managed by Certbot</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$scheme</span> <span class="token operator">!=</span> <span class="token string">"https"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token builtin class-name">return</span> <span class="token number">301</span> https://<span class="token variable">$host</span><span class="token variable">$request_uri</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token comment"># managed by Certbot</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>One point of note is these certificates need to be renewed and if you google you'll see this referred to but when you install <code>certbot</code> it does this for you with a package crontab (see <code>/etc/cron.d/certbot</code>).</p>
+<p>But ... we still have a problem. What's the certificate that's being loaded in our ASP.NET Core code? Right. Well we could ditch this code and just use a standard ASP.NET Core site and use the <code>nginx</code> rules. Again, I hit a problem: I simply could not find a way to load our <code>certbot</code> certificate with ASP.NET Core. The <code>certbot</code> certificate does not use a password (a good thing, we don't want our users having to enter a password when they browse our site) but there's no way I could get the certificate to load with a blank password. So, simple. I just followed the same steps at the start with <code>openssl</code> and created a local certificate for the site on the production server. It's up to you if you want to use one certificate for all your sites or one per site (just change localhost to something else and reference it in <code>/etc/hosts</code> to <code>127.0.0.1</code>). It would be better if we could get both <code>nginx</code> and ASP.NET Core using the same certificate but I think this is a good enough work around.</p>
+<p>Useful links ....</p>
+<p><a href="https://peteskelly.com/testing-ssl-in-asp-net-core-mac/amp/">https://peteskelly.com/testing-ssl-in-asp-net-core-mac/amp/</a></p>
+<p><a href="https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core">https://www.humankode.com/asp-net-core/develop-locally-with-https-self-signed-certificates-and-asp-net-core</a></p>
+<p><a href="https://certsimple.com/blog/localhost-ssl-fix">https://certsimple.com/blog/localhost-ssl-fix</a></p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77648562-1"></script>
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "UA-77648562-1");
+  </script>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Coders Coffee House blog">
+  <title>.NET Debugging Using Vim On Apple Silicon Machine</title>
+  
+  <link rel="stylesheet" href="/assets/css/theme-light.css">
+  
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="/pagefind/pagefind-ui.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+</head>
+
+<body><header>
+  <logo>
+    <a href="/">
+      <span>
+        CCH
+      </span>
+      <svg viewBox="-10 0 660 512">
+        <use href="/assets/img/coffee.svg#x" />
+      </svg>
+    </a>
+  </logo>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>|</li>
+      <li><a href="/about">About</a></li>
+      <li>|</li>
+      <li><a href="/other-stuff">Other Stuff</a></li>
+    </ul>
+  </nav>
+  <search>
+    <span>Click here for</span>
+    <span title="search">
+      <svg viewBox="0 0 512 512">
+        <use href="/assets/img/search.svg#x" />
+      </svg>
+    </span>
+    <span>or press Cmd+K</span>
+  </search>
+</header>
+
+  <div id="search-panel">
+    <div id="pagefind"></div>
+  </div>
+  <main>
+    <article>
+      <h1>.NET Debugging Using Vim On Apple Silicon Machine</h1> 
+      <p>I've mostly been using Vim for my development work recently. I have a JetBrains subscription but hopping between IDEs felt like overkill and I wanted something simpler. I have been an avid Rider user since it came out and I wanted to see if I could get the debugging working with Vim. It turns out you can.</p>
+<p>There's a truly outstanding project called <a href="https://github.com/puremourning/vimspector">Vimspector</a> which gets you covered for most of the languages you're likely to use (including C# in our case). The problem is it doesn't work for the (now not so new) Apple Silicon processor. I could get it to work using an x64 version of .NET but this felt regressive and I wanted to get it running on my M1 Macbook.</p>
+<p>I'm not going to cover setting up Vim debugging for .NET but if you follow the videos on <a href="https://www.youtube.com/user/thousandtyone">this</a> YouTube channel you'll find everything you need.</p>
+<p>Once you've installed everything you'll need to change the version of the debugger that comes with Vimspector. It uses the Samsung debugger but you need to compile it on your machine. Fortunately I found someone had already done a lot of the work already, you can follow the Github issue <a href="https://github.com/Samsung/netcoredbg/pull/103">here</a>.</p>
+<p>First download a compatible version of NetCoreDbg <a href="https://github.com/matthewblott/netcoredbg">here</a> (this is just a forked copy of the pull request in issue 103) and cd into the repo:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">git</span> clone https://github.com/matthewblott/netcoredbg
+<span class="token builtin class-name">cd</span> netcoredbg</code></pre>
+<p>Then follow the first actions as instructed on the home page:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">mkdir</span> build
+<span class="token builtin class-name">cd</span> build
+<span class="token assign-left variable">CC</span><span class="token operator">=</span>clang <span class="token assign-left variable">CXX</span><span class="token operator">=</span>clang++ cmake <span class="token punctuation">..</span> <span class="token parameter variable">-DCMAKE_INSTALL_PREFIX</span><span class="token operator">=</span><span class="token environment constant">$PWD</span>/<span class="token punctuation">..</span>/bin</code></pre>
+<p>Now is the part when I hit a snag. The next part is running the <code>make</code> command but it threw an error on my machine and didn't recognise the correct CPU type for some reason. You need to make a change to one of the C header files in the CoreCLR project that is dowloaded in the previous step. This is the file:</p>
+<pre class="language-bash"><code class="language-bash">./netcoredb/.coreclr/src/pal/inc/pal.h
+</code></pre>
+<p>Go to line 2518 (or thereabouts) and make sure the <code>_ARM64_</code> variable is set. When I tried I could only find the <code>HOST_ARM64</code> variable which is supposed to be correct but it doesn't work. Make sure the file includes something like the following:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment">#elif defined(__APPLE__) &amp;&amp; defined(_ARM64_)</span></code></pre>
+<p>The <code>PAL_CS_NATIVE_DATA_SIZE </code> variable should probably be set to 80 but it doesn't seem to matter for this process.</p>
+<p>Once the change is made save the file and navigate back to the build directory created earlier and then run the following:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">make</span>
+<span class="token function">make</span> <span class="token function">install</span></code></pre>
+<p>The created binaries will be in the <code>bin</code> directory at the root of the project. The final step is to copy the new binaries to the location Vimspector expects them to be:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token variable">${<span class="token environment constant">HOME</span>}</span>/.local/share/nvim/plugged/vimspector/gadgets/macos/download/netcoredbg/2.0.0-915/root/netcoredbg</code></pre>
+<p>The contents of the <code>netcoredbg</code> directory below <code>root</code> should look like the following:</p>
+<pre class="language-bash"><code class="language-bash">netcoredbg
+ManagedPart.dll
+Microsoft.CodeAnalysis.CSharp.dll
+Microsoft.CodeAnalysis.CSharp.Scripting.dll
+Microsoft.CodeAnalysis.dll
+Microsoft.CodeAnalysis.Scripting.dll
+libdbgshim.dylib</code></pre>
+<p>Now when I hit F5 in my project I can step through the code much as if I was using Rider or Visual Studio:<br>
+<img src="/assets/img/tech/2022-10-26-vimspector.jpg" alt="Vimspector" eleventy:widths="640"></p>
+<h2>Useful Links</h2>
+<p><a href="https://github.com/Samsung/netcoredbg">https://github.com/Samsung/netcoredbg</a><br>
+<a href="https://github.com/dotnet/runtime/tree/main/src/coreclr">https://github.com/dotnet/runtime/tree/main/src/coreclr</a></p>
+
+    </article>
+  </main>
+  
+  <div id="disqus_thread"></div>
+  <script>
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const disqus_shortname = "matthewblott";
+      const dsq = document.createElement("script");
+      dsq.async = true;
+      dsq.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+      (
+        document.getElementsByTagName("head")[0] ||
+        document.getElementsByTagName("body")[0]
+      ).appendChild(dsq);
+    });
+  </script><footer>
+  <nav>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+    </ul>
+    <ul>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/">Blog</a></li>
+    </ul>
+    <ul>
+      <li>
+        <a href="https://github.com/matthewblott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/github.svg#x" />
+          </svg><span>Github</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/MatthewBlott" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 448 512">
+            <use href="/assets/img/twitter.svg#x" />
+          </svg><span>Twitter</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</footer>
+
+
+  <script src="/pagefind/pagefind-ui.js" defer></script>
+  
+  <script src="/assets/js/main.min.js"></script>
+  
+
+</body>
+</html>

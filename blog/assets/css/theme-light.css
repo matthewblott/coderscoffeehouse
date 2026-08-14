@@ -1,0 +1,27 @@
+/* off white */
+/* F9F7F7 */
+
+/* light grey */
+/* DBE2EF */
+
+/* lighter blue */
+/* 3F72AF */
+
+/* dark blue */
+/* 112D4E */
+
+:root {
+  --primary-color: #1E3A8A; 
+  --secondary-color: #3B82F6;
+  --background-color: #F3F4F6;
+  --text-color: #374151;
+  --accent-color: #F59E0B;
+  --danger-colour: #DC2626;
+  --disabled-color: #9CA3AF;
+  --border-color: var(--primary-color);
+  --border-width: 0.1rem;
+  /* --box-shadow-offset-x: 0; */
+  /* --box-shadow-offset-y: 0.5rem; */
+  /* --box-shadow-blur-radius: 0.5rem; */
+  /* --box-shadow-color: var(--darkish); */
+}

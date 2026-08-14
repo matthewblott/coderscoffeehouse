@@ -14,7 +14,7 @@ export
 # Production
 # ==============================================================================
 
-project_name := coderscoffeehouse
+project_name := blog
 user_name := $(DEPLOYMENT_USER) 
 server_name := $(DEPLOYMENT_SERVER)
 
