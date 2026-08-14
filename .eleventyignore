@@ -193,6 +193,7 @@ pnpm-lock.yaml
 # ignore deployment files
 www*
 _site*
+blog*
 
 # ignore symlink for the 'tech' repo
 src/assets/img/tech
@@ -201,3 +202,5 @@ src/assets/img/posts
 # Ignore minimised files
 src/assets/css/site.min.css
 src/assets/js/main.min.js
+
+

@@ -193,6 +193,7 @@ src/other-stuff
 # ignore deployment files
 www*
 _site*
+blog*
 
 # ignore symlink for the 'tech' repo
 src/assets/img/tech
