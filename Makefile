@@ -20,6 +20,7 @@ server_name := $(DEPLOYMENT_SERVER)
 
 prod-build: ## Build production
 	rm -rf _site 
+	rm -rf ${project_name} 
 	bun eleventy
 	mv _site ${project_name} 
 	tar -czvf ${project_name}.tar.gz ${project_name} 
